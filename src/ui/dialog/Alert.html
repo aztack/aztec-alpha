@@ -1,0 +1,49 @@
+<html>
+	<head>
+		<link href="../UIControl.css" type="text/css" rel="stylesheet" charset="utf-8">
+		<script type="text/javascript" src="../UIControl.js"></script>
+		<!-- css -->
+		<style id="css">
+			.ui-alert{
+			}
+		</style>
+	</head>
+	
+	<!-- template -->
+	<div id="template" style="display:none">
+		<div class="ui-alert">
+			<div class="ui-title"></div>
+			<div class="ui-body"></div>
+		</div>
+	</div>
+
+	<!-- definition -->
+	<script type="text/javascript" id="javascript">
+
+		function Alert(){}
+		
+
+		var _ = Alert.prototype = new UIControl();
+
+		_.show = function(opt){
+		};
+
+		_.hide = function() {
+		};
+
+		Alert.show = function(opt){
+			(new Alert).show(opt);
+		};
+	</script>
+
+	<body>
+		<!-- demo -->
+		<script type="text/javascript" id="demo">
+			Alert.show('hello world!',{
+				onCancel: function(){
+					alert('closed');
+				}
+			});
+		</script>
+	</body>
+</html>
