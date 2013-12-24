@@ -45,6 +45,10 @@ function _object_each(obj, fn, thisValue, stopWhenFnReturnFalse){
 	return obj;
 }
 
+/**
+ * iterate over an array or object
+ * @return {object} return array or object being iterated
+ */
 function each() {
 	return _type.isArray(any) 
 		? _array_each.call(null, arguments) 
