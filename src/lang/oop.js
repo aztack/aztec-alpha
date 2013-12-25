@@ -5,5 +5,13 @@
 		_type: $root.lang.type,
 		_enum: $root.lang.enumerable
 	},
-	exports:[]
+	exports: []
 });
+
+function Class() {}
+
+Class.create = function() {
+
+};
+
+Class.extend = function() {};

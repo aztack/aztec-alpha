@@ -1,6 +1,9 @@
 ({
 	description: "String Utils",
 	namespace: $root.lang.string,
+	imports: {
+		_type: $root.lang.type
+	},
 	exports: [
 		toInt,
 		toFloat,
@@ -18,16 +21,39 @@
 	]
 });
 
+
+///exports
+
+/**
+ * toInt
+ * convert string s into integer. if it's not a string call it's toString method
+ * @param  {Any} s
+ * @param  {int} radix
+ * @return {int}
+ */
 function toInt(s, radix) {
+	if (!_type.isString(s)) {
+		s = s.toString();
+	}
 	return parseInt(s, radix || 10);
 }
 
+/**
+ * toFloat
+ * convert string s into float. if it's not a string call it's toString method
+ * @param  {Any} s
+ * @param  {int} radix
+ * @return {float}
+ */
 function toFloat(s, radix) {
-	return parseFloat(s, radix|| 10);
+	if (!_type.isString(s)) {
+		s = s.toString();
+	}
+	return parseFloat(s, radix || 10);
 }
 
 function capitalize(s) {
-	return s.replace(/^([a-zA-Z])/, function (a, m, i) {
+	return s.replace(/^([a-zA-Z])/, function(a, m, i) {
 		return m.toUpperCase();
 	});
 }
@@ -37,7 +63,7 @@ function isBlank(s) {
 }
 
 function lstrip(s) {
-	return s.replace(/^\s+/,'');
+	return s.replace(/^\s+/, '');
 }
 
 function rstrip(s) {
@@ -75,16 +101,16 @@ function repeat(s, n) {
 }
 
 var _trim = String.prototype.trim,
-	strip = _trim ? function(s){
-	return $trim.call(s);
-} : function(s){
-	return s.replace(/^\s+|s+$/g,'');
-};
+	strip = _trim ? function(s) {
+		return $trim.call(s);
+	} : function(s) {
+		return s.replace(/^\s+|s+$/g, '');
+	};
 
-function startWith(s,prefix) {
-	return s.substr(0,prefix.length) == prefix;
+function startWith(s, prefix) {
+	return s.substr(0, prefix.length) == prefix;
 }
 
-function endWith(s,suffix) {
+function endWith(s, suffix) {
 	return s.substr(-suffix.length) == suffix;
 }

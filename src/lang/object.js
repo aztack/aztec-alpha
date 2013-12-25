@@ -1,7 +1,7 @@
 ({
 	description: "Object utils",
 	namespace: $root.lang.object,
-	imports:{
+	imports: {
 		_type: $root.lang.type
 	},
 	exports: [
@@ -13,17 +13,16 @@
 	]
 });
 
-function mix(target,source,map) {
-}
+///exports
 
-function keys(obj) {
-}
+function mix(target, source, map) {}
 
-function values(obj) {
-}
+function keys(obj) {}
 
-function eachWithIndex(obj){
-}
+function values(obj) {}
+
+function eachWithIndex(obj) {}
+
 function inject(obj, fun) {
-	
+
 }
