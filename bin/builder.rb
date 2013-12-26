@@ -1,5 +1,6 @@
 # encoding:utf-8
 require 'rkelly'
+require 'execjs'
 require 'json'
 
 module Aztec
@@ -43,15 +44,15 @@ module Aztec
 	class JsModuleConfig
 		attr_reader :desciption, :namespace
 		def initialize(json)
-			
+			@config = JSON.parse json
 		end
 
-		def dependency
-			
+		def imports
+			@config['imports']
 		end
 
 		def exports
-			
+			@config['exports']	
 		end
 	end
 
@@ -64,10 +65,14 @@ module Aztec
 			@source = File.read path, :encoding=>'utf-8'
 			@ast = ::RKelly::Parser.new.parse @source
 			read_module_config
+			check_exports_existence
 		end
+		attr_reader :config
 
 		def to_amd
-			
+			"$root = {};" +
+			@config.imports.map{|k,v|"#{k} = '#{v};'"}.join("\n") + "\n" +
+			@ast.to_ecma
 		end
 
 		private
@@ -76,8 +81,31 @@ module Aztec
 			parenthetical_node = first_node.value
 			config = Utils::JsModuleConfigToJsonVisitor.new.accept(parenthetical_node.value);
 			config = config.chop if config.end_with? ';'
-			puts config
-			@config = JSON.parse(config)
+			@config = JsModuleConfig.new config
+		end
+
+		def check_exports_existence
+			@js_context = nil;
+			@config.exports.each do |name|
+				node = node_with_value(RKelly::Nodes::FunctionDeclNode, name)
+				if node.nil?
+					node = node_with_value(RKelly::Nodes::VarDeclNode, name)
+					if node.nil? and !in_exports?(name)
+						throw "Can not found #{name} to exports in #{@path}"
+					end
+				end
+			end
+		end
+
+		def in_exports?(name)
+			transformed_source_code = to_amd
+			puts transformed_source_code
+			@js_context = ExecJS.compile(transformed_source_code) if @js_context.nil?
+			not @js_context.eval("exports['#{name}']").nil?
+		end
+
+		def node_with_value(type, value)
+			@ast.pointcut(type).matches.to_a.find{|n|n.value == value}
 		end
 	end
 
@@ -109,4 +137,4 @@ module Aztec
 	end
 end
 
-Aztec::JsModule.new("../src/lang/type.js")
+puts Aztec::JsModule.new("../src/lang/type.js").config.exports
