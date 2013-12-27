@@ -8,6 +8,8 @@
 		isPrimitive,
 		isUndefined,
 		isNull,
+		isNullOrUndefined,
+		containsNullOrUndefined,
 		isEmpty,
 		isRegExp,
 		isString,
@@ -15,7 +17,8 @@
 		isFunction,
 		isNumber,
 		isBoolean,
-		isPainObject,
+		isPlainObject,
+		isEmptyObjct,
 		ctorName
 	]
 });

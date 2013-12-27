@@ -2,8 +2,21 @@
 require 'rkelly'
 require 'execjs'
 require 'json'
+require 'tsort'
+require 'erubis'
+require 'fuzzy_match'
+
+require File.expand_path('common.rb')
 
 module Aztec
+
+	class TsortableHash < Hash
+		include TSort
+		alias tsort_each_node each_key
+		def tsort_each_child(node, &block)
+			fetch(node).each(&block)
+		end
+	end
 
 	module Utils
 		#
@@ -37,6 +50,8 @@ module Aztec
 				end
 			end
 		end
+
+
 	end
 	#
 	# Representing JSON config at top of a js module
@@ -45,6 +60,10 @@ module Aztec
 		attr_reader :desciption, :namespace
 		def initialize(json)
 			@config = JSON.parse json
+		end
+
+		def [](key)
+			@config[key]
 		end
 
 		def imports
@@ -65,47 +84,79 @@ module Aztec
 			@source = File.read path, :encoding=>'utf-8'
 			@ast = ::RKelly::Parser.new.parse @source
 			read_module_config
-			check_exports_existence
+
+			#TODO
+			#check_exports_existence
 		end
 		attr_reader :config
 
+		def name
+			@config['namespace']
+		end
+
 		def to_amd
-			"$root = {};" +
-			@config.imports.map{|k,v|"#{k} = '#{v};'"}.join("\n") + "\n" +
-			@ast.to_ecma
+			tpl = <<-AMD
+			<%=@meta%>
+			define("<%=@name%>",[<%=@imports%>],function(exports){
+				<%=@requires%>
+				<%=@original%>
+				<%=@exports%>
+			});
+			AMD
+			tpl.gsub!(tpl[/^\s+/],'')
+			eruby = Erubis::Eruby.new(tpl)
+			ctx = Erubis::Context.new
+			ctx[:name] = name
+			ctx[:imports] = @config.imports.values.map(&:single_quote).join(',')
+			requires = @config.imports.map{|k,v| "#{k} = require('#{v}')"}.join(',')
+			ctx[:meta] = @meta.to_ecma.to_comment
+			ctx[:requires] = "var #{requires};"
+			ctx[:original] = @ast.to_ecma
+			exported = []
+			
+			exports = @config.exports.map do |name|
+				if declared?(name)
+					"exports['#{name}'] = #{name};\n  "
+					exported << name
+				else
+					real_name = find_similiar_decl(name[1...-1], exported)
+					#puts "#{name}=#{real_name}"
+					if real_name != nil
+						throw "Can not find #{name} to export! Do you mean #{real_name} instead of #{name}?"
+					end
+				end
+			end.join
+			ctx[:exports] = exports
+			code = eruby.evaluate ctx
+			RKelly::Parser.new.parse(code).to_ecma
 		end
 
 		private
 		def read_module_config
 			first_node = @ast.value.shift
-			parenthetical_node = first_node.value
+			@meta = parenthetical_node = first_node.value
 			config = Utils::JsModuleConfigToJsonVisitor.new.accept(parenthetical_node.value);
 			config = config.chop if config.end_with? ';'
 			@config = JsModuleConfig.new config
 		end
 
-		def check_exports_existence
-			@js_context = nil;
-			@config.exports.each do |name|
-				node = node_with_value(RKelly::Nodes::FunctionDeclNode, name)
-				if node.nil?
-					node = node_with_value(RKelly::Nodes::VarDeclNode, name)
-					if node.nil? and !in_exports?(name)
-						throw "Can not found #{name} to exports in #{@path}"
-					end
-				end
+		def decl_nodes
+			if @decls.nil?
+				@decls = @ast.pointcut(RKelly::Nodes::FunctionDeclNode).matches.to_a +
+					@ast.pointcut(RKelly::Nodes::VarDeclNode).matches.to_a
 			end
+			@decls.uniq
+		end
+		def declared?(value)
+			not decl_nodes.find{|n|n.value == value}.nil?
 		end
 
-		def in_exports?(name)
-			transformed_source_code = to_amd
-			puts transformed_source_code
-			@js_context = ExecJS.compile(transformed_source_code) if @js_context.nil?
-			not @js_context.eval("exports['#{name}']").nil?
-		end
-
-		def node_with_value(type, value)
-			@ast.pointcut(type).matches.to_a.find{|n|n.value == value}
+		def find_similiar_decl(name,exclude)
+			decls_names = decl_nodes.map do |n|
+				n.is_a?(RKelly::Nodes::FunctionDeclNode) ? n.value : n.name
+			end
+			candidates = decls_names - exclude
+			FuzzyMatch.new(candidates).find(name)
 		end
 	end
 
@@ -134,7 +185,10 @@ module Aztec
 		def [](namespace)
 			@modules[namespace]
 		end
+
+		def dependency_graph
+		end
 	end
 end
 
-puts Aztec::JsModule.new("../src/lang/type.js").config.exports
+puts Aztec::JsModule.new("../src/lang/type.js").to_amd
