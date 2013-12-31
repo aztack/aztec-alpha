@@ -70,6 +70,10 @@ function rstrip(s) {
 	return s.replace(/\s+$/, '');
 }
 
+function strip(s) {
+	return s.replace(/^\s+|\s+$/,'');
+}
+
 function chomp(s, sep) {
 	if (typeof sep !== 'undefined') {
 		return s.replace((new RegExp(sep + '$')), '');

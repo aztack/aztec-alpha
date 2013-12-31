@@ -1,14 +1,20 @@
 # encoding:utf-8
 require 'rkelly'
 require 'execjs'
+require 'nokogiri'
 require 'json'
 require 'tsort'
 require 'erubis'
-require 'fuzzy_match'
 
-require File.expand_path('common.rb')
+require File.expand_path('common.rb',File.dirname(__FILE__))
 
 module Aztec
+
+	module Message
+		def self.ExportsNotFound(name)
+			"//warning:#{name} not found in var statement or function declaration\n"
+		end
+	end
 
 	class TsortableHash < Hash
 		include TSort
@@ -49,9 +55,20 @@ module Aztec
 					super(o)
 				end
 			end
+
+			def visit_StringNode(o)
+				if o.value.single_quoted?
+					o.value.unquote.double_quote
+				else
+					o.value
+				end
+			end
 		end
 
-
+		def self.load_template(name)
+			path = "#{File.dirname(__FILE__)}/#{name}.erb"
+			File.read path
+		end
 	end
 	#
 	# Representing JSON config at top of a js module
@@ -67,11 +84,11 @@ module Aztec
 		end
 
 		def imports
-			@config['imports']
+			@config['imports'] || {}
 		end
 
 		def exports
-			@config['exports']	
+			@config['exports'] || {}
 		end
 	end
 
@@ -79,56 +96,49 @@ module Aztec
 	# JavaScript module
 	#
 	class JsModule
-		def initialize(path)
-			@path = path
-			@source = File.read path, :encoding=>'utf-8'
+		def initialize(code)
+			@source = code
 			@ast = ::RKelly::Parser.new.parse @source
 			read_module_config
-
-			#TODO
-			#check_exports_existence
+			from = @meta.range.to.index + 2
+			@source = @source[from..-1].strip
 		end
 		attr_reader :config
 
-		def name
+		def namespace
 			@config['namespace']
 		end
 
+		alias :name :namespace
+
 		def to_amd
-			tpl = <<-AMD
-			<%=@meta%>
-			define("<%=@name%>",[<%=@imports%>],function(exports){
-				<%=@requires%>
-				<%=@original%>
-				<%=@exports%>
-			});
-			AMD
-			tpl.gsub!(tpl[/^\s+/],'')
-			eruby = Erubis::Eruby.new(tpl)
+			tpl = Utils.load_template :amd
+			eruby = Erubis::Eruby.new tpl
 			ctx = Erubis::Context.new
 			ctx[:name] = name
-			ctx[:imports] = @config.imports.values.map(&:single_quote).join(',')
-			requires = @config.imports.map{|k,v| "#{k} = require('#{v}')"}.join(',')
-			ctx[:meta] = @meta.to_ecma.to_comment
-			ctx[:requires] = "var #{requires};"
-			ctx[:original] = @ast.to_ecma
-			exported = []
+			imports = @config.imports
+			if not imports.size.zero?
+				ctx[:imports] = imports.values.map(&:single_quote).join(',')
+				requires = @config.imports.map{|k,v| "#{k} = require('#{v}')"}.join(',')
+				ctx[:requires] = "var #{requires};"
+			else
+				ctx[:imports] = ctx[:requires] = ''
+			end
 			
-			exports = @config.exports.map do |name|
-				if declared?(name)
-					"exports['#{name}'] = #{name};\n  "
-					exported << name
-				else
-					real_name = find_similiar_decl(name[1...-1], exported)
-					#puts "#{name}=#{real_name}"
-					if real_name != nil
-						throw "Can not find #{name} to export! Do you mean #{real_name} instead of #{name}?"
-					end
-				end
-			end.join
-			ctx[:exports] = exports
-			code = eruby.evaluate ctx
-			RKelly::Parser.new.parse(code).to_ecma
+			ctx[:meta] = @meta.to_ecma.to_comment.endl			
+			ctx[:original] = @source.indent 4
+			ctx[:usestrict] = "//'use strict';"
+			
+			exports = @config.exports
+			if not exports.size.zero?
+				ctx[:exports] = @config.exports.map do |name|
+					code = "exports['#{name}'] = #{name};"
+					$stderr.puts Message::ExportsNotFound(name) unless declared?(name)
+				end.join
+			else
+				ctx[:exports] = ''
+			end
+			eruby.evaluate ctx
 		end
 
 		private
@@ -151,31 +161,35 @@ module Aztec
 			not decl_nodes.find{|n|n.value == value}.nil?
 		end
 
-		def find_similiar_decl(name,exclude)
-			decls_names = decl_nodes.map do |n|
-				n.is_a?(RKelly::Nodes::FunctionDeclNode) ? n.value : n.name
-			end
-			candidates = decls_names - exclude
-			FuzzyMatch.new(candidates).find(name)
-		end
+		#def find_similiar_decl(name,exclude)
+		#	decls_names = decl_nodes.map do |n|
+		#		n.is_a?(RKelly::Nodes::FunctionDeclNode) ? n.value : n.name
+		#	end
+		#	candidates = decls_names - exclude
+		#	FuzzyMatch.new(candidates).find(name)
+		#end
 	end
 
 	#
 	# Module manager
 	#
 	class JsModuleManager
-		def initialize(src_root_dir)
-			@dir = src_root_dir
-			@modules = {}
-			scan_dir
+		def initialize(src_dir)
+			@src_dir = src_dir
+			init
 		end
 
-		def scan_dir
-			Dir["#{@dir}/**/*.js"].each do |js_file|
-				puts js_file
-				m = JsModule.new js_file
+		attr_reader :dependency
+
+		def scan
+			Dir["#{@src_dir}/**/*.js"].each do |js_file|
+				code = File.read js_file, :encoding=>'utf-8'
+				m = JsModule.new code
+				cfg = m.config
 				@modules[m.namespace] = m
+				@dependency[m.namespace] = cfg.imports.nil? ? [] : cfg.imports.values
 			end
+			self
 		end
 
 		def release(output_dir)
@@ -186,9 +200,54 @@ module Aztec
 			@modules[namespace]
 		end
 
-		def dependency_graph
+		def dependency_hash
+			@dependency.tsort
+		end
+
+		def dependency_of(mod)
+			m = @modules[mod]
+			return [] if m.nil? or m.config.imports.empty?
+			cfg = m.config
+			imports = cfg.imports.values
+			ret = []
+			imports.each do |im|
+				ret.concat dependency_of(im)
+			end
+			(ret + imports).uniq
+		end
+
+		def save_dependency_graph(filename)
+			require 'graphviz'
+			if (Object.const_get(:GraphViz) rescue nil).nil?
+				$stderr.puts "GraphViz gem not installed, try `[sudo] gem install ruby-graphviz`"
+				return
+			end
+			init.scan_dir
+			GraphViz::new(:G, :type => :digraph) do |g|
+				@dependency.each do |name, depends|
+					n = g.add_node name
+					depends.each{|dep|g.add_edges n, g.add_node(dep)}
+				end
+			end.output :png => filename
+		end
+
+		private
+		def init
+			@modules = {}
+			@dependency = TsortableHash.new
+			@dependency['$root'] = []
+			@dependency['jQuery'] = []
+			self
 		end
 	end
 end
 
-puts Aztec::JsModule.new("../src/lang/type.js").to_amd
+if __FILE__ == $0
+	require 'pp'
+	man = Aztec::JsModuleManager.new('../src').scan
+	#puts Aztec::JsModule.new(File.read("#{File.dirname(__FILE__)}/../src/ui/UIControl.js")).to_amd
+	#Aztec::JsModuleManager.new('src').scan.save_dependency_graph 'module_dependency.png'
+	#puts Aztec::JsModuleManager.new('src').scan.dependency_hash
+	#puts man.dependency_hash
+	pp man.dependency_of("$root.lang.fn")
+end

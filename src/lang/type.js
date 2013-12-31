@@ -1,9 +1,6 @@
 ({
 	description: "JavaScript type system supplement",
 	namespace: $root.lang.type,
-	imports: {
-		_enum: $root.lang.enumerable
-	},
 	exports: [
 		isPrimitive,
 		isUndefined,
@@ -23,8 +20,7 @@
 	]
 });
 
-var _toString = Object.prototype.toString,
-	_all = _enum.all;
+var _toString = Object.prototype.toString;
 
 // exports
 
@@ -38,8 +34,7 @@ function isPrimitive(arg) {
 		typeof arg === 'boolean' ||
 		typeof arg === 'number' ||
 		typeof arg === 'string' ||
-		typeof arg === 'symbol' || // ES6 symbol
-	typeof arg === 'undefined';
+		typeof arg === 'undefined';
 }
 
 /**
@@ -49,12 +44,14 @@ function isPrimitive(arg) {
  * @return {Boolean}     [description]
  */
 function isUndefined(arg) {
-	if (arguments.length > 1) {
-		return _all(arguments, function(item) {
-			typeof item == 'undefined'
-		});
+	var i = arguemtns.length;
+	if (i == 1) {
+		return typeof arg == 'undefined';
 	} else {
-		typeof item == 'undefined'
+		while (--i) {
+			if (typeof arguments[i] != 'undefined') return false;
+		}
+		return true;
 	}
 }
 
@@ -65,12 +62,14 @@ function isUndefined(arg) {
  * @return {Boolean}     [description]
  */
 function isNull(arg) {
-	if (arguments.length > 1) {
-		return _all(arguments, function(item) {
-			return item === null;
-		});
+	var i = arguemtns.length;
+	if (i == 1) {
+		return typeof arg === null;
 	} else {
-		return arg === null;
+		while (--i) {
+			if (arguments[i] !== null) return false;
+		}
+		return true;
 	}
 }
 
@@ -80,7 +79,7 @@ function isNull(arg) {
  * @return {Boolean}
  */
 function isNullOrUndefined(arg) {
-	return arg == null;
+	return arg === null || typeof arg == 'undefined';
 }
 
 /**
@@ -90,8 +89,8 @@ function isNullOrUndefined(arg) {
  */
 function containsNullOrUndefined() {
 	var i = arguments.length;
-	while(i >= 0) {
-		if (arguments[i] == null) return true;
+	while (i >= 0) {
+		if (arguments[i] === null) return true;
 		i = i - 1;
 	}
 	return false;
@@ -152,7 +151,7 @@ function isPlainObject(arg) {
  * @param  {Any} arg can be anything
  * @return {String} string representation of constructor of arg
  * @remark
- * 		`arg.constructor` and `instanceof` are both not work cross-frame and cross-window
+ *     `arg.constructor` and `instanceof` are both not work cross-frame and cross-window
  */
 function ctorName(arg) {
 	return _toString.call(arg).slice(8, -1);

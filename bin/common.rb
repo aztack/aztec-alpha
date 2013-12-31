@@ -32,4 +32,18 @@ class ::String
 	def to_comment
 		self.gsub!(/^/,'// ')
 	end
+
+	def endl
+		self << "\n"
+	end
+
+	def as_file(extension)
+		ext = if extension.start_with? "."
+			extension
+		else
+			extension[1..-1]
+		end
+		path = File.dirname(self) + File::Separator + File.basename(self,".*") + ext
+	path.gsub("\\",File::Separator)
+	end
 end

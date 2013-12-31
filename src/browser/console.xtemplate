@@ -1,0 +1,21 @@
+/* console */
+<style>
+.ui-console {
+	position: fixed;
+	width: 100%;
+	bottom: 0;
+	height: 200px;
+	border: 1px solid red;
+}
+
+.ui-console-content {
+	overflow-y: scroll;
+}
+</style>
+
+<html>
+	<div class="ui-console">
+		<div class="ui-console-content">
+		</div>
+	</div>
+</html>

@@ -1,12 +1,14 @@
 ({
-	namespace: '$root.ui.UIControl',
+	description: "UIControl",
+	namespace: $root.ui.UIControl,
 	dependency: {
-		'jQuery':'$'
+		$: jQuery
 	},
 	exports: [
-		'UIControl'
+		UIControl
 	]
 });
+
 
 function UIControl(){}
 
