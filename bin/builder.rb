@@ -161,11 +161,18 @@ module Aztec
 			if @decls.nil?
 				@decls = @ast.pointcut(RKelly::Nodes::FunctionDeclNode).matches.to_a +
 					@ast.pointcut(RKelly::Nodes::VarDeclNode).matches.to_a
+				@decls.uniq!
 			end
-			@decls.uniq
+			@decls
 		end
 		def declared?(value)
-			not decl_nodes.find{|n|n.value == value}.nil?
+			not decl_nodes.find do |n|
+				if n.is_a? RKelly::Nodes::FunctionDeclNode
+					n.value == value
+				else
+					n.name == value
+				end
+			end.nil?
 		end
 
 		#def find_similiar_decl(name,exclude)
@@ -202,6 +209,10 @@ module Aztec
 			self
 		end
 
+		def rescan
+			init.scan
+		end
+
 		def release(output_dir)
 			
 		end
@@ -215,14 +226,7 @@ module Aztec
 		end
 
 		def dependency_of(mod, include_self = false)
-			m = @modules[mod]
-			return include_self ? [mod] : [] if m.nil? or m.config.imports.empty?
-			cfg = m.config
-			imports = cfg.imports.values
-			ret = []
-			imports.each{|im|ret.concat dependency_of(im)}
-			all = (ret + imports).uniq
-			include_self ? all << mod : all
+			_dependency_of(mod, include_self).unshift '$root'
 		end
 
 		def save_dependency_graph(filename)
@@ -248,6 +252,16 @@ module Aztec
 			@dependency['jQuery'] = []
 			self
 		end
+
+		def _dependency_of(mod, include_self)
+			m = @modules[mod]
+			return include_self ? [mod] : [] if m.nil? or m.config.imports.empty?
+			cfg = m.config
+			imports = cfg.imports.values
+			ret = imports.inject([]){|s,im| s |= _dependency_of(im, include_self)}
+			all = (ret + imports).uniq
+			include_self ? all << mod : all
+		end
 	end
 end
 
@@ -258,5 +272,5 @@ if __FILE__ == $0
 	#Aztec::JsModuleManager.new('src').scan.save_dependency_graph 'module_dependency.png'
 	#puts Aztec::JsModuleManager.new('src').scan.dependency_hash
 	#puts man.dependency_hash
-	pp man.dependency_of("$root.lang.type", true)
+	pp man.dependency_of("$root.lang.string", true)
 end

@@ -3,14 +3,14 @@ function test(ns, fn) {
 	console.log("Unit Test of: " + ns);
 
 	function ok(desc) {
-		console.log("%s %cOK!", desc, 'color:green');
+		console.log("%s %cOK!", desc, 'color:green;font-size:15px;');
 	}
 
 	function failed(desc, value, ret) {
 		errorCount++;
 		console.log('%s %cFAILED! %cexpect %s but got %s',
 			this._desc,
-			'color:red',
+			'color:red;font-size:14px;',
 			'color:black',
 			JSON.stringify(value),
 			JSON.stringify(ret));
@@ -22,7 +22,7 @@ function test(ns, fn) {
 		} else {
 			failed(desc, value, ret);
 		}
-		console.log('>',value);
+		console.log('>\texpect:', JSON.stringify(value), 'got', JSON.stringify(ret));
 		return specs;
 	}
 
@@ -58,6 +58,10 @@ function test(ns, fn) {
 			___: function(d) {
 				desc = d;
 				return this;
+			},
+			anything: function(v, fn) {
+				var ret = fn();
+				return check(true, v, ret);
 			},
 			equal: function(v, fn) {
 				var ret = fn();
@@ -96,11 +100,12 @@ function test(ns, fn) {
 				return check(ret <= v, v, ret);
 			},
 			done: function() {
-				console.log("%cError:%d", 'color:blue', errorCount)
+				console.log("%cError:%d", 'color:blue;font-size:14px;', errorCount);
 			}
 		};
 	specs.it = specs;
 	specs.should = specs;
+	specs.maybe = specs;
 
 	define('$root.test.' + ns, [], function() {
 		fn(require, specs);

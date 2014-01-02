@@ -50,7 +50,7 @@ end
 
 get "/test/:module" do
 	@mod = params[:module]
-	#mod.sub(/^$root\./,'')
+	man.rescan
 	erb :test
 end
 
@@ -63,11 +63,16 @@ end
 get "/scripts/:module" do
 	m = params[:module]
 	content_type "text/javascript"
-	@mods = ['$root'] + man.dependency_of(m, true)
+	@mods = man.dependency_of(m, true)
 	js = @mods.inject("") do |code, mod|
 		code << man[mod].to_amd
 	end
 	js << @mods.map(&:to_comment).join("\n")
+end
+
+get "/rescan" do
+	man.rescan
+	"Done!"
 end
 
 __END__

@@ -24,6 +24,6 @@ test("$root.lang.string", function(require, specs) {
 		})
 		.it.should.equal(' !helloWorld', function() {
 			return str.capitalize(' !helloWorld');
-		});
+		})
 		.done();
 });

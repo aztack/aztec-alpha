@@ -5,7 +5,7 @@ test("$root.lang.type", function(require, specs) {
 	function UserDefinedType() {}
 
 	specs
-		.___('type#ctorName')
+		.___('type#typename')
 		.it.should.equal([
 			'Null',
 			'Undefined',
