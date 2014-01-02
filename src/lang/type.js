@@ -15,12 +15,19 @@
 		isNumber,
 		isBoolean,
 		isPlainObject,
-		isEmptyObjct,
-		ctorName
+		isEmptyObject,
+		typename,
+		hasSameTypeName
 	]
 });
 
-var _toString = Object.prototype.toString;
+var _toString = Object.prototype.toString,
+	_primitives = {
+		'boolean': 'Boolean',
+		'number': 'Number',
+		'string': 'String',
+		'undefined': 'Undefined'
+	};
 
 // exports
 
@@ -30,11 +37,7 @@ var _toString = Object.prototype.toString;
  * @return {Boolean}
  */
 function isPrimitive(arg) {
-	return arg === null ||
-		typeof arg === 'boolean' ||
-		typeof arg === 'number' ||
-		typeof arg === 'string' ||
-		typeof arg === 'undefined';
+	return arg === null || typeof arg in _primitives;
 }
 
 /**
@@ -102,7 +105,7 @@ function containsNullOrUndefined() {
  * @param  {Any}  arg
  * @return {Boolean}
  */
-function isEmptyObjct(arg) {
+function isEmptyObject(arg) {
 	var i;
 	for (i in arg) {
 		return false;
@@ -121,6 +124,14 @@ function isEmpty(arg) {
 	return b ? true : isEmptyObject(arg);
 }
 
+function isRegExp(arg) {
+	return _toString.call(arg) == '[object RegExp]';
+}
+
+function isString(arg) {
+	return _toString.call(arg) == '[object String]';
+}
+
 /**
  * isArray
  * return true if given arg is truly an array
@@ -128,11 +139,21 @@ function isEmpty(arg) {
  * @param  {Any} arg
  * @return {Boolean}
  */
-_enum.each('RegExp String Array Function Number Boolean'.split(' '), function(ctor) {
-	exports['is' + ctor] = function(arg) {
-		return _toString.call(arg) == '[object ' + ctor + ']';
-	};
-});
+function isArray(arg) {
+	return _toString.call(arg) == '[object Array]';
+}
+
+function isFunction(arg) {
+	return _toString.call(arg) == '[object Function]';
+}
+
+function isNumber(arg) {
+	return _toString.call(arg) == '[object Number]';
+}
+
+function isBoolean(arg) {
+	return _toString.call(arg) == '[object Boolean]';
+}
 
 /**
  * isPlainObject
@@ -153,6 +174,36 @@ function isPlainObject(arg) {
  * @remark
  *     `arg.constructor` and `instanceof` are both not work cross-frame and cross-window
  */
-function ctorName(arg) {
-	return _toString.call(arg).slice(8, -1);
+function _ctorName(arg) {
+	var ctor = arg.constructor;
+	if (isFunction(ctor) && !isEmpty(ctor.name)) {
+		return ctor.name;
+	} else {
+		return _toString.call(arg).slice(8, -1);
+	}
+}
+
+/**
+ * typename
+ * return type of arg in string
+ * @param  {Any} arg
+ * @return {String}
+ */
+function typename(arg) {
+	var t = typeof arg;
+	if (arg === null) {
+		return 'Null';
+	}
+	return t in _primitives ? _primitives[t] : _ctorName(arg);
+}
+
+/**
+ * hasSameTypeName
+ * return true if a, b has the same type name
+ * @param  {Any}  a
+ * @param  {Any}  b
+ * @return {Boolean}
+ */
+function hasSameTypeName(a, b) {
+	return typename(a) == typename(b);
 }

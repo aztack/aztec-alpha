@@ -12,7 +12,7 @@ module Aztec
 
 	module Message
 		def self.ExportsNotFound(name)
-			"//warning:#{name} not found in var statement or function declaration\n"
+			"warning:#{name} not found in var statement or function declaration\n"
 		end
 	end
 
@@ -96,9 +96,10 @@ module Aztec
 	# JavaScript module
 	#
 	class JsModule
-		def initialize(code)
-			@source = code
-			@ast = ::RKelly::Parser.new.parse @source
+		def initialize(path)
+			@source = File.read path, :encoding=>'utf-8'
+			@ast = ::RKelly::Parser.new.parse @source rescue nil
+			throw "There are SytaxError in #{path}!" if @ast.nil?
 			read_module_config
 			from = @meta.range.to.index + 2
 			@source = @source[from..-1].strip
@@ -109,10 +110,14 @@ module Aztec
 			@config['namespace']
 		end
 
+		def is_root
+			@config['namespace'] == '$root'
+		end
+
 		alias :name :namespace
 
 		def to_amd
-			tpl = Utils.load_template :amd
+			tpl = is_root ?  "<%=@meta%>\n<%=@original%>" : Utils.load_template(:amd)
 			eruby = Erubis::Eruby.new tpl
 			ctx = Erubis::Context.new
 			ctx[:name] = name
@@ -132,13 +137,15 @@ module Aztec
 			exports = @config.exports
 			if not exports.size.zero?
 				ctx[:exports] = @config.exports.map do |name|
-					code = "exports['#{name}'] = #{name};"
-					$stderr.puts Message::ExportsNotFound(name) unless declared?(name)
-				end.join
+					c = "exports['#{name}'] = #{name};".indent(4)
+					c = c.to_comment unless declared?(name)
+					c
+				end.join "\n"
 			else
 				ctx[:exports] = ''
 			end
-			eruby.evaluate ctx
+			code = eruby.evaluate ctx
+			code.gsub(/\t/,'  ')
 		end
 
 		private
@@ -174,8 +181,9 @@ module Aztec
 	# Module manager
 	#
 	class JsModuleManager
-		def initialize(src_dir)
+		def initialize(src_dir, exclude = [])
 			@src_dir = src_dir
+			@exclude = exclude
 			init
 		end
 
@@ -183,8 +191,10 @@ module Aztec
 
 		def scan
 			Dir["#{@src_dir}/**/*.js"].each do |js_file|
-				code = File.read js_file, :encoding=>'utf-8'
-				m = JsModule.new code
+				for ex in @exclude
+					next if js_file[ex]
+				end
+				m = JsModule.new js_file
 				cfg = m.config
 				@modules[m.namespace] = m
 				@dependency[m.namespace] = cfg.imports.nil? ? [] : cfg.imports.values
@@ -204,16 +214,15 @@ module Aztec
 			@dependency.tsort
 		end
 
-		def dependency_of(mod)
+		def dependency_of(mod, include_self = false)
 			m = @modules[mod]
-			return [] if m.nil? or m.config.imports.empty?
+			return include_self ? [mod] : [] if m.nil? or m.config.imports.empty?
 			cfg = m.config
 			imports = cfg.imports.values
 			ret = []
-			imports.each do |im|
-				ret.concat dependency_of(im)
-			end
-			(ret + imports).uniq
+			imports.each{|im|ret.concat dependency_of(im)}
+			all = (ret + imports).uniq
+			include_self ? all << mod : all
 		end
 
 		def save_dependency_graph(filename)
@@ -249,5 +258,5 @@ if __FILE__ == $0
 	#Aztec::JsModuleManager.new('src').scan.save_dependency_graph 'module_dependency.png'
 	#puts Aztec::JsModuleManager.new('src').scan.dependency_hash
 	#puts man.dependency_hash
-	pp man.dependency_of("$root.lang.fn")
+	pp man.dependency_of("$root.lang.type", true)
 end

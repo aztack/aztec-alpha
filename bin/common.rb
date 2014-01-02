@@ -26,7 +26,7 @@ class ::String
 	end
 
 	def indent(n)
-		self.gsub!(/^/,' '*n)
+		self[Regexp.new("^"+' '*n)] ? self : self.gsub!(/^/,' '*n)
 	end
 
 	def to_comment

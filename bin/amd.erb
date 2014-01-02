@@ -1,8 +1,10 @@
 <%=@meta%>
 
-;define('<%=@name%>',[<%=@imports%>],function(exports){
+;define('<%=@name%>',[<%=@imports%>],function(require, exports){
 	<%=@usestrict%>
 	<%=@requires%>
 	<%=@original%>
 	<%=@exports%>
-});//end of <%=@name%>
+	return exports;
+});
+//end of <%=@name%>

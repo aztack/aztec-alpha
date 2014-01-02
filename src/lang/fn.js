@@ -80,7 +80,7 @@ function Callbacks() {
 		return this;
 	};
 	return proto;
-};
+}
 
 /**
  * bind
@@ -112,3 +112,17 @@ function bind(fn, context) {
  * @return {Undefined}
  */
 function noop() {}
+
+function forge0(old, replacement, ctx) {
+	return function(){
+		var ret = replacement.apply(null, arguments);
+		return old.apply(ctx, ret);
+	};
+}
+
+function forge$(old, replacement, ctx) {
+	return function(){
+		var ret = old.apply(ctx, arguments);
+		return replacement.apply(ctx, arguments);
+	};
+}

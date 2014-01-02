@@ -17,7 +17,11 @@
 		reverse,
 		repeat,
 		startWith,
-		endWith
+		endWith,
+		quoted,
+		enclose,
+		quote,
+		toArray
 	]
 });
 
@@ -71,7 +75,7 @@ function rstrip(s) {
 }
 
 function strip(s) {
-	return s.replace(/^\s+|\s+$/,'');
+	return s.replace(/^\s+|\s+$/, '');
 }
 
 function chomp(s, sep) {
@@ -106,7 +110,7 @@ function repeat(s, n) {
 
 var _trim = String.prototype.trim,
 	strip = _trim ? function(s) {
-		return $trim.call(s);
+		return _trim.call(s);
 	} : function(s) {
 		return s.replace(/^\s+|s+$/g, '');
 	};
@@ -117,4 +121,27 @@ function startWith(s, prefix) {
 
 function endWith(s, suffix) {
 	return s.substr(-suffix.length) == suffix;
+}
+
+function quoted(s) {
+	if (!s) return false;
+	var head = s.substr(0, 1),
+		tail = s.substr(-1);
+	return (head == '"' && tail == '"') || (head == "'" && tail == "'");
+}
+
+function enclose(s, chr) {
+	var t = s;
+	if (!_type.isString(s) &&_type.isFunction(s.toString)) {
+		t = s.toString();
+	}
+	return chr + t + chr;
+}
+
+function quote(s, doubleQuote) {
+	return enclose(s,!!doubleQuote ? '"' : "'");
+}
+
+function toArray(s) {
+	return [s];
 }

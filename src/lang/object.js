@@ -2,7 +2,8 @@
 	description: "Object utils",
 	namespace: $root.lang.object,
 	imports: {
-		_type: $root.lang.type
+		_type: $root.lang.type,
+		_enum: $root.lang.enumerable
 	},
 	exports: [
 		mix,
@@ -15,14 +16,53 @@
 
 ///exports
 
-function mix(target, source, map) {}
+function mix(target, source) {
+	_enum.each(source,function(k,v,i){
+		target[k] = v;
+	});
+	return target;
+}
 
-function keys(obj) {}
+/**
+ * keys
+ * return keys of obj
+ * @param  {Object} obj
+ * @return {Array}
+ */
+function keys(obj) {
+	var ret = [];
+	for (var i in obj) {
+		ret.push(i);
+	}
+	return ret;
+}
 
-function values(obj) {}
+/**
+ * values
+ * return values of obj
+ * @param  {Object} obj
+ * @return {Array}
+ */
+function values(obj) {
+	var ret = [];
+	if (!_type.isEmpty(obj)) return ret;
+	for (var i in obj) {
+		ret.push(obj[i]);
+	}
+	return ret;
+}
 
-function eachWithIndex(obj) {}
-
-function inject(obj, fun) {
-
+/**
+ * Inject
+ * @param  {Any} obj
+ * @param  {Any} init
+ * @param  {Function} fn
+ * @return {Any}
+ */
+function inject(obj, init, fn) {
+	if (_type.isEmpty(obj)) return init;
+	_type.each(obj, function(k, v, i) {
+		init = fn(init, k, v, i);
+	})
+	return init;
 }
