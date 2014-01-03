@@ -107,7 +107,7 @@ function test(ns, fn) {
 	specs.should = specs;
 	specs.maybe = specs;
 
-	define('$root.test.' + ns, [], function() {
+	define('$root.test.' + ns, [], function(require, _) {
 		fn(require, specs);
 	});
 }

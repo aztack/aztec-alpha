@@ -1,5 +1,6 @@
 ({
 	description: "String Utils",
+	version: '0.0.1',
 	namespace: $root.lang.string,
 	imports: {
 		_type: $root.lang.type

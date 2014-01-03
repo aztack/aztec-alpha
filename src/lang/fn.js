@@ -1,5 +1,6 @@
 ({
 	description: "Function",
+	version: '0.0.1',
 	namespace: $root.lang.fn,
 	imports: {
 		_type: $root.lang.type,

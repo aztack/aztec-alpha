@@ -1,5 +1,6 @@
 ({
 	description: "Event",
+	version: '0.0.1',
 	namespace: $root.browser.event,
 	imports: {
 		_type: $root.lang.type,

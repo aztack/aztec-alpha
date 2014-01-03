@@ -1,5 +1,6 @@
 ({
 	description: 'Date Utils',
+	version: '0.0.1',
 	namespace: $root.lang.date,
 	imports: {
 		_type: $root.lang.type,

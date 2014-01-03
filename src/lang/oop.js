@@ -1,5 +1,6 @@
 ({
 	description: "Object-Orientated Programming Library for JavaScript",
+	version: '0.0.1',
 	namespace: $root.lang.oop,
 	imports: {
 		_type: $root.lang.type,

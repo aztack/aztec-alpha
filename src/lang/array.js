@@ -1,5 +1,6 @@
 ({
 	description: "Ruby String like string module",
+	version: '0.0.1',
 	namespace: $root.lang.array,
 	imports: {
 		_type: $root.lang.type

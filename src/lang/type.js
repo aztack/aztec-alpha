@@ -1,5 +1,6 @@
 ({
 	description: "JavaScript type system supplement",
+	version: '0.0.1',
 	namespace: $root.lang.type,
 	exports: [
 		isPrimitive,

@@ -37,6 +37,10 @@ class ::String
 		self << "\n"
 	end
 
+	def enclose(s)
+		s + self + s
+	end
+
 	def as_file(extension)
 		ext = if extension.start_with? "."
 			extension
@@ -44,6 +48,6 @@ class ::String
 			extension[1..-1]
 		end
 		path = File.dirname(self) + File::Separator + File.basename(self,".*") + ext
-	path.gsub("\\",File::Separator)
+		path.gsub("\\",File::Separator)
 	end
 end

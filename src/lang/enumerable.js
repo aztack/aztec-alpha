@@ -1,5 +1,6 @@
 ({
 	description: "Enumerable Interface",
+	version: '0.0.1',
 	namespace: $root.lang.enumerable,
 	imports: {
 		_type: $root.lang.type,

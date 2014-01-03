@@ -56,15 +56,16 @@ end
 
 get "/demo/:module" do
 	m = params[:module]
-	path = m.gsub(".",File::Separator).sub('$root','src')
-	"<h1>#{path}</h1>"
+	path = m.gsub(".",File::Separator).sub('$root','src') + ".html"
+	readfile path
 end
 
 get "/scripts/:module" do
 	m = params[:module]
 	content_type "text/javascript"
 	@mods = man.dependency_of(m, true)
-	js = @mods.inject("") do |code, mod|
+	js = @mods.join("\n").to_comment.endl
+	js << @mods.inject("") do |code, mod|
 		if man[mod].nil?
 			$stderr.puts "Can not found module #{mod}!"
 			code
@@ -72,7 +73,6 @@ get "/scripts/:module" do
 			code << man[mod].to_amd
 		end
 	end
-	js << @mods.map(&:to_comment).join("\n")
 end
 
 get "/rescan" do

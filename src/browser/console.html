@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Console</title>
+		<style>
+		.ui-console {
+			position: fixed;
+			width: 100%;
+			bottom: 0;
+			height: 200px;
+			border: 1px solid blue;
+		}
+
+		.ui-console-content {
+			overflow-y: scroll;
+		}
+		</style>
+		<script src="/scripts/$root.browser.console"></script>
+	</head>
+	<body>
+		<div date-xtemplate="console" class="ui-console">
+			<div class="ui-console-content">
+			</div>
+		</div>
+	</body>
+	<script>
+		define('$root.demo.browser.console', function(require) {
+			var _con = require('$root.browser.console');
+			_con.log('hello');
+		});
+	</script>
+</html>

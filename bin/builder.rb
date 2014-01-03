@@ -132,7 +132,8 @@ module Aztec
 			end
 			
 			ctx[:meta] = @meta.to_ecma.to_comment.endl
-			ctx[:original] =is_root ? @source : @source.indent(4)
+			#preprocess
+			ctx[:original] = is_root ? @source : @source.indent(4)
 			ctx[:usestrict] = "//'use strict';"
 			
 			exports = @config.exports
@@ -145,6 +146,7 @@ module Aztec
 			else
 				ctx[:exports] = ''
 			end
+			ctx[:returnstatement] = has_last_return_statement ? '' : 'return exports;'
 			code = eruby.evaluate ctx
 			code.gsub(/\t/,'  ')
 		end
@@ -177,15 +179,34 @@ module Aztec
 			end.nil?
 		end
 
-		PREPROCESS_PATTERN = /^(\s*)(\s*)\(\{(a-zA-Z0-9):'(.*?)'\}\);\n*/g
+		def has_last_return_statement
+			@ast.value.last.is_a? RKelly::Nodes::ReturnNode
+		end
+
+		#  //#include '/path/to/file'
+		PREPROCESS_PATTERN = /\n*(?<indent>\s*)\/\/#(?<code>.*)\n*/
 		def preprocess
-			@source.scan(PREPROCESS_PATTERN).reverse.each do |indent, action, param|
-				from, to = *Regexp.last_match.offset(0)
+			while (match = @source.match PREPROCESS_PATTERN)
+				puts match
+				code, str = match[:code], match.string
+				@source[str] = begin
+					self.instance_eval(code).enclose("\n")
+				rescue => e
+					str.sub('//','//!')
+				end
 			end
 		end
 
-		def include
-			
+		#
+		# builtin preprocess functions
+		#
+		def include(path)
+			relative_path = File.expand_path(path, @path)
+			File.read relative_path, :encoding => 'utf-8'
+		end
+
+		def echo(arg)
+			"#{arg}"
 		end
 	end
 
@@ -231,7 +252,7 @@ module Aztec
 		end
 
 		def dependency_of(mod, include_self = false)
-			mod == '$root' ? [mod] : _dependency_of(mod, include_self).unshift('$root')
+			mod == '$root' ? [mod] : _dependency_of(mod, include_self).unshift('$root').uniq
 		end
 
 		def save_dependency_graph(filename)
@@ -265,7 +286,7 @@ module Aztec
 			imports = cfg.imports.values
 			ret = imports.inject([]){|s,im| s |= _dependency_of(im, include_self)}
 			all = (ret + imports).uniq
-			include_self ? all << mod : all
+			(include_self ? all << mod : all).uniq
 		end
 	end
 end
@@ -277,5 +298,6 @@ if __FILE__ == $0
 	#Aztec::JsModuleManager.new('src').scan.save_dependency_graph 'module_dependency.png'
 	#puts Aztec::JsModuleManager.new('src').scan.dependency_hash
 	#puts man.dependency_hash
-	pp man.dependency_of("$root", true)
+	#pp man.dependency_of("$root", true)
+	puts Aztec::JsModule.new("../src/aztec.js").to_amd
 end

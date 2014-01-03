@@ -1,5 +1,6 @@
 ({
   description: "DOM Manipulation",
+  version: '0.0.1',
   namespace: $root.browser.dom,
   imports: {
     _type: $root.lang.type,

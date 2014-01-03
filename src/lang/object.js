@@ -1,5 +1,6 @@
 ({
 	description: "Object utils",
+	version: '0.0.1',
 	namespace: $root.lang.object,
 	imports: {
 		_type: $root.lang.type,
