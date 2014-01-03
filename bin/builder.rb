@@ -111,13 +111,14 @@ module Aztec
 		end
 
 		def is_root
-			@config['namespace'] == '$root'
+			ns = @config['namespace']
+			ns == '$root' || ns["."].nil?
 		end
 
 		alias :name :namespace
 
 		def to_amd
-			tpl = is_root ?  "<%=@meta%>\n<%=@original%>" : Utils.load_template(:amd)
+			tpl = is_root ?  "<%=@meta%>\n<%=@original%>\n" : Utils.load_template(:amd)
 			eruby = Erubis::Eruby.new tpl
 			ctx = Erubis::Context.new
 			ctx[:name] = name
@@ -130,8 +131,8 @@ module Aztec
 				ctx[:imports] = ctx[:requires] = ''
 			end
 			
-			ctx[:meta] = @meta.to_ecma.to_comment.endl			
-			ctx[:original] = @source.indent 4
+			ctx[:meta] = @meta.to_ecma.to_comment.endl
+			ctx[:original] =is_root ? @source : @source.indent(4)
 			ctx[:usestrict] = "//'use strict';"
 			
 			exports = @config.exports
@@ -140,7 +141,7 @@ module Aztec
 					c = "exports['#{name}'] = #{name};".indent(4)
 					c = c.to_comment unless declared?(name)
 					c
-				end.join "\n"
+				end.join("\n").lstrip
 			else
 				ctx[:exports] = ''
 			end
@@ -165,6 +166,7 @@ module Aztec
 			end
 			@decls
 		end
+
 		def declared?(value)
 			not decl_nodes.find do |n|
 				if n.is_a? RKelly::Nodes::FunctionDeclNode
@@ -175,13 +177,16 @@ module Aztec
 			end.nil?
 		end
 
-		#def find_similiar_decl(name,exclude)
-		#	decls_names = decl_nodes.map do |n|
-		#		n.is_a?(RKelly::Nodes::FunctionDeclNode) ? n.value : n.name
-		#	end
-		#	candidates = decls_names - exclude
-		#	FuzzyMatch.new(candidates).find(name)
-		#end
+		PREPROCESS_PATTERN = /^(\s*)(\s*)\(\{(a-zA-Z0-9):'(.*?)'\}\);\n*/g
+		def preprocess
+			@source.scan(PREPROCESS_PATTERN).reverse.each do |indent, action, param|
+				from, to = *Regexp.last_match.offset(0)
+			end
+		end
+
+		def include
+			
+		end
 	end
 
 	#
@@ -226,7 +231,7 @@ module Aztec
 		end
 
 		def dependency_of(mod, include_self = false)
-			_dependency_of(mod, include_self).unshift '$root'
+			mod == '$root' ? [mod] : _dependency_of(mod, include_self).unshift('$root')
 		end
 
 		def save_dependency_graph(filename)
@@ -272,5 +277,5 @@ if __FILE__ == $0
 	#Aztec::JsModuleManager.new('src').scan.save_dependency_graph 'module_dependency.png'
 	#puts Aztec::JsModuleManager.new('src').scan.dependency_hash
 	#puts man.dependency_hash
-	pp man.dependency_of("$root.lang.string", true)
+	pp man.dependency_of("$root", true)
 end

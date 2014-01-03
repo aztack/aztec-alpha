@@ -1,7 +1,8 @@
 ({
   description: 'Handlebars',
   namespace: Handlebars
-});/*!
+});
+/*!
 
  handlebars v1.2.0
 

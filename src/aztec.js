@@ -2,10 +2,13 @@
 	description: 'The Aztec JavaScript framework',
 	namespace: $root
 });
-(function(G) {
+(function(global) {
 
-	var NAMESPAE_ROOT = 'aztec',
+	var G = {},
+		NAMESPAE_ROOT = 'aztec',
 		requrieCache = {};
+
+	({include:'$dependency'});
 
 	function validateNS(namespace, extraMsg) {
 		if (!namespace || namespace.match(/[^_$.a-zA-Z0-9]/)) {
@@ -14,9 +17,8 @@
 		return true;
 	}
 
-	function createNS(namespace) {
-		validateNS(namespace, 'when create namespace in `createNS`');
-
+	function createNS(namespace, errormsg) {
+		validateNS(namespace, errormsg);
 		var i = 0,
 			ns = G,
 			parts = namespace.split('.'),
@@ -35,7 +37,7 @@
 		return ns;
 	}
 
-	G.require = function(namespace) {
+	function require(namespace, fn) {
 		var i = 0,
 			cached,
 			part,
@@ -43,7 +45,8 @@
 			len,
 			ns = G;
 
-		if (cached = requrieCache[namespace]) {
+		cached = requrieCache[namespace];
+		if (cached) {
 			return cached;
 		}
 
@@ -58,13 +61,17 @@
 				throw namespace + ' is not defined!';
 			}
 		}
-		return (requrieCache[namespace] = ns);
+		requrieCache[namespace] = ns;
+		return ns;
 	}
 
-	G.define = function(namespace, dependency, factory) {
-		validateNS(namespace, 'in `define`');
-		factory(require, createNS(namespace));
-	}
+	global.define = function(namespace, dependency, factory) {
+		var exported = factory(require, createNS(namespace, 'in `define`')),
+			parts = namespace.split('.'),
+			name = parts.pop(),
+			parent = require(parts.join('.'));
+		parent[name] = exported;
+	};
 
 	createNS('aztec');
 }(this));

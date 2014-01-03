@@ -65,7 +65,12 @@ get "/scripts/:module" do
 	content_type "text/javascript"
 	@mods = man.dependency_of(m, true)
 	js = @mods.inject("") do |code, mod|
-		code << man[mod].to_amd
+		if man[mod].nil?
+			$stderr.puts "Can not found module #{mod}!"
+			code
+		else
+			code << man[mod].to_amd
+		end
 	end
 	js << @mods.map(&:to_comment).join("\n")
 end
