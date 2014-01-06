@@ -21,7 +21,7 @@ var console = exports,
   $container,
   $content,
 	tplLine,
-	tpl = _tpl.idOf('$root.browser.console');
+	tpl = _tpl.id$('$root.browser.console');
 
 //helper
 

@@ -11,7 +11,8 @@
     script,
     stylesheet,
     internalScript,
-    internalStylesheet
+    internalStylesheet,
+	removeWhiteTextNode
   ]
 });
 
@@ -105,7 +106,7 @@ function internalScript(js) {
 
 
 /**
- * [domReady description]
+ * domReady
  * @param  {Function} fn [description]
  * @return {[type]}      [description]
  */
@@ -117,7 +118,7 @@ function removeWhiteTextNode(node) {
 	var child, next;
 	if (!node) return;
 	
-	switch(nodeType) {
+	switch(node.nodeType) {
 		case 3: //TextNode
 			if (_str.isBlank(node.nodeValue)) {
 				node.parentNode.removeChild(node);

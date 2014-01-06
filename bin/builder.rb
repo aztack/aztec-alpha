@@ -1,7 +1,5 @@
 # encoding:utf-8
 require 'rkelly'
-require 'execjs'
-require 'nokogiri'
 require 'json'
 require 'tsort'
 require 'erubis'
@@ -221,19 +219,26 @@ module Aztec
 		end
 
 		attr_reader :dependency
+		attr_reader :src_dir
 
 		def scan
 			Dir["#{@src_dir}/**/*.js"].each do |js_file|
 				for ex in @exclude
 					next if js_file[ex]
 				end
-				m = JsModule.new js_file
-				cfg = m.config
-				@modules[m.namespace] = m
-				@dependency[m.namespace] = cfg.imports.nil? ? [] : cfg.imports.values
+				add_module js_file
 			end
 			self
 		end
+
+		def add_module(js_file)
+			m = JsModule.new js_file
+			cfg = m.config
+			@modules[m.namespace] = m
+			@dependency[m.namespace] = cfg.imports.nil? ? [] : cfg.imports.values
+		end
+
+		alias :update_module :add_module
 
 		def rescan
 			init.scan

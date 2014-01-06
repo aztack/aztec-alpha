@@ -12,7 +12,7 @@
 		collect,
 		set,
 		get,
-		idOf
+		id$
 	]
 });
 
@@ -32,11 +32,11 @@ function collect(force) {
       var n = $(ele),
           id = n.attr(XTEMPLATE_ID_ATTR),
           html;
-      n.removeAttr(XTEMPLATE_ID_ATTR);
       if (n.tagName == 'SCRIPT') {
         html = n.text();
       } else {
-        tmp = $('<div>').append(_dom.removeWhiteTextNode(n.clone()));
+		tmp = n.clone().removeAttr(XTEMPLATE_ID_ATTR);
+        tmp = $('<div>').append(_dom.removeWhiteTextNode(tmp[0]));
         html = tmp.html();
       }
       if (_type.isUndefined(templates[id]) || force) {
@@ -53,7 +53,7 @@ function get(id) {
     return templates[id];
 }
 
-function idOf(namespace) {
+function id$(namespace) {
 	return function(id){
 		return get(namespace + '.' + id);
 	};
