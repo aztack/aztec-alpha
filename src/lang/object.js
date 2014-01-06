@@ -62,11 +62,12 @@ function values(obj) {
  */
 function inject(obj, init, fn) {
 	if (_type.isEmpty(obj)) return init;
-	_type.each(obj, function(k, v, i) {
+	_enum.each(obj, function(k, v, i) {
 		init = fn(init, k, v, i);
 	})
 	return init;
 }
+
 
 /**
  * tryget
