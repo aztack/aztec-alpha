@@ -25,5 +25,11 @@ test("$root.lang.string", function(require, specs) {
 		.it.should.equal(' !helloWorld', function() {
 			return str.capitalize(' !helloWorld');
 		})
+		.___('string#isBlank')
+		.it.should.equal([true, true], function(){
+			return [
+			        str.isBlank('  '),
+			        str.isBlank("\t\n")];
+		})
 		.done();
 });

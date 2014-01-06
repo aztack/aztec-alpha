@@ -4,7 +4,8 @@
   namespace: $root.browser.dom,
   imports: {
     _type: $root.lang.type,
-    _enum: $root.lang.enumerable
+    _enum: $root.lang.enumerable,
+    _str: $root.lang.string,
   },
   exports: [
     script,
@@ -99,7 +100,6 @@ function internalScript(js) {
     s = document.createElement('script');
   s.type = 'text/javascript';
   s.appendChild(document.createTextNode(js));
-
   return ReadyToAttach(s, tag);
 }
 
@@ -111,4 +111,27 @@ function internalScript(js) {
  */
 function domReady(fn) {
   //TODO
+}
+
+function removeWhiteTextNode(node) {
+	var child, next;
+	if (!node) return;
+	
+	switch(nodeType) {
+		case 3: //TextNode
+			if (_str.isBlank(node.nodeValue)) {
+				node.parentNode.removeChild(node);
+			}
+			break;
+		case 1: // ElementNode
+		case 9: // DocumentNode
+			child = node.firstChild;
+			while(child) {
+				next = child.nextSibling;
+				removeWhiteTextNode(next);
+				child = next;
+			}
+			break;
+	}
+  return node;
 }

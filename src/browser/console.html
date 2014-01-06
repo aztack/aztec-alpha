@@ -9,24 +9,45 @@
 			bottom: 0;
 			height: 200px;
 			border: 1px solid blue;
+			overflow-y: scroll;
+			padding:2px;
 		}
 
 		.ui-console-content {
-			overflow-y: scroll;
+			
+		}
+		
+		.ui-console-line {
+			border-bottom: 1px solid 
 		}
 		</style>
 		<script src="/scripts/$root.browser.console"></script>
 	</head>
 	<body>
-		<div date-xtemplate="console" class="ui-console">
+		<a href="javascript:;" id="open">Open</a>
+		
+		<div data-xtemplate-id="$root.browser.console.main" class="ui-console" style="display:none;">
 			<div class="ui-console-content">
 			</div>
 		</div>
+		
+		<div data-xtemplate-id="$root.browser.console.line" class="ui-content-line" style="display:none;">
+			<span class="ui-console-prompt"></span>
+			<span class="ui-console-text"></span>
+		</div>
+		
 	</body>
 	<script>
-		define('$root.demo.browser.console', function(require) {
-			var _con = require('$root.browser.console');
-			_con.log('hello');
+		$(function(){
+			define('$root.demo.browser.console', function(require) {
+				var _con = require('$root.browser.console'),
+					$ = require('jQuery');
+				_con.open();
+				$('#open').click(function() {
+					_con.log(new Date().getTime());
+				});
+				window._con = _con;
+			});
 		});
 	</script>
 </html>

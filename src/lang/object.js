@@ -67,3 +67,28 @@ function inject(obj, init, fn) {
 	})
 	return init;
 }
+
+/**
+ * tryget
+ * try to retrieve value of object according to given `path`
+ * @param {Object} o
+ * @param {String} path
+ * @param {Any} v, default value if
+ * @returns {Any}
+ */
+function tryget(o, path, v) {
+    if (_type.isEmpty(o) || path.indexOf('.') < 0) return v;
+
+    var parts = path.split("."),
+        part, x, len = parts.length;
+
+    for (var t = o, i = 0; i < len; ++i) {
+        part = parts[i];
+        if (part in t) {
+            t = t[parts[i]];
+        } else {
+            return v;
+        }
+    }
+    return t;
+}

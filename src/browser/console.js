@@ -5,41 +5,54 @@
 	imports: {
 		_type: $root.lang.type,
 		_str: $root.lang.string,
-		_$: $root,
+		_tpl: $root.browser.template,
 		$: jQuery
 	},
 	exports: [
 		open,
 		close,
 		log,
-		error,
-		table
+		error
 	]
 });
 
 //vars
 var console = exports,
-	con;
-//if (typeof window.console !== 'undefined') {
-//	return window.console;
-//}
+  $container,
+  $content,
+	tplLine,
+	tpl = _tpl.idOf('$root.browser.console');
 
 //helper
 
 //impl
-con = $('<div>');
-
-console.open = function() {
-
-};
-
-console.close = function() {
-
-};
-
-console.log = function() {};
-console.error = function() {};
-console.table = function() {};
+function puts(s){
+	var line = $(tplLine).text(s).show();
+  line.appendTo($content);
+	line[0].scrollIntoView(true);
+	return console;
+}
 
 //exports
-return console;
+function open() {
+	$container.show();
+}
+
+function close() {
+  $container.hide();
+}
+
+function log(s) {
+	puts(s);
+}
+
+function error() {
+	puts(s);
+}
+
+$(function(){
+  $container = $(tpl('main'));
+  $content = $container.find('.ui-console-content').show();
+	tplLine = tpl('line');
+	$container.appendTo(document.body);
+});

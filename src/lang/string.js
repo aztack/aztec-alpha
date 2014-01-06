@@ -22,18 +22,22 @@
 		quoted,
 		enclose,
 		quote,
-		toArray
+		toArray,
+		format
 	]
 });
 
 
-///exports
+// /exports
 
 /**
- * toInt
- * convert string s into integer. if it's not a string call it's toString method
- * @param  {Any} s
- * @param  {int} radix
+ * toInt convert string s into integer. if it's not a string call it's toString
+ * method
+ *
+ * @param {Any}
+ *            s
+ * @param {int}
+ *            radix
  * @return {int}
  */
 function toInt(s, radix) {
@@ -44,10 +48,13 @@ function toInt(s, radix) {
 }
 
 /**
- * toFloat
- * convert string s into float. if it's not a string call it's toString method
- * @param  {Any} s
- * @param  {int} radix
+ * toFloat convert string s into float. if it's not a string call it's toString
+ * method
+ *
+ * @param {Any}
+ *            s
+ * @param {int}
+ *            radix
  * @return {float}
  */
 function toFloat(s, radix) {
@@ -64,7 +71,7 @@ function capitalize(s) {
 }
 
 function isBlank(s) {
-	return !Boolean(s.match(/\S/));
+	return s.match(/^\s*$/);
 }
 
 function lstrip(s) {
@@ -140,9 +147,42 @@ function enclose(s, chr) {
 }
 
 function quote(s, doubleQuote) {
-	return enclose(s,!!doubleQuote ? '"' : "'");
+	return enclose(s, !! doubleQuote ? '"' : "'");
 }
 
 function toArray(s) {
 	return [s];
 }
+
+// https://gist.github.com/aztack/9ac4033ac7ec54b6fdca
+var format = (function() {
+	// handle array arguments
+	function a(w, m, args) {
+		var x = args[+m];
+		return typeof(x) == "function" ? x(m) : x;
+	}
+
+	// handle object arguments
+	function o(w, m, args) {
+		var fn = m,
+			p = [],
+			x = m.split(':');
+		x.length == 2 && (fn = x[0], p.push(x[1]))
+		var t = typeof(args[fn]);
+		if (t == "function") {
+			return args[fn].apply(undefined, p);
+		} else if (t == "string" || t == "object") {
+			return args[fn].toString();
+		} else {
+			return w;
+		}
+	}
+
+	return function(fmt, args) {
+		var f = _type.isArray(args) ? a : o,
+			fmtstr = _type.isArray(fmt) ? fmt.join("") : fmt;
+		return fmtstr.replace(/{([a-zA-Z0-9_$:.]+)}/g, function(w, m) {
+			return f(w, m, args);
+		});
+	};
+})();

@@ -48,7 +48,7 @@ function isPrimitive(arg) {
  * @return {Boolean}     [description]
  */
 function isUndefined(arg) {
-	var i = arguemtns.length;
+	var i = arguments.length;
 	if (i == 1) {
 		return typeof arg == 'undefined';
 	} else {
