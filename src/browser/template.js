@@ -47,6 +47,7 @@ function collect(force) {
 
 function set(id, tpl) {
     templates[id] = tpl;
+    return this;
 }
 
 function get(id) {
