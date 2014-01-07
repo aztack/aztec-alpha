@@ -266,7 +266,7 @@ module Aztec
 				$stderr.puts "GraphViz gem not installed, try `[sudo] gem install ruby-graphviz`"
 				return
 			end
-			init.scan_dir
+			init.scan
 			GraphViz::new(:G, :type => :digraph) do |g|
 				@dependency.each do |name, depends|
 					n = g.add_node name
@@ -300,9 +300,9 @@ if __FILE__ == $0
 	require 'pp'
 	man = Aztec::JsModuleManager.new('../src').scan
 	#puts Aztec::JsModule.new(File.read("#{File.dirname(__FILE__)}/../src/ui/UIControl.js")).to_amd
-	#Aztec::JsModuleManager.new('src').scan.save_dependency_graph 'module_dependency.png'
+	Aztec::JsModuleManager.new('src').scan.save_dependency_graph 'module_dependency.png'
 	#puts Aztec::JsModuleManager.new('src').scan.dependency_hash
 	#puts man.dependency_hash
 	#pp man.dependency_of("$root", true)
-	puts Aztec::JsModule.new("../src/aztec.js").to_amd
+	#puts Aztec::JsModule.new("../src/aztec.js").to_amd
 end

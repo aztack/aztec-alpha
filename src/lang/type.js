@@ -1,34 +1,35 @@
 ({
-	description: "JavaScript type system supplement",
-	version: '0.0.1',
-	namespace: $root.lang.type,
-	exports: [
-		isPrimitive,
-		isUndefined,
-		isNull,
-		isNullOrUndefined,
-		containsNullOrUndefined,
-		isEmpty,
-		isRegExp,
-		isString,
-		isArray,
-		isFunction,
-		isNumber,
-		isBoolean,
-		isPlainObject,
-		isEmptyObject,
-		typename,
-		hasSameTypeName
-	]
+    description: "JavaScript type system supplement",
+    version: '0.0.1',
+    namespace: $root.lang.type,
+    exports: [
+        isPrimitive,
+        isUndefined,
+        isNull,
+        isNullOrUndefined,
+        containsNullOrUndefined,
+        isEmpty,
+        isRegExp,
+        isString,
+        isArray,
+        isFunction,
+        isNumber,
+        isFinitNumber,
+        isBoolean,
+        isPlainObject,
+        isEmptyObject,
+        typename,
+        hasSameTypeName
+    ]
 });
 
 var _toString = Object.prototype.toString,
-	_primitives = {
-		'boolean': 'Boolean',
-		'number': 'Number',
-		'string': 'String',
-		'undefined': 'Undefined'
-	};
+    _primitives = {
+        'boolean': 'Boolean',
+        'number': 'Number',
+        'string': 'String',
+        'undefined': 'Undefined'
+    };
 
 // exports
 
@@ -38,7 +39,7 @@ var _toString = Object.prototype.toString,
  * @return {Boolean}
  */
 function isPrimitive(arg) {
-	return arg === null || typeof arg in _primitives;
+    return arg === null || typeof arg in _primitives;
 }
 
 /**
@@ -48,15 +49,15 @@ function isPrimitive(arg) {
  * @return {Boolean}     [description]
  */
 function isUndefined(arg) {
-	var i = arguments.length;
-	if (i == 1) {
-		return typeof arg == 'undefined';
-	} else {
-		while (--i) {
-			if (typeof arguments[i] != 'undefined') return false;
-		}
-		return true;
-	}
+    var i = arguments.length;
+    if (i == 1) {
+        return typeof arg == 'undefined';
+    } else {
+        while (--i) {
+            if (typeof arguments[i] != 'undefined') return false;
+        }
+        return true;
+    }
 }
 
 /**
@@ -66,15 +67,15 @@ function isUndefined(arg) {
  * @return {Boolean}     [description]
  */
 function isNull(arg) {
-	var i = arguemtns.length;
-	if (i == 1) {
-		return typeof arg === null;
-	} else {
-		while (--i) {
-			if (arguments[i] !== null) return false;
-		}
-		return true;
-	}
+    var i = arguemtns.length;
+    if (i == 1) {
+        return typeof arg === null;
+    } else {
+        while (--i) {
+            if (arguments[i] !== null) return false;
+        }
+        return true;
+    }
 }
 
 /**
@@ -83,7 +84,7 @@ function isNull(arg) {
  * @return {Boolean}
  */
 function isNullOrUndefined(arg) {
-	return arg === null || typeof arg == 'undefined';
+    return arg === null || typeof arg == 'undefined';
 }
 
 /**
@@ -92,12 +93,12 @@ function isNullOrUndefined(arg) {
  * @return {Boolean}
  */
 function containsNullOrUndefined() {
-	var i = arguments.length;
-	while (i >= 0) {
-		if (arguments[i] === null) return true;
-		i = i - 1;
-	}
-	return false;
+    var i = arguments.length;
+    while (i >= 0) {
+        if (arguments[i] === null) return true;
+        i = i - 1;
+    }
+    return false;
 }
 
 /**
@@ -107,11 +108,11 @@ function containsNullOrUndefined() {
  * @return {Boolean}
  */
 function isEmptyObject(arg) {
-	var i;
-	for (i in arg) {
-		return false;
-	}
-	return true;
+    var i;
+    for (i in arg) {
+        return false;
+    }
+    return true;
 }
 
 /**
@@ -121,16 +122,16 @@ function isEmptyObject(arg) {
  * @return {Boolean}
  */
 function isEmpty(arg) {
-	var b = typeof arg === 'undefined' || arg === null || arg.length === 0;
-	return b ? true : isEmptyObject(arg);
+    var b = typeof arg === 'undefined' || arg === null || arg.length === 0;
+    return b ? true : isEmptyObject(arg);
 }
 
 function isRegExp(arg) {
-	return _toString.call(arg) == '[object RegExp]';
+    return _toString.call(arg) == '[object RegExp]';
 }
 
 function isString(arg) {
-	return _toString.call(arg) == '[object String]';
+    return _toString.call(arg) == '[object String]';
 }
 
 /**
@@ -141,19 +142,44 @@ function isString(arg) {
  * @return {Boolean}
  */
 function isArray(arg) {
-	return _toString.call(arg) == '[object Array]';
+    return _toString.call(arg) == '[object Array]';
+}
+
+/**
+ * isArrayLike
+ * return true if arg has a length property and it's a integer
+ * @param  {Any}  arg
+ * @return {Boolean}
+ */
+function isArrayLike(arg) {
+    return isInteger(arg.length);
 }
 
 function isFunction(arg) {
-	return _toString.call(arg) == '[object Function]';
+    return _toString.call(arg) == '[object Function]';
 }
 
 function isNumber(arg) {
-	return _toString.call(arg) == '[object Number]';
+    return _toString.call(arg) == '[object Number]';
 }
 
+function isFinitNumber(arg) {
+    if (arg === null) return false;
+    return isFinit(arg);
+}
+/**
+ * isInteger
+ * @param  {Any}  arg
+ * @return {Boolean} return true if arg is an integer
+ */
+function isInteger(arg) {
+    //http://stackoverflow.com/questions/3885817/how-to-check-if-a-number-is-float-or-integer
+    return typeof arg == 'number' && parseFloat(arg) == parseInt(arg, 10) && !isNaN(arg);
+}
+
+
 function isBoolean(arg) {
-	return _toString.call(arg) == '[object Boolean]';
+    return _toString.call(arg) == '[object Boolean]';
 }
 
 /**
@@ -163,7 +189,7 @@ function isBoolean(arg) {
  * @return {Boolean}
  */
 function isPlainObject(arg) {
-	return arg && ctorName(arg) === 'Object';
+    return arg && ctorName(arg) === 'Object';
 }
 
 /**
@@ -176,12 +202,12 @@ function isPlainObject(arg) {
  *     `arg.constructor` and `instanceof` are both not work cross-frame and cross-window
  */
 function _ctorName(arg) {
-	var ctor = arg.constructor;
-	if (isFunction(ctor) && !isEmpty(ctor.name)) {
-		return ctor.name;
-	} else {
-		return _toString.call(arg).slice(8, -1);
-	}
+    var ctor = arg.constructor;
+    if (isFunction(ctor) && !isEmpty(ctor.name)) {
+        return ctor.name;
+    } else {
+        return _toString.call(arg).slice(8, -1);
+    }
 }
 
 /**
@@ -191,11 +217,11 @@ function _ctorName(arg) {
  * @return {String}
  */
 function typename(arg) {
-	var t = typeof arg;
-	if (arg === null) {
-		return 'Null';
-	}
-	return t in _primitives ? _primitives[t] : _ctorName(arg);
+    var t = typeof arg;
+    if (arg === null) {
+        return 'Null';
+    }
+    return t in _primitives ? _primitives[t] : _ctorName(arg);
 }
 
 /**
@@ -206,5 +232,5 @@ function typename(arg) {
  * @return {Boolean}
  */
 function hasSameTypeName(a, b) {
-	return typename(a) == typename(b);
+    return typename(a) == typename(b);
 }

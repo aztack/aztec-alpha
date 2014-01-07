@@ -61,7 +61,7 @@ end
 
 get "/test/:module" do
 	@mod = params[:module]
-	$man.rescan
+	rescan @mod
 	erb :test
 end
 
