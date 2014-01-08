@@ -5,13 +5,19 @@ require 'tsort'
 require 'erubis'
 require 'execjs'
 require 'nokogiri'
+require 'stringio'
 require 'fileutils'
 require 'benchmark'
 
 require File.expand_path('common.rb',File.dirname(__FILE__))
 
 module Aztec
-
+    
+    def self.name(ext = nil)
+        n = 'aztec'
+        ext.nil? ? n : n + ext
+    end
+    
     class TsortableHash < Hash
         include TSort
         alias tsort_each_node each_key
@@ -26,7 +32,7 @@ module Aztec
             if namespace.index '.'
                 namespace.sub('$root.','').gsub('.','/')
             else
-                namespace
+                namespace == '$root' ? Aztec.name : namespace
             end
         end
         #
@@ -91,8 +97,13 @@ module Aztec
 
         private
         def collect_styles
-            css = @doc.css('style').map(&:text).join('\n')
-            @styles = css.dedent_block
+            style_nodes = @doc.css('style')
+            @styles = if style_nodes.size > 0
+                css = style_nodes.map(&:text).join('\n')
+                css.dedent_block.sub(/^\n*/,'').rstrip
+            else
+                ''
+            end
         end
 
         def collect_template
@@ -162,7 +173,7 @@ module Aztec
         end
 
         def xtemplate_styles
-            if @xtemplate.nil?
+            if @xtemplate.nil? or @xtemplate.styles.empty?
                 ''
             else
                 css = @xtemplate.styles
@@ -174,8 +185,6 @@ module Aztec
             ns = @config['namespace']
             ns == '$root' || ns["."].nil?
         end
-
-        alias :name :namespace
 
         def to_amd
             tpl = is_root ?  "<%=@meta%>\n<%=@original%>\n" : Utils.load_template(:amd)
@@ -222,6 +231,9 @@ module Aztec
             code.gsub(/\t/,'  ')
         end
 
+        alias :name :namespace
+        alias :styles :xtemplate_styles
+        
         private
         def read_module_config
             raise "#{@path} has not module config!" unless @source.index(CONFIG_PATTERN).zero?
@@ -328,13 +340,25 @@ module Aztec
 
         def release(output_dir, overwrite = false)
             raise "#{output_dir} not exits!" unless File.exists? output_dir
+            styles = StringIO.new
             @modules.each do |namespace, m|
                 segment = Utils.namespace_to_file_path(m.namespace)
                 path = "#{output_dir}/#{segment}.js"
                 raise "#{path} already exists!" if !overwrite and File.exists?(path)
                 yield path if block_given?
+                
+                #javascript
                 FileUtils.mkpath(File.dirname(path))
                 File.open(path,'w:utf-8'){|f| f.write m.to_amd}
+                
+                #style
+                styles.puts m.styles
+                styles.puts
+            end
+            css_file_path = "#{output_dir}/#{Aztec.name('.css')}"
+            File.open(css_file_path, 'w') do |f|
+                yield css_file_path if block_given?
+                f.puts styles.string.strip
             end
         end
 
