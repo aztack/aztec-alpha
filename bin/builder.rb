@@ -3,16 +3,14 @@ require 'rkelly'
 require 'json'
 require 'tsort'
 require 'erubis'
+require 'execjs'
+require 'nokogiri'
+require 'fileutils'
+require 'benchmark'
 
 require File.expand_path('common.rb',File.dirname(__FILE__))
 
 module Aztec
-
-    module Message
-        def self.ExportsNotFound(name)
-            "warning:#{name} not found in var statement or function declaration\n"
-        end
-    end
 
     class TsortableHash < Hash
         include TSort
@@ -23,6 +21,14 @@ module Aztec
     end
 
     module Utils
+    
+        def self.namespace_to_file_path(namespace)
+            if namespace.index '.'
+                namespace.sub('$root.','').gsub('.','/')
+            else
+                namespace
+            end
+        end
         #
         # Convert module config js-object into ruby-hash
         #
@@ -70,13 +76,13 @@ module Aztec
     end
 
     class XTemplate
-        XTEMPLATE_ID_ATTR = 'data-xtemplate-id'
-        XTEMPLATE_ID_ATTR_SEL = '[data-xtemplate-id]'
+        XTEMPLATE_ID_ATTR = 'data-xtemplate'
+        XTEMPLATE_ID_ATTR_SEL = '[data-xtemplate]'
 
         def initialize(path)
             @path = path
             @source = File.read path, :encoding => 'utf-8'
-            @doc = Nokogiri::HTML @source
+            @doc = ::Nokogiri::HTML @source
             collect_styles
             collect_template
         end
@@ -85,13 +91,15 @@ module Aztec
 
         private
         def collect_styles
-            @styles = @doc.css('style').map(&:text).join '\n'
+            css = @doc.css('style').map(&:text).join('\n')
+            @styles = css.dedent_block
         end
 
         def collect_template
             @templates = @doc.css(XTEMPLATE_ID_ATTR_SEL).inject({}) do |tpls, ele|
-                html = ele.to_html.inspect
                 id = ele.attr XTEMPLATE_ID_ATTR
+                ele.remove_attribute XTEMPLATE_ID_ATTR
+                html = ele.to_html.inspect
                 tpls[id] = html
                 tpls
             end
@@ -118,26 +126,48 @@ module Aztec
         def exports
             @config['exports'] || {}
         end
+        
+        def notransform
+            @config['notransform'] == true
+        end
     end
 
     #
     # JavaScript module
     #
     class JsModule
+        CONFIG_PATTERN = /(^\(\{\n*.*?\}\);)$/m
+        
         def initialize(path)
             @path = path
             @source = File.read path, :encoding=>'utf-8'
-            @ast = ::RKelly::Parser.new.parse @source rescue nil
-            throw "There are SytaxError in #{path}!" if @ast.nil?
             read_module_config
-            from = @meta.range.to.index + 2
-            @source = @source[from..-1].strip
-            @xtemplate = load_xtemplate
+            if @config.notransform
+                @ast = nil
+                @source = @source.sub CONFIG_PATTERN, ''
+                @xtemplate = nil
+            else
+                @ast = ::RKelly::Parser.new.parse(@source) rescue nil
+                throw "There are SytaxError in #{path}!" if @ast.nil?
+                @ast.value.shift #drop config object literal
+                from = @meta.range.to.index + 2
+                @source = @source[from..-1].strip
+                @xtemplate = load_xtemplate
+            end
         end
         attr_reader :config
 
         def namespace
             @config['namespace']
+        end
+
+        def xtemplate_styles
+            if @xtemplate.nil?
+                ''
+            else
+                css = @xtemplate.styles
+                "/* #{namespace} */".endl + css
+            end
         end
 
         def is_root
@@ -163,8 +193,9 @@ module Aztec
 
             ctx[:xtemplate] = if not @xtemplate.nil?
                 js = ["require('$root.browser.template')"]
-                @xtemplate.templates.each do |id, tpl|
-                    js << ".set('#{id}',#{tpl})".indent(4)
+                @xtemplate.templates.each do |data, t|
+                    id = data.split(',').first
+                    js << ".set('#{id}',#{t})".indent(4)
                 end
                 js.join("\n").indent(4) + ';'
             else
@@ -193,8 +224,9 @@ module Aztec
 
         private
         def read_module_config
-            first_node = @ast.value.shift
-            @meta = parenthetical_node = first_node.value
+            raise "#{@path} has not module config!" unless @source.index(CONFIG_PATTERN).zero?
+            first_node = ::RKelly::Parser.new.parse @source[CONFIG_PATTERN]
+            @meta = parenthetical_node = first_node.value[0].value
             config = Utils::JsModuleConfigToJsonVisitor.new.accept(parenthetical_node.value);
             config = config.chop if config.end_with? ';'
             @config = JsModuleConfig.new config
@@ -223,18 +255,18 @@ module Aztec
         PREPROCESS_PATTERN = /\n*(?<indent>\s*)\/\/#(?<code>.*)\n*/
         def preprocess
             while (match = @source.match PREPROCESS_PATTERN)
-                puts match
+                #puts match
                 code, str = match[:code], match.string
                 @source[str] = begin
                     self.instance_eval(code).enclose("\n")
-                rescue => e
+                rescue
                     str.sub('//','//!')
                 end
             end
         end
 
         def load_xtemplate
-            xtpl_path = @path.sub(/\.js$/,'.html')
+            xtpl_path = File.absolute_path @path.sub(/\.js$/,'.html')
             return nil unless File.exists?(xtpl_path)
             XTemplate.new xtpl_path
         end
@@ -252,9 +284,11 @@ module Aztec
     # Module manager
     #
     class JsModuleManager
-        def initialize(src_dir, exclude = [])
+        def initialize(src_dir, opt)
             @src_dir = src_dir
-            @exclude = exclude
+            @exclude = opt['exclude'] || []
+            @verbose = opt['verbose'] || false
+            @styles = []
             init
         end
 
@@ -272,7 +306,15 @@ module Aztec
         end
 
         def add_module(js_file)
-            m = JsModule.new js_file
+            m = nil
+            if @verbose            
+                s = Benchmark.measure {m = JsModule.new(js_file) rescue nil}
+                return nil if m.nil?
+                $stdout.puts "#{s.to_s.strip} #{js_file}"
+            else
+                m = JsModule.new(js_file)
+                return nil if m.nil?
+            end
             cfg = m.config
             @modules[m.namespace] = m
             @dependency[m.namespace] = cfg.imports.nil? ? [] : cfg.imports.values
@@ -284,8 +326,16 @@ module Aztec
             init.scan
         end
 
-        def release(output_dir)
-            
+        def release(output_dir, overwrite = false)
+            raise "#{output_dir} not exits!" unless File.exists? output_dir
+            @modules.each do |namespace, m|
+                segment = Utils.namespace_to_file_path(m.namespace)
+                path = "#{output_dir}/#{segment}.js"
+                raise "#{path} already exists!" if !overwrite and File.exists?(path)
+                yield path if block_given?
+                FileUtils.mkpath(File.dirname(path))
+                File.open(path,'w:utf-8'){|f| f.write m.to_amd}
+            end
         end
 
         def [](namespace)
@@ -338,11 +388,15 @@ end
 
 if __FILE__ == $0
     require 'pp'
-    man = Aztec::JsModuleManager.new('../src').scan
+    man = Aztec::JsModuleManager.new('../src',:verbose => true)
+    man.scan
     #puts Aztec::JsModule.new(File.read("#{File.dirname(__FILE__)}/../src/ui/UIControl.js")).to_amd
-    Aztec::JsModuleManager.new('src').scan.save_dependency_graph 'module_dependency.png'
+    #Aztec::JsModuleManager.new('src').scan.save_dependency_graph 'module_dependency.png'
     #puts Aztec::JsModuleManager.new('src').scan.dependency_hash
-    #puts man.dependency_hash
+    
+    #pp man.dependency_hash
     #pp man.dependency_of("$root", true)
     #puts Aztec::JsModule.new("../src/aztec.js").to_amd
+    #puts man['$root.browser.console'].xtemplate_styles
+    man.release(File.absolute_path('../release'), true) {|path| puts "Writting #{path}"}
 end

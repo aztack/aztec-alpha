@@ -1,6 +1,7 @@
 ({
   description: 'jQuery',
-  namespace: jQuery
+  namespace: jQuery,
+  notransform: true
 });
 /*!
  * jQuery JavaScript Library v1.10.2

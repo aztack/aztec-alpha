@@ -18,20 +18,33 @@
 
 //vars
 var console = exports,
-  $container,
-  $content,
+	$container,
+	$content,
+	tplMain,
 	tplLine,
 	tpl = _tpl.id$('$root.browser.console');
+
 
 //helper
 
 //impl
 function puts(s){
 	var line = $(tplLine).text(s).show();
-  line.appendTo($content);
+	line.appendTo($content);
 	line[0].scrollIntoView(true);
 	return console;
 }
+
+tplMain = tpl('main');
+tplLine = tpl('line');
+$container = $(tplMain);
+
+function main(){
+	$container.appendTo(document.body);
+	$content = $container.find('.ui-console-content');	
+}
+
+$(main);
 
 //exports
 function open() {
@@ -39,7 +52,7 @@ function open() {
 }
 
 function close() {
-  $container.hide();
+	$container.hide();
 }
 
 function log(s) {
@@ -49,10 +62,3 @@ function log(s) {
 function error() {
 	puts(s);
 }
-
-$(function(){
-  $container = $(tpl('main'));
-  $content = $container.find('.ui-console-content').show();
-	tplLine = tpl('line');
-	$container.appendTo(document.body);
-});

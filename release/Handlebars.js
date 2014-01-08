@@ -1,8 +1,10 @@
-({
-  description: 'Handlebars',
-  namespace: Handlebars,
-  notransform: true
-});
+// ({
+//   description: 'Handlebars',
+//   namespace: Handlebars,
+//   notransform: true
+// })
+
+
 /*!
 
  handlebars v1.2.0
@@ -2613,3 +2615,4 @@ var __module0__ = (function(__dependency1__, __dependency2__, __dependency3__, _
 
   return __module0__;
 })();
+

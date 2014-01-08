@@ -28,10 +28,23 @@ class ::String
 	def indent(n)
 		self[Regexp.new("^"+' '*n)] ? self : self.gsub!(/^/,' '*n)
 	end
+	
+	def dedent_block
+		firstline = self.sub(/^\n+/,'').split("\n").first
+		return self if firstline.nil? or firstline.empty?
+		n = if firstline.index("\t") == 0
+			firstline.match(/^(\t)*/).size
+		elsif firstline.index(" ") == 0
+			firstline.match(/^( )*/).size
+		end
+		
+		n == 0 ? self : self.gsub(Regexp.new("^[\\t ]{,#{n}}"), '')
+	end
 
 	def to_comment
 		self.gsub!(/^/,'// ')
 	end
+
 
 	def endl
 		self << "\n"
