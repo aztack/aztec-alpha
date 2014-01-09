@@ -3,7 +3,6 @@ require 'rkelly'
 require 'json'
 require 'tsort'
 require 'erubis'
-require 'execjs'
 require 'nokogiri'
 require 'stringio'
 require 'fileutils'
@@ -28,6 +27,11 @@ module Aztec
 
     module Utils
     
+        def self.load_template(name)
+            path = "#{File.dirname(__FILE__)}/#{name}.erb"
+            File.read path
+        end
+        
         def self.namespace_to_file_path(namespace)
             if namespace.index '.'
                 namespace.sub('$root.','').gsub('.','/')
@@ -36,7 +40,7 @@ module Aztec
             end
         end
         #
-        # Convert module config js-object into ruby-hash
+        # Convert module config from javascript object into ruby hash
         #
         class JsModuleConfigToJsonVisitor < ::RKelly::Visitors::ECMAVisitor
             def initialize
@@ -75,10 +79,6 @@ module Aztec
             end
         end
 
-        def self.load_template(name)
-            path = "#{File.dirname(__FILE__)}/#{name}.erb"
-            File.read path
-        end
     end
 
     class XTemplate
@@ -110,7 +110,11 @@ module Aztec
             @templates = @doc.css(XTEMPLATE_ID_ATTR_SEL).inject({}) do |tpls, ele|
                 id = ele.attr XTEMPLATE_ID_ATTR
                 ele.remove_attribute XTEMPLATE_ID_ATTR
-                html = ele.to_html.inspect
+                html = if ele.name.downcase == 'script'
+                    ele.inner_html
+                else
+                    ele.to_html
+                end.inspect
                 tpls[id] = html
                 tpls
             end
@@ -141,6 +145,14 @@ module Aztec
         def notransform
             @config['notransform'] == true
         end
+        
+        def description 
+            @config['description'] || ''
+        end
+        
+        def namespace
+            @config['namespace']
+        end
     end
 
     #
@@ -169,7 +181,7 @@ module Aztec
         attr_reader :config
 
         def namespace
-            @config['namespace']
+            @config.namespace
         end
 
         def xtemplate_styles
@@ -182,7 +194,7 @@ module Aztec
         end
 
         def is_root
-            ns = @config['namespace']
+            ns = @config.namespace
             ns == '$root' || ns["."].nil?
         end
 
@@ -375,18 +387,18 @@ module Aztec
         end
 
         def save_dependency_graph(filename)
-            require 'graphviz'
-            if (Object.const_get(:GraphViz) rescue nil).nil?
+            begin
+                require 'graphviz'
+                init.scan
+                GraphViz::new(:G, :type => :digraph) do |g|
+                    @dependency.each do |name, depends|
+                        n = g.add_node name
+                        depends.each{|dep|g.add_edges n, g.add_node(dep)}
+                    end
+                end.output :png => filename
+            rescue LoadError
                 $stderr.puts "GraphViz gem not installed, try `[sudo] gem install ruby-graphviz`"
-                return
             end
-            init.scan
-            GraphViz::new(:G, :type => :digraph) do |g|
-                @dependency.each do |name, depends|
-                    n = g.add_node name
-                    depends.each{|dep|g.add_edges n, g.add_node(dep)}
-                end
-            end.output :png => filename
         end
 
         private

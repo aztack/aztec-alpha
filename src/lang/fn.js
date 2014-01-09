@@ -10,7 +10,7 @@
     exports: [
         isFunction,
         Callbacks,
-        binds,
+        bind,
         noop,
         increase,
         decrease
@@ -74,7 +74,7 @@ function Callbacks() {
             len = arguments.length;
         for (; i < len; ++i) {
             fn = arguments[i];
-            if (!_type.isFunction(fn)) return;
+            if (!_type.isFunction(fn)) return this;
             pos = list.indexOf(fn);
             if (pos >= 0) {
                 list.splice(pos, 1);
@@ -97,15 +97,12 @@ function bind(fn, context) {
         throw TypeError("first argument must be a function");
     }
 
-    var len = arguments.length,
-        args = _ary.toArray(arguments, len),
-        ctx;
+    var len = 1 + (arguments.length >= 2),
+        args = _ary.toArray(arguments, len);
 
-    if (len === 2) {
-        ctx = context;
-    }
     return function() {
-        fn.call(ctx, args);
+        var args2 = args.concat(_ary.toArray(arguments));
+        fn.call(context, args2);
     };
 }
 

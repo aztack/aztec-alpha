@@ -1,5 +1,5 @@
 ({
-    description: "JavaScript type system supplement",
+    description: "JavaScript Type System Supplement",
     version: '0.0.1',
     namespace: $root.lang.type,
     exports: [
@@ -19,7 +19,8 @@
         isPlainObject,
         isEmptyObject,
         typename,
-        hasSameTypeName
+        hasSameTypeName,
+        create
     ]
 });
 
@@ -217,7 +218,11 @@ function _ctorName(arg) {
  * @return {String}
  */
 function typename(arg) {
-    var t = typeof arg;
+    var t;
+    if (isFunction(arg.__class__)) {
+        return arg.__class__.typename();
+    }
+    t = typeof arg;
     if (arg === null) {
         return 'Null';
     }
@@ -234,3 +239,158 @@ function typename(arg) {
 function hasSameTypeName(a, b) {
     return typename(a) == typename(b);
 }
+
+/**
+ * Object-Orientated Programming Support
+ */
+function clazz$getClass(){
+    return Class;
+}
+
+function instance$is(t) {debugger;
+    var clazz = this.getClass();
+    if (clazz === Object && t == Object) {
+        return true;
+    }
+    while(clazz !== Object) {
+        if (clazz === t) {
+            return true;
+        }
+        if (!isFunction(clazz.getParent)) {
+            return false;
+        }
+        clazz = clazz.getParent();
+    }
+    return false;
+}
+
+var clazz$getParent = clazz$getClass;
+/**
+ * The Ultimate Class class
+ * Methods inheritated through protype chain
+ * proeprty belongs to every instance, not shared throught prototype
+ */
+function Class(typename, parent, init){
+    // use underscore as name for less debugging noise
+    var _ = function (){
+        this.getClass = function (){
+            return _;
+        };
+        this.is = instance$is;
+        this.constructor = _;
+        if (parent.prototype.initialize) {
+            parent.prototype.initialize.apply(this, arguments);
+        }
+        init.call(this);
+    };
+    _.getClass = clazz$getClass;
+    _.newInstance = function(){
+        return new _();
+    };
+    _.typename = function(){
+        return typename || 'Object';
+    };
+    _.getParent = function(){
+        return parent || Object;
+    };
+    _.constructor = Class;
+    _.prototype = new parent();
+    _.prototype.initialize = init;    
+    return _;
+};
+
+Class.getClass = clazz$getClass;
+Class.newInstance = function(){
+    return new Class();
+};
+Class.typename = function(){
+    return 'Class';
+};
+Class.getParent = clazz$getParent;
+
+Person = new Class('Person',Object, function(){
+    this.name = 'adma';
+})
+Student = new Class('Student', Person,function(){
+    this.grade = 0;
+});
+
+p = new Person();
+s = new Student();
+
+function include(mod) {
+    for(var i in mod) {
+        if (mod.hasOwnProperty(i) && isFunction(mod)) {
+            this.prototype[i] = mod[i];
+        }
+    }
+    return this;
+}
+
+function create(/* [typename, [parent,]] init */) {
+    var len = arguments.length,
+        typename, parent, init;
+    if (len === 1) {
+        init = arguments[0];
+    } else if (len === 2) {
+        typename = String(arguments[0]);
+        init = arguments[1];
+    } else if (len === 3) {
+        typename = String(arguments[0]);
+        parent = arguments[1];
+        init = arguments[2];
+    }
+    if (!isFunction(init)) {
+        throw Error('(constructor (1/1 or 2/3 argument) must be a function!');
+    } else if (len === 3 && isFunction(parent)) {
+        throw Error('parent (2/3 argument) must be a function')
+    }
+    
+    return new Class(typename, parent, init);
+}
+
+
+Person = type.create('Person', function (){
+});
+type.create('Student', Person, function(){
+});
+
+type.create('module', {
+    hi: function(){}
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
