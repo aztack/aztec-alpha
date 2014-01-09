@@ -2,27 +2,27 @@ function test(ns, fn) {
 
     console.log("Unit Test of: " + ns);
 
-    function ok(desc) {
-        console.log("%s %cOK!", desc, 'color:green;font-size:15px;');
+    function ok() {
+        console.log("%cOK!", 'color:green;font-size:15px;');
     }
 
-    function failed(desc, value, ret) {
+    function failed(value, ret) {
         errorCount++;
-        console.log('%s %cFAILED! %cexpect %s but got %s',
-            this._desc,
+        console.log('%cFAILED! %cexpect \n%s %cbut got\n%c%s',
             'color:red;font-size:14px;',
             'color:black',
             JSON.stringify(value),
+            'color:gray',
+            'color:magenta',
             JSON.stringify(ret));
     }
 
     function check(condition, value, ret) {
         if (condition) {
-            ok(desc);
+            ok();
         } else {
-            failed(desc, value, ret);
+            failed(value, ret);
         }
-        console.log('>\texpect:', JSON.stringify(value), 'got', JSON.stringify(ret));
         return specs;
     }
 
@@ -56,7 +56,7 @@ function test(ns, fn) {
         errorCount = 0,
         specs = {
             ___: function(d) {
-                desc = d;
+                console.log("%c%s", 'font-size:16px' ,d);
                 return this;
             },
             anything: function(v, fn) {

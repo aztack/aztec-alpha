@@ -20,6 +20,7 @@
         isEmptyObject,
         typename,
         hasSameTypeName,
+        Class,
         create
     ]
 });
@@ -218,15 +219,16 @@ function _ctorName(arg) {
  * @return {String}
  */
 function typename(arg) {
-    var t;
-    if (isFunction(arg.__class__)) {
-        return arg.__class__.typename();
-    }
-    t = typeof arg;
+    var t = typeof arg;
     if (arg === null) {
         return 'Null';
+    } else if (t in _primitives) {
+        return _primitives[t];
+    } else if (isFunction(arg.getClass)) {
+        return arg.getClass().typename();
+    } else {
+        return _ctorName(arg);
     }
-    return t in _primitives ? _primitives[t] : _ctorName(arg);
 }
 
 /**
@@ -243,11 +245,7 @@ function hasSameTypeName(a, b) {
 /**
  * Object-Orientated Programming Support
  */
-function clazz$getClass(){
-    return Class;
-}
-
-function instance$is(t) {debugger;
+function instance$is(t) {
     var clazz = this.getClass();
     if (clazz === Object && t == Object) {
         return true;
@@ -264,26 +262,62 @@ function instance$is(t) {debugger;
     return false;
 }
 
+function instance$toString() {
+    var type = this.getClass().typename(),
+        s = [], k, v;
+    for (k in this) {
+        if (this.hasOwnProperty(k)) {
+            v = this[k];
+            if (isString(v)) {
+                s.push(k + '="' + v + '"');
+            } else if (isFunction(v)) {
+                continue;
+            } else {
+                s.push(k + '=' + v);
+            }
+        }
+    }
+    return '#<' + type + ' ' + s.join(' ') + '>';
+}
+
+function clazz$getClass(){
+    return Class;
+}
 var clazz$getParent = clazz$getClass;
+
+function clazz$methods(methods) {
+    var name;
+    for(name in methods) {
+        if(methods.hasOwnProperty(name)) {
+            this.prototype[name] = methods[name];
+        }
+    }
+    return this;
+}
 /**
  * The Ultimate Class class
- * Methods inheritated through protype chain
- * proeprty belongs to every instance, not shared throught prototype
+ * Methods inheritated through protype
+ * property belongs to every instance, not shared throught prototype
  */
 function Class(typename, parent, init){
+    if (arguments.length !== 3) {
+        throw Error('Class(typename, parent, init) requires 3 arguments!');
+    }
     // use underscore as name for less debugging noise
+    function instance$getClass() {
+        return _;
+    }
     var _ = function (){
-        this.getClass = function (){
-            return _;
-        };
+        this.getClass = instance$getClass;
+        this.toString = instance$toString;
         this.is = instance$is;
-        this.constructor = _;
         if (parent.prototype.initialize) {
             parent.prototype.initialize.apply(this, arguments);
         }
         init.apply(this, arguments);
     };
     _.getClass = clazz$getClass;
+    _.methods = clazz$methods;
     _.newInstance = function(){
         return new _();
     };
@@ -293,13 +327,14 @@ function Class(typename, parent, init){
     _.getParent = function(){
         return parent || Object;
     };
-    _.constructor = Class;
     _.prototype = new parent();
+    _.prototype.constructor = Class;
     _.prototype.initialize = init;    
     return _;
-};
+}
 
 Class.getClass = clazz$getClass;
+Class.methods= clazz$methods;
 Class.newInstance = function(){
     return new Class();
 };
@@ -307,25 +342,6 @@ Class.typename = function(){
     return 'Class';
 };
 Class.getParent = clazz$getParent;
-
-Person = new Class('Person',Object, function(){
-    this.name = 'adma';
-})
-Student = new Class('Student', Person,function(){
-    this.grade = 0;
-});
-
-p = new Person();
-s = new Student();
-
-function include(mod) {
-    for(var i in mod) {
-        if (mod.hasOwnProperty(i) && isFunction(mod)) {
-            this.prototype[i] = mod[i];
-        }
-    }
-    return this;
-}
 
 function create(/* [typename, [parent,]] init */) {
     var len = arguments.length,
@@ -343,21 +359,15 @@ function create(/* [typename, [parent,]] init */) {
     if (!isFunction(init)) {
         throw Error('(constructor (1/1 or 2/3 argument) must be a function!');
     } else if (len === 3 && isFunction(parent)) {
-        throw Error('parent (2/3 argument) must be a function')
+        throw Error('parent (2/3 argument) must be a function');
     }
     
     return new Class(typename, parent, init);
 }
 
+function extend(parent, init) {
 
-Person = type.create('Person', function (){
-});
-type.create('Student', Person, function(){
-});
-
-type.create('module', {
-    hi: function(){}
-});
+}
 
 
 
