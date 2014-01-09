@@ -281,7 +281,7 @@ function Class(typename, parent, init){
         if (parent.prototype.initialize) {
             parent.prototype.initialize.apply(this, arguments);
         }
-        init.call(this);
+        init.apply(this, arguments);
     };
     _.getClass = clazz$getClass;
     _.newInstance = function(){

@@ -16,7 +16,7 @@
     var _type = require('$root.lang.type'),_str = require('$root.lang.string'),_tpl = require('$root.browser.template'),$ = require('jQuery');
     require('$root.browser.template')
     .set('$root.browser.console.main',"<div class=\"ui-console\">\n\t\t\t\t\t<div class=\"ui-console-content\"></div>\n\t\t\t\t</div>")
-    .set('$root.browser.console.line',"<script type=\"text/xtemplate\">\n\t\t\t\t<div class=\"ui-content-line\">\n\t\t\t\t\t<span class=\"ui-console-prompt\"></span>\n\t\t\t\t\t<span class=\"ui-console-text\"></span>\n\t\t\t\t</div>\n\t\t</script>");
+    .set('$root.browser.console.line',"\n\t\t\t\t<div class=\"ui-content-line\">\n\t\t\t\t\t<span class=\"ui-console-prompt\"></span>\n\t\t\t\t\t<span class=\"ui-console-text\"></span>\n\t\t\t\t</div>\n\t\t");
       //vars
     var console = exports,
       $container,
