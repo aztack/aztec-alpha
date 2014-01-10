@@ -128,6 +128,8 @@ module Aztec
         attr_reader :desciption, :namespace
         def initialize(json)
             @config = JSON.parse json
+        rescue
+            $stderr.puts "Parsing Module Config Error: #{json}"
         end
 
         def [](key)

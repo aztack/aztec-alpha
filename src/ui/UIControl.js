@@ -1,30 +1,24 @@
 ({
-	description: "UIControl",
-	namespace: $root.ui.UIControl,
-	dependency: {
-		$: jQuery
-	},
-	exports: [
-		UIControl
-	]
+    description: "Base class for all UI controls",
+    namespace: $root.ui.UIControl,
+    imports: {
+        _type: $root.lang.type,
+        $: jQuery
+    },
+    exports: [UIControl]
 });
 
-
-function UIControl(){}
-
-function _notImplementated(){
-	throw "Not Implementated";
-}
-
-UIControl.prototype.initialize = function(opt){
-	this._option = opt;
-	if(opt.container) {
-		this._container = $(opt.container);
-	}
-};
-
-UIControl.prototype.container = function(){
-	return this.container;
-};
-
-UIControl.prototype.parentControl = function(){};
+var UIControl = type.create('UIControl', {
+    initialize: function(options) {
+        var clazz = this.getClass();
+        UIControl.all[clazz.typename()] = clazz;
+    },
+    getOptions: function() {
+        return {};
+    },
+    parentControl: function() {
+        return null;
+    }
+}).statics({
+    all: {}
+});

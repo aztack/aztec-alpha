@@ -51,11 +51,12 @@ function isPrimitive(arg) {
  * @return {Boolean}     [description]
  */
 function isUndefined(arg) {
-    var i = arguments.length;
-    if (i == 1) {
+    var i = 0,
+        len = arguments.length;
+    if (len == 1) {
         return typeof arg == 'undefined';
     } else {
-        while (--i) {
+        for (; i < len; ++i) {
             if (typeof arguments[i] != 'undefined') return false;
         }
         return true;
@@ -69,11 +70,12 @@ function isUndefined(arg) {
  * @return {Boolean}     [description]
  */
 function isNull(arg) {
-    var i = arguemtns.length;
-    if (i == 1) {
+    var i = 0,
+        len = arguments.length;
+    if (len == 1) {
         return typeof arg === null;
     } else {
-        while (--i) {
+        for (; i < len; ++i) {
             if (arguments[i] !== null) return false;
         }
         return true;
@@ -95,10 +97,10 @@ function isNullOrUndefined(arg) {
  * @return {Boolean}
  */
 function containsNullOrUndefined() {
-    var i = arguments.length;
-    while (i >= 0) {
-        if (arguments[i] === null) return true;
-        i = i - 1;
+    var i = 0,
+        len = arguments.length;
+    for (; i < len; ++i) {
+        if (arguments[i] === null || typeof arguments[i] == 'undefined') return true;
     }
     return false;
 }
@@ -206,6 +208,7 @@ function isPlainObject(arg) {
 function _ctorName(arg) {
     var ctor = arg.constructor;
     if (isFunction(ctor) && !isEmpty(ctor.name)) {
+        //function in JScript does not has name property
         return ctor.name;
     } else {
         return _toString.call(arg).slice(8, -1);
@@ -250,157 +253,175 @@ function instance$is(t) {
     if (clazz === Object && t == Object) {
         return true;
     }
-    while(clazz !== Object) {
+    while (clazz !== Object) {
         if (clazz === t) {
             return true;
         }
-        if (!isFunction(clazz.getParent)) {
+        if (!isFunction(clazz.parent)) {
             return false;
         }
-        clazz = clazz.getParent();
+        clazz = clazz.parent();
     }
     return false;
 }
 
+/**
+ * print object in format #<typename a=1 b="s">
+ */
 function instance$toString() {
     var type = this.getClass().typename(),
-        s = [], k, v;
+        s = [],
+        k, v;
     for (k in this) {
         if (this.hasOwnProperty(k)) {
             v = this[k];
             if (isString(v)) {
-                s.push(k + '="' + v + '"');
+                s.push(' ' + k + '="' + v + '"');
             } else if (isFunction(v)) {
                 continue;
             } else {
-                s.push(k + '=' + v);
+                s.push(' ' + k + '=' + v);
             }
         }
     }
-    return '#<' + type + ' ' + s.join(' ') + '>';
+    return '#<' + type + s.join('') + '>';
 }
 
-function clazz$getClass(){
+/**
+ * Every instance create with class which create with type.Class or type.create
+ * will has a getClass function to get it's class object
+ * `class` is a reserved word so we use `getClass` instead
+ */
+function clazz$getClass() {
     return Class;
 }
-var clazz$getParent = clazz$getClass;
+var clazz$parent = clazz$getClass;
 
+/**
+ * define methods of a class
+ * inspired by http://ejohn.org/blog/simple-javascript-inheritance/
+ */
 function clazz$methods(methods) {
-    var name;
-    for(name in methods) {
-        if(methods.hasOwnProperty(name)) {
+    var name, parentProto = this.parent().prototype;
+    for (name in methods) {
+        if (!methods.hasOwnProperty(name)) continue;
+
+        //if parent class does not define method with this name
+        //just added it to prototype(instance method)
+        if (!parentProto.hasOwnProperty(name)) {
             this.prototype[name] = methods[name];
+            continue;
         }
+
+        //if parent already defined a method with the same name
+        //we need to wrap provided function to make call to
+        //this.super() possible by replace this.super to
+        //parent method on the fly
+        this.prototype[name] = (function(name, method) {
+            return function() {
+                //bakcup existing property named super
+                var t = this.super,
+                    r;
+
+                //make this.super to parent's method
+                //so you can call this.super() in your method
+                this.super = parentProto[name];
+
+                //call the method
+                r = method.apply(this, arguments);
+
+                //restore super property
+                this.super = t;
+                return r;
+            };
+        }(name, methods[name]));
     }
     return this;
 }
-/**
- * The Ultimate Class class
- * Methods inheritated through protype
- * property belongs to every instance, not shared throught prototype
- */
-function Class(typename, parent, init){
-    if (arguments.length !== 3) {
-        throw Error('Class(typename, parent, init) requires 3 arguments!');
+
+function clazz$statics(props) {
+    var name;
+    for (name in props) {
+        if (!props.hasOwnProperty(name)) continue;
+        this[name] = props[name];
     }
+    return this;
+}
+
+function clazz$extend() {
+    var len = arguments.length,
+        name, m;
+    if (len === 0) {
+        return new Class('anonymous', this);
+    } else if (len === 1) {
+        return new Class('anonymous', this).methods(arguments[1]);
+    }
+    return new Class(arguments[0], this).methods(arguments[1]);
+}
+/**
+ * The Ultimate `Class`
+ */
+function Class(typename, parent) {
     // use underscore as name for less debugging noise
     function instance$getClass() {
         return _;
     }
-    var _ = function (){
+    var _ = function() {
         this.getClass = instance$getClass;
         this.toString = instance$toString;
         this.is = instance$is;
-        if (parent.prototype.initialize) {
-            parent.prototype.initialize.apply(this, arguments);
+        if (isFunction(_.prototype.initialize)) {
+            this.initialize.apply(this, arguments);
         }
-        init.apply(this, arguments);
     };
     _.getClass = clazz$getClass;
     _.methods = clazz$methods;
-    _.newInstance = function(){
+    _.statics = clazz$statics;
+    _.newInstance = function() {
         return new _();
     };
-    _.typename = function(){
+    _.typename = function() {
         return typename || 'Object';
     };
-    _.getParent = function(){
+    _.parent = function() {
         return parent || Object;
     };
+    _.extend = clazz$extend;
     _.prototype = new parent();
     _.prototype.constructor = Class;
-    _.prototype.initialize = init;    
     return _;
 }
 
 Class.getClass = clazz$getClass;
-Class.methods= clazz$methods;
-Class.newInstance = function(){
+Class.methods = clazz$methods;
+Class.extend = clazz$extend;
+Class.newInstance = function() {
     return new Class();
 };
-Class.typename = function(){
+Class.typename = function() {
     return 'Class';
 };
-Class.getParent = clazz$getParent;
+Class.parent = clazz$parent;
+Class.toString = instance$toString;
 
-function create(/* [typename, [parent,]] init */) {
-    var len = arguments.length,
-        typename, parent, init;
-    if (len === 1) {
-        init = arguments[0];
-    } else if (len === 2) {
-        typename = String(arguments[0]);
-        init = arguments[1];
-    } else if (len === 3) {
-        typename = String(arguments[0]);
-        parent = arguments[1];
-        init = arguments[2];
+/**
+ * create
+ * create class
+ * @param  {String} typename, class name
+ * @param  {Function} parent, parent class(function)
+ * @param  {Object} methods
+ * @return {Class}
+ */
+function create(typename, parent, methods) {
+    var init;
+    typename = isString(typename) ? typename : 'anonymous';
+    parent = isFunction(parent) ? parent : Object;
+    methods = methods || {};
+    if (isFunction(methods.initialize)) {
+        init = methods.initialize;
+        delete methods.initialize;
+    } else {
+        init = function() {};
     }
-    if (!isFunction(init)) {
-        throw Error('(constructor (1/1 or 2/3 argument) must be a function!');
-    } else if (len === 3 && isFunction(parent)) {
-        throw Error('parent (2/3 argument) must be a function');
-    }
-    
-    return new Class(typename, parent, init);
+    return new Class(typename, parent, init).methods(methods);
 }
-
-function extend(parent, init) {
-
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

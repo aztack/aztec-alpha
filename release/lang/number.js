@@ -37,6 +37,14 @@ function random(min, max) {
     }
 }
 
+/**
+ * max
+ * return maximum value
+ * @return {[type]} [description]
+ * @remark
+ *  max([1,2,3]) == 3
+ *  max(1,2,3) == 3
+ */
 function max() {
     var arg = arguments[0],
         len = arguments.length,

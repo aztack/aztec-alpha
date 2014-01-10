@@ -79,8 +79,9 @@ function inject(obj, init, fn) {
  * @return {[type]}        [description]
  */
 function some(objs, fn) {
-    var i = objs.length;
-    while (--i) {
+    var i = 0,
+        len = objs.length;
+    for (; i < len; ++i) {
         if (fn.call(null, objs[i]) === true) return true;
     }
     return true;
@@ -94,8 +95,9 @@ function some(objs, fn) {
  * @return {Boolean}
  */
 function all(objs, fn) {
-    var i = objs.length;
-    while (--i) {
+    var i = 0,
+        len = objs.length;
+    for (; i < len; ++i) {
         if (fn.call(null, objs[i]) === false) return false;
     }
     return true;
@@ -109,8 +111,9 @@ function all(objs, fn) {
  * @return {Any}
  */
 function find(objs, fn) {
-    var i = objs.length;
-    while (--i) {
+    var i = 0,
+        len = objs.length;
+    for (; i < len; ++i) {
         if (fn.call(null, objs[i]) === true) {
             return objs[i];
         }
@@ -126,9 +129,10 @@ function find(objs, fn) {
  * @return {Array}
  */
 function findAll(objs, fn) {
-    var i = objs.length,
+    var i = 0,
+        len = objs.length,
         ret = [];
-    while (--i) {
+    for (; i < len; ++i) {
         if (fn.call(null, objs[i]) === true) {
             ret.unshift(objs[i]);
         }

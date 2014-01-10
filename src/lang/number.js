@@ -2,8 +2,7 @@
     description: 'Number Utils',
     namespace: $root.lang.number,
     imports: {
-        _type: $root.lang.type,
-        _enum: $root.lang.enumerable
+        _type: $root.lang.type
     },
     exports: [
         random,
@@ -15,8 +14,8 @@
 //vars
 var rand$ = Math.random,
     floor$ = Math.floor,
-    max$ = Math.max;
-min$ = Math.min;
+    max$ = Math.max,
+    min$ = Math.min;
 
 //helper
 
@@ -37,6 +36,14 @@ function random(min, max) {
     }
 }
 
+/**
+ * max
+ * return maximum value
+ * @return {[type]} [description]
+ * @remark
+ *  max([1,2,3]) == 3
+ *  max(1,2,3) == 3
+ */
 function max() {
     var arg = arguments[0],
         len = arguments.length,
