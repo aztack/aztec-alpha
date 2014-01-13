@@ -1,6 +1,6 @@
 ({
     description: "Base class for all UI controls",
-    namespace: $root.ui.UIControl,
+    namespace: $root.ui,
     imports: {
         _type: $root.lang.type,
         $: jQuery

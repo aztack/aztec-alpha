@@ -1,9 +1,10 @@
 # encoding:utf-8
-require 'rkelly'
+require 'pp'
 require 'json'
+require 'pry'
+require 'rkelly'
 require 'erubis'
 require 'sinatra'
-require 'pp'
 
 require File.expand_path('common.rb',File.dirname(__FILE__))
 require File.expand_path('builder.rb',File.dirname(__FILE__))
@@ -83,7 +84,8 @@ get "/scripts/:module" do
             $stderr.puts "Can not found module #{mod}!"
             code
         else
-            code << $man[mod].to_amd
+            #code << $man[mod].to_amd
+            code << $man.to_ecma(mod)
         end
     end
 end

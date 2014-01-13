@@ -39,7 +39,7 @@ function random(min, max) {
 /**
  * max
  * return maximum value
- * @return {[type]} [description]
+ * @return {Any}
  * @remark
  *  max([1,2,3]) == 3
  *  max(1,2,3) == 3
@@ -59,6 +59,14 @@ function max() {
     }
 }
 
+/**
+ * min
+ * return minimum value
+ * @return {Any}
+ * @remark
+ *  min([1,2,3]) == 1
+ *  min(1,2,3) == 1
+ */
 function min() {
     var arg = arguments[0],
         len = arguments.length,

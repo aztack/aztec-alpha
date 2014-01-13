@@ -2,6 +2,7 @@
 require 'rkelly'
 require 'json'
 require 'tsort'
+require 'yaml'
 require 'erubis'
 require 'nokogiri'
 require 'stringio'
@@ -136,6 +137,10 @@ module Aztec
             @config[key]
         end
 
+        def []=(key, value)
+            @config[key] = value
+        end
+
         def imports
             @config['imports'] || {}
         end
@@ -155,32 +160,69 @@ module Aztec
         def namespace
             @config['namespace']
         end
+
+        def files
+            @config['files']
+        end
+
+        def <<(config)
+            merge('imports', config, :merge, {})
+            merge('exports', config, :'+', [])
+            merge('files', config, :'+', [])
+        end
+
+        def to_ecma
+            @config.to_yaml
+        end
+
+        private
+        def merge(key, config, merege_method, default)
+            a = @config[key] || default.dup
+            b = config[key] || default.dup
+            @config[key] = a.send(merege_method, b)
+        end
     end
 
     #
     # JavaScript module
     #
     class JsModule
+        include Comparable
         CONFIG_PATTERN = /(^\(\{\n*.*?\}\);)$/m
         
         def initialize(path)
             @path = path
             @source = File.read path, :encoding=>'utf-8'
             read_module_config
+            @config['files'] = [path]
+            parse
+        end
+
+        def <=>(other)
+            k = 'priority'
+            a, b = @config[k] || 0, other.config[k] || 0
+            a <=> b
+        end
+
+        attr_reader :config
+        attr_reader :source
+        
+        def parse(drop_config_object = true)
             if @config.notransform
                 @ast = nil
                 @source = @source.sub CONFIG_PATTERN, ''
                 @xtemplate = nil
             else
                 @ast = ::RKelly::Parser.new.parse(@source) rescue nil
-                throw "There are SytaxError in #{path}!" if @ast.nil?
-                @ast.value.shift #drop config object literal
-                from = @meta.range.to.index + 2
-                @source = @source[from..-1].strip
-                @xtemplate = load_xtemplate
+                throw "There are SytaxError in #{@path}!\n" if @ast.nil?
+                if drop_config_object
+                    @ast.value.shift
+                    from = @meta.range.to.index + 2
+                    @source = @source[from..-1].strip
+                    @xtemplate = load_xtemplate
+                end
             end
         end
-        attr_reader :config
 
         def namespace
             @config.namespace
@@ -208,24 +250,24 @@ module Aztec
             imports = @config.imports
             if not imports.size.zero?
                 ctx[:imports] = imports.values.map(&:single_quote).join(',')
-                requires = @config.imports.map{|k,v| "#{k} = require('#{v}')"}.join(',')
+                requires = @config.imports.map{|k,v| "#{k} = require('#{v}')"}.join(",\n" + ' '*8)
                 ctx[:requires] = "var #{requires};"
             else
                 ctx[:imports] = ctx[:requires] = ''
             end
 
-            ctx[:xtemplate] = if not @xtemplate.nil?
-                js = ["require('$root.browser.template')"]
+            ctx[:xtemplate] = if not @xtemplate.nil? and @xtemplate.templates.size > 0
+                js = ["\n///xtemplate","require('$root.browser.template')"]
                 @xtemplate.templates.each do |data, t|
                     id = data.split(',').first
-                    js << ".set('#{id}',#{t})".indent(4)
+                    js << ".set('#{id}',#{t})".indent(8)
                 end
                 js.join("\n").indent(4) + ';'
             else
                 ''
             end
             
-            ctx[:meta] = @meta.to_ecma.to_comment.endl
+            ctx[:meta] = @config.to_ecma.to_multiline_comment.endl
             #preprocess
             ctx[:original] = is_root ? @source : @source.indent(4)
             ctx[:usestrict] = "//'use strict';"
@@ -243,6 +285,30 @@ module Aztec
             ctx[:returnstatement] = 'return exports;'
             code = eruby.evaluate ctx
             code.gsub(/\t/,'  ')
+        end
+
+        #
+        # merge two or more modules into one
+        #
+        def merge(others)
+            if others.nil? or others.size.zero?
+                self
+            else
+                others.each{|e| self << e}
+                self
+            end
+        end
+
+        def <<(other)
+            if @config.namespace != other.config.namespace
+                raise "Can not merge two module with different namespace!" 
+                return
+            end
+            cfg = other.config
+            desc = cfg.files.first.to_comment.newline
+            desc << cfg['description'].to_multiline_comment.newline.endl
+            @config << cfg
+            @source << desc << other.source
         end
 
         alias :name :namespace
@@ -342,7 +408,7 @@ module Aztec
                 return nil if m.nil?
             end
             cfg = m.config
-            @modules[m.namespace] = m
+            @modules[m.namespace] << m
             @dependency[m.namespace] = cfg.imports.nil? ? [] : cfg.imports.values
         end
 
@@ -352,22 +418,59 @@ module Aztec
             init.scan
         end
 
+        def to_ecma(namespace)
+            binding.pry
+            namespace = namespace.namespace if namespace.is_a? JsModule
+            mods = @modules[namespace]
+            return '' if mods.size.zero?
+            js = StringIO.new
+            main = mods[0]
+            others = mods[1..-1]
+            seg = Utils.namespace_to_file_path(main.namespace)
+            if others.size.zero?
+                js.puts main.to_amd
+            else
+                tmp = main.dup.merge(others)
+                tmp.parse false
+                js.puts tmp.to_amd
+            end
+            js.string
+        end
+
+        def to_styles(namespace)
+            #TODO
+        end
+
         def release(output_dir, overwrite = false)
-            raise "#{output_dir} not exits!" unless File.exists? output_dir
+            FileUtils.mkdir output_dir unless File.exists? output_dir
             styles = StringIO.new
             @modules.each do |namespace, m|
-                segment = Utils.namespace_to_file_path(m.namespace)
+                m = m.sort
+                main = m[0]
+                mods = m[1..-1]
+                segment = Utils.namespace_to_file_path(main.namespace)
                 path = "#{output_dir}/#{segment}.js"
                 raise "#{path} already exists!" if !overwrite and File.exists?(path)
                 yield path if block_given?
                 
                 #javascript
                 FileUtils.mkpath(File.dirname(path))
-                File.open(path,'w:utf-8'){|f| f.write m.to_amd}
+                File.open(path,'w:utf-8') do |f|
+                    if mods.size.zero?
+                        f.write main.to_amd
+                    else
+                        tmp = main.dup.merge(mods)
+                        tmp.parse false
+                        f.write tmp.to_amd
+                    end
+                end
                 
                 #style
-                styles.puts m.styles
-                styles.puts
+                styles.puts main.styles
+                mods.each do |m|
+                    styles.puts m.styles
+                    styles.puts
+                end
             end
             css_file_path = "#{output_dir}/#{Aztec.name('.css')}"
             File.open(css_file_path, 'w') do |f|
@@ -377,7 +480,7 @@ module Aztec
         end
 
         def [](namespace)
-            @modules[namespace]
+            @modules[namespace].first
         end
 
         def dependency_hash
@@ -405,7 +508,7 @@ module Aztec
 
         private
         def init
-            @modules = {}
+            @modules = Hash.new{|h,k| h[k] = []}
             @dependency = TsortableHash.new
             @dependency['$root'] = []
             @dependency['jQuery'] = []
@@ -413,7 +516,7 @@ module Aztec
         end
 
         def _dependency_of(mod, include_self)
-            m = @modules[mod]
+            m = @modules[mod].first
             return include_self ? [mod] : [] if m.nil? or m.config.imports.empty?
             cfg = m.config
             imports = cfg.imports.values
@@ -426,6 +529,7 @@ end
 
 if __FILE__ == $0
     require 'pp'
+    require 'pry'
     man = Aztec::JsModuleManager.new('../src',:verbose => true)
     man.scan
     #puts Aztec::JsModule.new(File.read("#{File.dirname(__FILE__)}/../src/ui/UIControl.js")).to_amd
@@ -437,4 +541,6 @@ if __FILE__ == $0
     #puts Aztec::JsModule.new("../src/aztec.js").to_amd
     #puts man['$root.browser.console'].xtemplate_styles
     man.release(File.absolute_path('../release'), true) {|path| puts "Writting #{path}"}
+    
+    #puts man.to_ecma('$root.ui.dialog')
 end

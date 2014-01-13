@@ -4,10 +4,11 @@
 	imports: {
 		_type: $root.lang.type,
 		_str: $root.lang.string,
-		UIControl: $root.ui.UIControl,
+		_ui: $root.ui,
 		$: jQuery
 	},
-	exports: [Alert]
+	exports: [Alert],
+	priority: 1
 });
 
 ///vars
@@ -16,11 +17,11 @@
 
 
 ///impl
-var Alert = _type.create('Alert', UIControl, {
+var Alert = _type.create('Alert', Dialog, {
 	initialize: function(options) {
 		this.super();
 	}
-})
+});
 
 /**
  * main function is called when DOMReady

@@ -1,6 +1,5 @@
 /* $root */
 body{margin: 0;}
-
 /* $root.browser.console */
 .ui-console {
 	position: fixed;
@@ -37,21 +36,8 @@ body{margin: 0;}
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/* $root.ui.dialog */
+          /* TODO */
 /* $root.ui.dialog */
           .ui-alert{
           }

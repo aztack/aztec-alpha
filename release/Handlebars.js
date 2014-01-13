@@ -1,8 +1,11 @@
-// ({
-//   description: 'Handlebars',
-//   namespace: Handlebars,
-//   notransform: true
-// })
+/**
+ * ---
+ * description: Handlebars
+ * namespace: Handlebars
+ * notransform: true
+ * files:
+ * - ../src/handlebars-v1.2.0.js
+ */
 
 
 /*!

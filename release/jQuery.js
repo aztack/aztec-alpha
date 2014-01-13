@@ -1,8 +1,11 @@
-// ({
-//   description: 'jQuery',
-//   namespace: jQuery,
-//   notransform: true
-// })
+/**
+ * ---
+ * description: jQuery
+ * namespace: jQuery
+ * notransform: true
+ * files:
+ * - ../src/jquery-1.10.2.js
+ */
 
 
 /*!

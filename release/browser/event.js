@@ -1,20 +1,26 @@
-// ({
-//   description: "Event",
-//   version: '0.0.1',
-//   namespace: $root.browser.event,
-//   imports: {
-//     _type: $root.lang.type,
-//     _array: $root.lang.array,
-//     _enum: $root.lang.enumerable
-// },
-//   exports: [pauseEvent, EventEmitter]
-// })
+/**
+ * ---
+ * description: Event
+ * version: 0.0.1
+ * namespace: $root.browser.event
+ * imports:
+ *   _type: $root.lang.type
+ *   _array: $root.lang.array
+ *   _enum: $root.lang.enumerable
+ * exports:
+ * - pauseEvent
+ * - EventEmitter
+ * files:
+ * - ../src/browser/event.js
+ */
 
 ;define('$root.browser.event',['$root.lang.type','$root.lang.array','$root.lang.enumerable'],function(require, exports){
     //'use strict';
-    var _type = require('$root.lang.type'),_array = require('$root.lang.array'),_enum = require('$root.lang.enumerable');
+    var _type = require('$root.lang.type'),
+        _array = require('$root.lang.array'),
+        _enum = require('$root.lang.enumerable');
     
-      ///imports
+        ///imports
     var Callbacks = _fn.Callbacks;
     
     ///exports
@@ -157,7 +163,7 @@
     function removeEventListener() {
     
     }
-  exports['pauseEvent'] = pauseEvent;
+    exports['pauseEvent'] = pauseEvent;
     exports['EventEmitter'] = EventEmitter;
     return exports;
 });

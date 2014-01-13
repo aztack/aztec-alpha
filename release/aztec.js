@@ -1,8 +1,11 @@
-// ({
-//   description: 'The Aztec JavaScript framework',
-//   version: '0.0.1',
-//   namespace: $root
-// })
+/**
+ * ---
+ * description: The Aztec JavaScript framework
+ * version: 0.0.1
+ * namespace: $root
+ * files:
+ * - ../src/aztec.js
+ */
 
 (function(global) {
 
