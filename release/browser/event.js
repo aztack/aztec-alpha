@@ -1,27 +1,48 @@
 /**
  * ---
- * description: Event
+ * description: Event Utils
  * version: 0.0.1
  * namespace: $root.browser.event
  * imports:
  *   _type: $root.lang.type
- *   _array: $root.lang.array
- *   _enum: $root.lang.enumerable
+ *   _fn: $root.lang.fn
  * exports:
- * - pauseEvent
+ * - stopEvent
  * - EventEmitter
  * files:
  * - ../src/browser/event.js
+ * - ../src/browser/event.emitter.js
  */
 
-;define('$root.browser.event',['$root.lang.type','$root.lang.array','$root.lang.enumerable'],function(require, exports){
+;define('$root.browser.event',['$root.lang.type','$root.lang.fn'],function(require, exports){
     //'use strict';
     var _type = require('$root.lang.type'),
-        _array = require('$root.lang.array'),
-        _enum = require('$root.lang.enumerable');
+        _fn = require('$root.lang.fn');
     
-        ///imports
-    var Callbacks = _fn.Callbacks;
+        ///exports
+    
+    /**
+     * pauseEvent
+     * @param  {Event} e
+     * @return {Boolean}
+     */
+    function stopEvent(e) {
+        if (e.stopPropagation) {
+            e.stopPropagation();
+            e.preventDefault();
+        } else {
+            e.cancelBuble = true;
+            e.returnValue = false;
+        }
+        return false;
+    }
+    // ../src/browser/event.emitter.js
+    /**
+     * Event Emitter
+     */
+    ///imports
+    var _slice = Array.prototype.slice,
+        Callbacks = _fn.Callbacks;
     
     ///exports
     
@@ -31,8 +52,8 @@
      * @see http://nodejs.org/api/events.html
      */
     function EventEmitter() {
-      this._events = {};
-      this._maxListeners = 10;
+        this._events = {};
+        this._maxListeners = 10;
     }
     
     var eeproto = EventEmitter.prototype;
@@ -44,12 +65,12 @@
      * @return {EventEmitter}
      */
     eeproto.addListener = function(event, listener) {
-      var callbacks = this._events[event];
-      if (_type.isUndefined(callbacks)) {
-        callbacks = this._events[event] = Callbacks();
-      }
-      callbacks.add(listener);
-      return this;
+        var callbacks = this._events[event];
+        if (_type.isUndefined(callbacks)) {
+            callbacks = this._events[event] = Callbacks();
+        }
+        callbacks.add(listener);
+        return this;
     };
     
     eeproto.on = eeproto.addListener;
@@ -62,13 +83,14 @@
      * @return {[type]}          [description]
      */
     eeproto.once = function(event, listener) {
-      var self = this;
-      function f(){
-        self.removeListener(event, f);
-        f.apply(this, arguments);
-      }
-      this.on(event,f);
-      return this;
+        var self = this;
+    
+        function f() {
+            self.removeListener(event, f);
+            f.apply(this, arguments);
+        }
+        this.on(event, f);
+        return this;
     };
     
     /**
@@ -78,11 +100,11 @@
      * @return {EventEmitter}
      */
     eeproto.removeListener = function(event, listener) {
-      var callbacks = this._events[event];
-      if (!_type.isUndefined(callbacks) && _type.isFunction(listener)) {
-        callbacks.remove(listener);
-      }
-      return this;
+        var callbacks = this._events[event];
+        if (!_type.isUndefined(callbacks) && _type.isFunction(listener)) {
+            callbacks.remove(listener);
+        }
+        return this;
     };
     
     /**
@@ -91,12 +113,12 @@
      * @return {EventEmitter}
      */
     eeproto.removeAllListeners = function(event) {
-      if (_type.isUndefined(event)) {
-        this._events = {};
-      } else {
-        this._events[event] = Callbacks();
-      }
-      return this;
+        if (_type.isUndefined(event)) {
+            this._events = {};
+        } else {
+            this._events[event] = Callbacks();
+        }
+        return this;
     };
     
     /**
@@ -105,10 +127,10 @@
      * @param {int} n
      */
     eeproto.setMaxListeners = function(n) {
-      if (_type.isNumber(n)) {
-        this._maxListeners = n;
-      }
-      return this;
+        if (_type.isInteger(n)) {
+            this._maxListeners = n;
+        }
+        return this;
     };
     
     /**
@@ -118,7 +140,7 @@
      * @return {[type]}       [description]
      */
     eeproto.listeners = function(event) {
-      return this._events[event];
+        return this._events[event];
     };
     
     /**
@@ -128,42 +150,16 @@
      * @return {[type]}       [description]
      */
     eeproto.emit = function(event) {
-      var listeners = this.listeners(event),
-        args;
-      if (_type.isUndefined(listeners)) {
+        var listeners = this.listeners(event),
+            args;
+        if (_type.isUndefined(listeners)) {
+            return this;
+        }
+        args = _slice.call(arguments, 1);
+        listeners.fire(this, args);
         return this;
-      }
-      args = _array.toArray(arguments, 1);
-      listeners.fire(event, args);
-      return this;
     };
-    
-    // other event related functions
-    
-    /**
-     * pauseEvent
-     * @param  {Event} e
-     * @return {Boolean}
-     */
-    function pauseEvent(e) {
-      if (e.stopPropagation) {
-        e.stopPropagation();
-        e.preventDefault();
-      } else {
-        e.cancelBuble = true;
-        e.returnValue = false;
-      }
-      return false;
-    }
-    
-    function addEventListener() {
-    
-    }
-    
-    function removeEventListener() {
-    
-    }
-    exports['pauseEvent'] = pauseEvent;
+    exports['stopEvent'] = stopEvent;
     exports['EventEmitter'] = EventEmitter;
     return exports;
 });

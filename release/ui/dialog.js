@@ -5,7 +5,7 @@
  * imports:
  *   _type: $root.lang.type
  *   _str: $root.lang.string
- *   UIControl: $root.ui.UIControl
+ *   _ui: $root.ui
  *   $: jQuery
  * exports:
  * - Dialog
@@ -15,11 +15,11 @@
  * - ../src/ui/dialog/Alert.js
  */
 
-;define('$root.ui.dialog',['$root.lang.type','$root.lang.string','$root.ui.UIControl','jQuery'],function(require, exports){
+;define('$root.ui.dialog',['$root.lang.type','$root.lang.string','$root.ui','jQuery'],function(require, exports){
     //'use strict';
     var _type = require('$root.lang.type'),
         _str = require('$root.lang.string'),
-        UIControl = require('$root.ui.UIControl'),
+        _ui = require('$root.ui'),
         $ = require('jQuery');
         
     ///xtemplate

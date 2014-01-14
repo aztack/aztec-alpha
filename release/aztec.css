@@ -36,8 +36,18 @@ body{margin: 0;}
 
 
 
+
+
+
 /* $root.ui.dialog */
           /* TODO */
 /* $root.ui.dialog */
           .ui-alert{
+          }
+
+/* $root.ui */
+          .ui-control {
+              background: #fff;
+              margin:0;
+              padding:0;
           }

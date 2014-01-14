@@ -2,9 +2,34 @@
 <html>
     <head>
         <title>UIControl</title>
-        <script src="/scripts/$root.browser.console"></script>
-        <link rel="stylesheet" type="text/css" href="/styles/$root.browser.console">
+        <script src="/scripts/$root.ui"></script>
+        <style>
+            .ui-control {
+                background: #fff;
+                margin:0;
+                padding:0;
+            }
+        </style>
     </head>
     <body>
+    	<div data-xtemplate="$root.ui.UIControl,delete">
+            
+        </div>
     </body>
+    <script type="text/javascript">
+        define('$root.demo.ui.UIControl', [], function(require) {
+            var UIControl = require('$root.ui').UIControl,
+                $ = require('jQuery');
+                ctrl = new UIControl({
+                    appendTo:$('body'),
+                    css: {
+                        border: '1px solid red;'
+                    }
+                });
+
+                ctrl.on('created', function() {
+                    console.log(this);
+                });
+        });
+    </script>
 </html>

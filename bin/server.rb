@@ -8,7 +8,7 @@ require 'sinatra'
 
 require File.expand_path('common.rb',File.dirname(__FILE__))
 require File.expand_path('builder.rb',File.dirname(__FILE__))
-$ROOT = File.dirname(__FILE__) + '/..'
+$ROOT = File.dirname(__FILE__)
 
 def ns_to_relative_path(m, ext)
     m.gsub(".",File::Separator).sub('$root','src') + ext
@@ -21,15 +21,26 @@ def readfile(relative_path)
 end
 
 def rescan(m)
-    path = ns_to_relative_path(m, ".js")
-    path = "#{$ROOT}/#{path}"
-    $stdout.puts "Updating #{path}"
-    $man.update_module path
+    #path = ns_to_relative_path(m, ".js")
+    #path = "#{$ROOT}/#{path}"
+    #$stdout.puts "Updating #{path}"
+    files = $man[m].config.files
+    if files.size == 1
+        $man.update_module files.first
+    else
+        m = $man.update_module files.shift
+        files.each do |p|
+            jm = Aztec::JsModule.new p
+            m << jm
+        end
+    end
 end
 
 $stdout.puts "Loading JavaScript Module Manager..."
 $man = Aztec::JsModuleManager.new('../src',:exclude => ['/ui/'], :verbose => true).scan
-$stdout.puts "dependency hash:", $man.dependency_hash
+$stdout.puts "Releasing Code..."
+$man.release(File.absolute_path('../release'), true)
+$stdout.puts "Dependency hash:", $man.dependency_hash
 $stdout.puts "Done!"
 
 set :public_folder, $ROOT
@@ -65,43 +76,26 @@ get "/test/:module" do
     @mod = params[:module]
     erb :test
 end
-
+require 'pry'
 get "/demo/:module" do
     m = params[:module]
     rescan m
-    path = ns_to_relative_path(m,'.html')
-    readfile path
+    #binding.pry
+    path = $man[m].config.files.first.sub('.js','.html')
+    readfile path rescue ''
 end
 
 get "/scripts/:module" do
     $man.rescan
     m = params[:module]
     content_type "text/javascript"
-    @mods = $man.dependency_of(m, true)
-    js = @mods.join("\n").to_comment.endl
-    js << @mods.inject("") do |code, mod|
-        if $man[mod].nil?
-            $stderr.puts "Can not found module #{mod}!"
-            code
-        else
-            #code << $man[mod].to_amd
-            code << $man.to_ecma(mod)
-        end
-    end
+    $man.js_with_dependency m
 end
 
 get "/styles/:module" do
     m = params[:module]
     content_type = "text/css"
-    @mods = $man.dependency_of(m, true)
-    css = @mods.inject("") do |code, mod|
-        if $man[mod].nil?
-            $stderr.puts "Can not found module #{mod}!"
-            code
-        else
-            code << $man[mod].xtemplate_styles
-        end
-    end
+    $man.css_with_dependency m
 end
 
 __END__

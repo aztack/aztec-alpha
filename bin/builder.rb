@@ -316,7 +316,8 @@ module Aztec
         
         private
         def read_module_config
-            raise "#{@path} has not module config!" unless @source.index(CONFIG_PATTERN).zero?
+            i = @source.index(CONFIG_PATTERN)
+            raise "#{@path} has not module config!" if i.nil? or i < 0
             first_node = ::RKelly::Parser.new.parse @source[CONFIG_PATTERN]
             @meta = parenthetical_node = first_node.value[0].value
             config = Utils::JsModuleConfigToJsonVisitor.new.accept(parenthetical_node.value);
@@ -385,7 +386,7 @@ module Aztec
         end
 
         attr_reader :dependency
-        attr_reader :src_dir
+        attr_reader :src_dirw
 
         def scan
             Dir["#{@src_dir}/**/*.js"].each do |js_file|
@@ -410,6 +411,7 @@ module Aztec
             cfg = m.config
             @modules[m.namespace] << m
             @dependency[m.namespace] = cfg.imports.nil? ? [] : cfg.imports.values
+            return m
         end
 
         alias :update_module :add_module
@@ -419,9 +421,8 @@ module Aztec
         end
 
         def to_ecma(namespace)
-            binding.pry
             namespace = namespace.namespace if namespace.is_a? JsModule
-            mods = @modules[namespace]
+            mods = @modules[namespace].sort
             return '' if mods.size.zero?
             js = StringIO.new
             main = mods[0]
@@ -480,7 +481,7 @@ module Aztec
         end
 
         def [](namespace)
-            @modules[namespace].first
+            @modules[namespace].sort.first
         end
 
         def dependency_hash
@@ -489,6 +490,37 @@ module Aztec
 
         def dependency_of(mod, include_self = false)
             mod == '$root' ? [mod] : _dependency_of(mod, include_self).unshift('$root').uniq
+        end
+
+        def js_with_dependency(mod)
+            mods = dependency_of mod, true
+            js mods
+        end
+
+        def css_with_dependency(mod)
+            mods = dependency_of mod, true
+            css mods
+        end
+
+        def js(mods)
+            js = mods.join("\n").to_comment.endl
+            js << mods.inject("") do |code, mod|
+                if $man[mod].nil?
+                    code
+                else
+                    code << self.to_ecma(mod)
+                end
+            end
+        end
+
+        def css(mods)
+            css = mods.inject("") do |code, mod|
+            if self[mod].nil?
+                code
+            else
+                code << self[mod].xtemplate_styles
+            end
+        end
         end
 
         def save_dependency_graph(filename)
@@ -516,7 +548,7 @@ module Aztec
         end
 
         def _dependency_of(mod, include_self)
-            m = @modules[mod].first
+            m = @modules[mod].sort.first
             return include_self ? [mod] : [] if m.nil? or m.config.imports.empty?
             cfg = m.config
             imports = cfg.imports.values
@@ -537,7 +569,8 @@ if __FILE__ == $0
     #puts Aztec::JsModuleManager.new('src').scan.dependency_hash
     
     #pp man.dependency_hash
-    #pp man.dependency_of("$root", true)
+    #binding.pry
+    #pp man.dependency_of("$root.ui", true)
     #puts Aztec::JsModule.new("../src/aztec.js").to_amd
     #puts man['$root.browser.console'].xtemplate_styles
     man.release(File.absolute_path('../release'), true) {|path| puts "Writting #{path}"}

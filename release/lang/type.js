@@ -21,11 +21,16 @@
  * - isEmptyObject
  * - typename
  * - hasSameTypeName
+ * - Boolean
+ * - Number
+ * - String
+ * - Undefined
+ * - Integer
  * - Class
  * - create
  * files:
  * - ../src/lang/type.js
- * - ../src/lang/oop.js
+ * - ../src/lang/type.oop.js
  * imports: {}
  */
 
@@ -42,7 +47,14 @@
         };
     
     // exports
-    
+    exports.Boolean = 'Boolean';
+    exports.Number = 'Number';
+    exports.String = 'String';
+    exports.Undefined = 'Undefined';
+    exports.Integer = 'Integer';
+    exports.Array = 'Array';
+    exports.PlainObject = 'PlainObject';
+    exports.Function = 'Function';
     /**
      * isPrimitive
      * @param  {Any}  arg
@@ -213,7 +225,7 @@
      * @remark
      *     `arg.constructor` and `instanceof` are both not work cross-frame and cross-window
      */
-    function _ctorName(arg) {
+    function ctorName(arg) {
         var ctor = arg.constructor;
         if (isFunction(ctor) && !isEmpty(ctor.name)) {
             //function in JScript does not has name property
@@ -252,7 +264,7 @@
     function hasSameTypeName(a, b) {
         return typename(a) == typename(b);
     }
-    // ../src/lang/oop.js
+    // ../src/lang/type.oop.js
     /**
      *  Object-Orientated Programming Support
      */
@@ -303,6 +315,9 @@
     function clazz$getClass() {
         return Class;
     }
+    
+    function instance$noop() {}
+    
     var clazz$parent = clazz$getClass;
     
     /**
@@ -311,6 +326,7 @@
      */
     function clazz$methods(methods) {
         var name, parentProto = this.parent().prototype;
+        this.super = instance$noop;
         for (name in methods) {
             if (!methods.hasOwnProperty(name)) continue;
     
@@ -348,10 +364,16 @@
     }
     
     function clazz$statics(props) {
-        var name;
-        for (name in props) {
-            if (!props.hasOwnProperty(name)) continue;
-            this[name] = props[name];
+        var name, methods;
+        if (isFunction(props)) {
+            methods = props();
+        } else {
+            methods = props || {};
+        }
+    
+        for (name in methods) {
+            if (!methods.hasOwnProperty(name)) continue;
+            this[name] = methods[name];
         }
         return this;
     }
@@ -366,6 +388,15 @@
         }
         return new Class(arguments[0], this).methods(arguments[1]);
     }
+    
+    function clazz$readonly(name, initValue, force) {
+        if ( !! force || !isFunction(this[name])) {
+            this['get' + name] = function() {
+                return initValue;
+            };
+        } else throw Error('Readonly property `' + name + '` already defined!');
+    }
+    
     /**
      * The Ultimate `Class`
      */
@@ -395,6 +426,7 @@
             return parent || Object;
         };
         _.extend = clazz$extend;
+        _.readonly = clazz$readonly;
         _.prototype = new parent();
         _.prototype.constructor = Class;
         return _;
@@ -403,6 +435,7 @@
     Class.getClass = clazz$getClass;
     Class.methods = clazz$methods;
     Class.extend = clazz$extend;
+    Class.readonly = clazz$readonly;
     Class.newInstance = function() {
         return new Class();
     };
@@ -419,19 +452,69 @@
      * @param  {Function} parent, parent class(function)
      * @param  {Object} methods
      * @return {Class}
+     * @remark
+     * type.create('ClassName');
+     * type.create(Parent);
+     * type.create({method:function(){}});
+     * type.create('ClassName',Parent);
+     * type.create('ClassName',{method:function(){}});
+     * type.create(Parent,{method:function(){}});
+     * type.create('ClassName',Parent,{method:function(){});
      */
-    function create(typename, parent, methods) {
-        var init;
-        typename = isString(typename) ? typename : '';
-        parent = isFunction(parent) ? parent : Object;
-        methods = methods || {};
+    function create(typename, parent, methodsOrFn) {
+        var init, methods, len = arguments.length,
+            arg0 = arguments[0],
+            arg1 = arguments[1],
+            arg2 = arguments[2],
+            noop = instance$noop;
+    
+        if (len === 0) {
+            //type.create();
+            return new Class('', Object, noop);
+        } else if (len === 1) {
+            if (isString(arg0)) {
+                //type.create('ClassName');
+                return new Class(typename, Object, noop);
+            } else if (isFunction(arg0)) {
+                //type.create(Parent);
+                return new Class('', arg0, noop);
+            } else if (isPlainObject(arg0)) {
+                //type.create({method:function(){}});
+                return new Class('', Object, noop).methods(arg0);
+            }
+        } else if (len === 2) {
+            if (isString(arg0) && isFunction(arg1)) {
+                //type.create('ClassName',Parent);
+                return new Class(arg0, arg1, noop);
+            } else if (isString(arg0) && isPlainObject(arg1)) {
+                //type.create('ClassName',{method:function(){}})
+                return new Class(arg0, Object, noop).methods(arg1);
+            } else if (isFunction(arg0) && isPlainObject(arg1)) {
+                //type.create(Parent,{method:function(){}})
+                return new Class('', arg0).methods(arg1);
+            }
+        } else {
+            //type.create('ClassName',Parent,{method:function(){});
+            typename = isString(typename) ? typename : '';
+            parent = isFunction(parent) ? parent : Object;
+            methods = getMethods(methodsOrFn);
+            init = getInitializeFn(methods);
+            return new Class(typename, parent, init).methods(methods);
+        }
+    }
+    
+    function getInitializeFn(methods) {
         if (isFunction(methods.initialize)) {
             init = methods.initialize;
             delete methods.initialize;
         } else {
-            init = function() {};
+            init = instance$noop;
         }
-        return new Class(typename, parent, init).methods(methods);
+        return init;
+    }
+    
+    function getMethods(methodsOrFn) {
+        return (isFunction(methodsOrFn) ? methodsOrFn() : methodsOrFn) || {};
     }
     exports['isPrimitive'] = isPrimitive;
     exports['isUndefined'] = isUndefined;
@@ -450,6 +533,11 @@
     exports['isEmptyObject'] = isEmptyObject;
     exports['typename'] = typename;
     exports['hasSameTypeName'] = hasSameTypeName;
+//     exports['Boolean'] = Boolean;
+//     exports['Number'] = Number;
+//     exports['String'] = String;
+//     exports['Undefined'] = Undefined;
+//     exports['Integer'] = Integer;
     exports['Class'] = Class;
     exports['create'] = create;
     return exports;

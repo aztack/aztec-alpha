@@ -19,7 +19,12 @@
         isPlainObject,
         isEmptyObject,
         typename,
-        hasSameTypeName
+        hasSameTypeName,
+        Boolean,
+        Number,
+        String,
+        Undefined,
+        Integer
     ]
 });
 
@@ -32,7 +37,14 @@ var _toString = Object.prototype.toString,
     };
 
 // exports
-
+exports.Boolean = 'Boolean';
+exports.Number = 'Number';
+exports.String = 'String';
+exports.Undefined = 'Undefined';
+exports.Integer = 'Integer';
+exports.Array = 'Array';
+exports.PlainObject = 'PlainObject';
+exports.Function = 'Function';
 /**
  * isPrimitive
  * @param  {Any}  arg
@@ -203,7 +215,7 @@ function isPlainObject(arg) {
  * @remark
  *     `arg.constructor` and `instanceof` are both not work cross-frame and cross-window
  */
-function _ctorName(arg) {
+function ctorName(arg) {
     var ctor = arg.constructor;
     if (isFunction(ctor) && !isEmpty(ctor.name)) {
         //function in JScript does not has name property
