@@ -18,7 +18,7 @@
  * - isLeapYear
  * - daysOfMonth
  * files:
- * - ../src/lang/date.js
+ * - /lang/date.js
  */
 
 ;define('$root.lang.date',['$root.lang.type','$root.lang.string'],function(require, exports){

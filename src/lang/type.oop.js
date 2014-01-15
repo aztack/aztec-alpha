@@ -147,29 +147,34 @@ function Class(typename, parent) {
         return _;
     }
     var _ = function() {
+        var ret;
         this.getClass = instance$getClass;
         this.toString = instance$toString;
         this.is = instance$is;
         if (isFunction(_.prototype.initialize)) {
-            return this.initialize.apply(this, arguments);
+            ret = this.initialize.apply(this, arguments);
+        } else if (isFunction(_.prototype.init)) {
+            ret = this.init.apply(this, arguments);
+        }
+        if (typeof ret !== 'undefined') {
+            return ret;
         }
     };
     _.getClass = clazz$getClass;
     _.methods = clazz$methods;
     _.statics = clazz$statics;
-    _.newInstance = function() {
-        return new _();
-    };
     _.typename = function() {
-        return typename || 'Object';
+        return typename;
     };
     _.parent = function() {
-        return parent || Object;
+        return parent || _.prototype.constructor;
     };
     _.extend = clazz$extend;
     _.readonly = clazz$readonly;
-    _.prototype = new parent();
-    _.prototype.constructor = Class;
+    if (parent) {
+        _.prototype = new parent();
+        //_.prototype.constructor = Class;
+    }
     return _;
 }
 
@@ -177,9 +182,6 @@ Class.getClass = clazz$getClass;
 Class.methods = clazz$methods;
 Class.extend = clazz$extend;
 Class.readonly = clazz$readonly;
-Class.newInstance = function() {
-    return new Class();
-};
 Class.typename = function() {
     return 'Class';
 };

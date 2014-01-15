@@ -7,7 +7,7 @@
  * - parse
  * - stringify
  * files:
- * - ../src/lang/json.js
+ * - /lang/json.js
  */
 
 ;define('$root.lang.json',[],function(require, exports){

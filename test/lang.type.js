@@ -55,7 +55,7 @@ test("$root.lang.type", function(require, specs) {
             'RegExp',
             'UserDefinedType',
             'Person',
-            'anonymous'
+            ''
         ], function() {
             return [
                 c(null),
@@ -78,7 +78,7 @@ test("$root.lang.type", function(require, specs) {
             true, true, true, false,
             true, true, true, false,
             true, true,
-            'Person', 'anonymous',
+            'Person', '',
             true, 'Person',
             'adam', 'jack', 'yumi', 5, 1
         ], function() {

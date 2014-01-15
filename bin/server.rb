@@ -8,14 +8,14 @@ require 'sinatra'
 
 require File.expand_path('common.rb',File.dirname(__FILE__))
 require File.expand_path('builder.rb',File.dirname(__FILE__))
-$ROOT = File.dirname(__FILE__)
+$ROOT = File.absolute_path(File.dirname(__FILE__) + "/../")
+$stdout.puts "$ROOT=#{$ROOT}"
 
 def ns_to_relative_path(m, ext)
     m.gsub(".",File::Separator).sub('$root','src') + ext
 end
 
-def readfile(relative_path)
-    path = "#{$ROOT}/#{relative_path}"
+def readfile(path)
     $stdout.puts "reading file: #{path}"
     File.read path, :encoding => 'utf-8'
 end
@@ -26,9 +26,9 @@ def rescan(m)
     #$stdout.puts "Updating #{path}"
     files = $man[m].config.files
     if files.size == 1
-        $man.update_module files.first
+        $man.update_module "#{$ROOT}/src/#{files.first}"
     else
-        m = $man.update_module files.shift
+        m = $man.update_module "#{$ROOT}/src/#{files.shift}"
         files.each do |p|
             jm = Aztec::JsModule.new p
             m << jm
@@ -37,9 +37,9 @@ def rescan(m)
 end
 
 $stdout.puts "Loading JavaScript Module Manager..."
-$man = Aztec::JsModuleManager.new('../src',:exclude => ['/ui/'], :verbose => true).scan
+$man = Aztec::JsModuleManager.new("#{$ROOT}/src",:exclude => ['/ui/'], :verbose => true).scan
 $stdout.puts "Releasing Code..."
-$man.release(File.absolute_path('../release'), true)
+$man.release(File.absolute_path("#{$ROOT}/release"), true)
 $stdout.puts "Dependency hash:", $man.dependency_hash
 $stdout.puts "Done!"
 
@@ -68,7 +68,7 @@ get "/static/*" do
     elsif path[".css"]
         content_type "text/stylesheet"
     end
-    readfile path
+    readfile "#{$ROOT}/#{path}"
 end
 
 get "/test/:module" do
@@ -76,13 +76,13 @@ get "/test/:module" do
     @mod = params[:module]
     erb :test
 end
-require 'pry'
+
 get "/demo/:module" do
     m = params[:module]
     rescan m
     #binding.pry
     path = $man[m].config.files.first.sub('.js','.html')
-    readfile path rescue ''
+    readfile "#{$ROOT}/src/#{path}" rescue ''
 end
 
 get "/scripts/:module" do

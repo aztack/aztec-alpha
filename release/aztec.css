@@ -39,15 +39,38 @@ body{margin: 0;}
 
 
 
-/* $root.ui.dialog */
-          /* TODO */
-/* $root.ui.dialog */
-          .ui-alert{
-          }
 
 /* $root.ui */
-          .ui-control {
-              background: #fff;
-              margin:0;
-              padding:0;
+          .ui-alert {
+              border: 1px solid #999;
+              position: absolute;
+              left: 40%;
+              top: 40%;
+              font-size: .875em;
+              min-height: 80px;
+              min-width: 200px;
+          }
+          .ui-title {
+              background-color: #eee;
+              color: #000;
+              text-align: center;;
+              vertical-align: middle;
+              cursor: move;
+          }
+          .ui-body {
+              padding: 5px;
+          }
+          .ui-buttons {
+              text-align: right;
+              position: absolute;
+              bottom: 0.2em;
+              right: 0.2em;
+          }
+          .ui-button {
+              background-color: white;
+              border: 1px solid #ccc;
+              cursor: pointer;
+          }
+          .ui-button:hover {
+              background-color: #eee;
           }

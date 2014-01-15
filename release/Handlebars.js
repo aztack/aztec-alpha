@@ -4,7 +4,7 @@
  * namespace: Handlebars
  * notransform: true
  * files:
- * - ../src/handlebars-v1.2.0.js
+ * - /handlebars-v1.2.0.js
  */
 
 

@@ -10,8 +10,8 @@
  * - stopEvent
  * - EventEmitter
  * files:
- * - ../src/browser/event.js
- * - ../src/browser/event.emitter.js
+ * - /browser/event.js
+ * - /browser/event.emitter.js
  */
 
 ;define('$root.browser.event',['$root.lang.type','$root.lang.fn'],function(require, exports){
@@ -36,7 +36,7 @@
         }
         return false;
     }
-    // ../src/browser/event.emitter.js
+    // /browser/event.emitter.js
     /**
      * Event Emitter
      */

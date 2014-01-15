@@ -2,28 +2,66 @@
     <head>
         <title>Alert</title>
         <style>
-            .ui-alert{
+            .ui-alert {
+                border: 1px solid #999;
+                position: absolute;
+                left: 40%;
+                top: 40%;
+                font-size: .875em;
+                min-height: 80px;
+                min-width: 200px;
+            }
+            .ui-title {
+                background-color: #eee;
+                color: #000;
+                text-align: center;;
+                vertical-align: middle;
+                cursor: move;
+            }
+            .ui-body {
+                padding: 5px;
+            }
+            .ui-buttons {
+                text-align: right;
+                position: absolute;
+                bottom: 0.2em;
+                right: 0.2em;
+            }
+            .ui-button {
+                background-color: white;
+                border: 1px solid #ccc;
+                cursor: pointer;
+            }
+            .ui-button:hover {
+                background-color: #eee;
             }
         </style>
-        <script src="/scripts/$root.ui.dialog.Alert"></script>
-        <link rel="stylesheet" type="text/css" href="/styles/$root.ui.dialog.Alert">
+        <script src="/scripts/$root.ui"></script>
+        <link rel="stylesheet" type="text/css" href="/styles/$root.ui">
     </head>
 
     <body>
-        <div data-xtemplate="$root.ui.dialog.Alert,delete" style="display:none">
-            <div class="ui-alert">
-                <div class="ui-title"></div>
-                <div class="ui-body"></div>
+        <div data-xtemplate="$root.ui.Alert,delete" class="ui-alert" style="display:none">
+            <div class="ui-title">alert dialog</div>
+            <div class="ui-body">
+                Hello World
+            </div>
+            <div class="ui-buttons">
+                <button class="ui-button">OK</button>
+                <button class="ui-button">Cancel</button>
             </div>
         </div>
 
         <script>
-        $(function(){
             define('$root.demo.ui.Alert', function(require) {
-                var Alert = require('$root.ui.dialog.Alert'),
-                    $ = require('jQuery');
+                var _alert = require('$root.ui').alert;
+                _alert('Hello World', 'Information', function(e, i, b) {
+                    console.log(i, b);
+                });
+                _alert('Hello World', 'Information', function(e, i, b) {
+                    console.log(i, b);
+                });
             });
-        });
         </script>
     </body>
 </html>

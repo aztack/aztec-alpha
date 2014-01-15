@@ -7,13 +7,14 @@
  *   _type: $root.lang.type
  * exports:
  * - forEach
+ * - indexOf
  * - toArray
  * - equal
  * - strictEqual
  * - compact
  * - flatten
  * files:
- * - ../src/lang/array.js
+ * - /lang/array.js
  */
 
 ;define('$root.lang.array',['$root.lang.type'],function(require, exports){
@@ -22,7 +23,8 @@
     
         ///imports
     var _forEach = Array.prototype.forEach,
-        _slice = Array.prototype.slice;
+        _slice = Array.prototype.slice,
+        _indexOf = Array.prototype.indexOf;
     
     ///exports
     
@@ -43,6 +45,25 @@
                 fn(item, i);
             }
             return ary;
+        };
+    
+    /**
+     * indexOf
+     * @param  {Array} ary
+     * @param  {Any} obj
+     * @return {Integer}
+     */
+    var indexOf = _indexOf ? function(ary, obj) {
+            return _indexOf.call(ary, obj);
+        } : function(ary, obj) {
+            var i = 0,
+            len = ary.length;
+            for (; i < len; ++i) {
+                if (ary[i] == obj) {
+                    return i;
+                }
+            }
+            return -1;
         };
     
     /**
@@ -112,7 +133,8 @@
     function compact(ary) {
         var ret = [];
         if (!_type.isArrayLike(ary)) return ret;
-        var i = 0, len = ary.length;
+        var i = 0,
+            len = ary.length;
         for (; i < len; ++i) {
             if (_type.isEmpty(ary[i])) continue;
             ret.push(arg[i]);
@@ -143,6 +165,7 @@
         return ret;
     }
     exports['forEach'] = forEach;
+    exports['indexOf'] = indexOf;
     exports['toArray'] = toArray;
     exports['equal'] = equal;
     exports['strictEqual'] = strictEqual;

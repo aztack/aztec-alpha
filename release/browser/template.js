@@ -14,7 +14,7 @@
  * - get
  * - id$
  * files:
- * - ../src/browser/template.js
+ * - /browser/template.js
  */
 
 ;define('$root.browser.template',['$root.lang.type','$root.lang.string','$root.browser.dom','jQuery','Handlebars'],function(require, exports){

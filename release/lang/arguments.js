@@ -2,69 +2,84 @@
  * ---
  * description: Arguments Utils
  * namespace: $root.lang.arguments
- * imports:
- *   _type: $root.lang.type
- *   _ary: $root.lang.array
- * exports: []
+ * exports:
+ * - toArray
+ * - varArg
  * files:
- * - ../src/lang/arguments.js
+ * - /lang/arguments.js
  */
 
-;define('$root.lang.arguments',['$root.lang.type','$root.lang.array'],function(require, exports){
+;define('$root.lang.arguments',[],function(require, exports){
     //'use strict';
-    var _type = require('$root.lang.type'),
-        _ary = require('$root.lang.array');
+    
     
         ///vars
     var _slice = Array.prototype.slice;
     ///exports
-    function toArray(_arguments) {
-        return _slice.call(_arguments, 0);
+    function toArray(_arguments, n) {
+        return _slice.call(_arguments, n || 0);
     }
     
-    function varArgs(_arguments) {
-        var fns = {}, n = 4,
-            i, j, typeName;
-        while (--n) {
-            fns['_' + n] = function(sig, callback) {
-                var signatures = sig,
-                    len;
-                if (_type.isString(sig)) {
-                    signatures = sig.split('|');
-                    len = signatures.length;
-                    for (; i < len; ++i) {
-                        signatures[i] = signatures[i].split(',');
-                    }
-                }
-                for (; i < len; ++i) {
-                    for (j = 0; j < signatures[i].length; ++j) {
-                        typeName = signatures[i][j];
-                        if (!_type[typeName]) {
-                            break;
-                        } else {
+    /**
+     * varArg
+     * handle variadic arguments
+     * @param  {Arguments} args
+     * @return {varArg}
+     */
+    function varArg(args) {
+        var signatures = [];
+        return {
+            when: function() {
+                var types = toArray(arguments),
+                    fn = types.pop();
+                signatures.push({
+                    fn: fn,
+                    types: types
+                });
+                return this;
+            },
+            asArgumentsOf: function(func) {
+                var i = 0,
+                    j = 0,
+                    len1 = signatures.length,
+                    len2,
+                    sig,
+                    pred,
+                    match,
+                    ret;
     
+                for (; i < len1; ++i) {
+                    sig = signatures[i];
+                    len2 = sig.types.length;
+                    match = true;
+                    for (; j < len2; ++j) {
+                        if (len2 !== args.length) {
+                            match = false;
+                            break;
                         }
+                        pred = sig.types[j];
+                        if (typeof pred == 'string') {
+                            if (typeof args[j] != pred) {
+                                match = false;
+                                break;
+                            }
+                        } else if (typeof pred === 'function') {
+                            if (!pred(args[j])) {
+                                match = false;
+                                break;
+                            }
+                        }
+                    }
+                    if (match) {
+                        ret = calculatedArgs = sig.fn.apply(null, args);
+                        func.apply(null, ret);
                     }
                 }
             }
-        }
+        };
     }
-    /*
-    _arg.varArgs(arguments)
-    ._0(function(){
-    
-    })
-    ._1('String,Number',function(){
-    
-    })
-    ._2('string,function',function(){
-    
-    })
-    ._3_('string,function,object',function(){
-        
-    });
-    */
-    
+    exports['toArray'] = toArray;
+    exports['varArg'] = varArg;
     return exports;
 });
 //end of $root.lang.arguments

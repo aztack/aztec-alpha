@@ -8,7 +8,7 @@
  *   _str: $root.lang.string
  * exports: []
  * files:
- * - ../src/browser/core.js
+ * - /browser/core.js
  */
 
 ;define('$root.browser.core',['$root.lang.type','$root.lang.string'],function(require, exports){

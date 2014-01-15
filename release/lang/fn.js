@@ -15,7 +15,7 @@
  * - increase
  * - decrease
  * files:
- * - ../src/lang/fn.js
+ * - /lang/fn.js
  */
 
 ;define('$root.lang.fn',['$root.lang.type','$root.lang.array','$root.lang.enumerable'],function(require, exports){

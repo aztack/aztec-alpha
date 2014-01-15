@@ -12,7 +12,7 @@
  * - values
  * - map
  * files:
- * - ../src/lang/object.js
+ * - /lang/object.js
  */
 
 ;define('$root.lang.object',['$root.lang.type','$root.lang.enumerable'],function(require, exports){

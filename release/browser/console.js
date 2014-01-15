@@ -14,7 +14,7 @@
  * - log
  * - error
  * files:
- * - ../src/browser/console.js
+ * - /browser/console.js
  */
 
 ;define('$root.browser.console',['$root.lang.type','$root.lang.string','$root.browser.template','jQuery'],function(require, exports){
@@ -26,8 +26,8 @@
         
     ///xtemplate
     require('$root.browser.template')
-            .set('$root.browser.console.main',"<div class=\"ui-console\">\n\t\t\t\t\t<div class=\"ui-console-content\"></div>\n\t\t\t\t</div>")
-            .set('$root.browser.console.line',"\n\t\t\t\t<div class=\"ui-content-line\">\n\t\t\t\t\t<span class=\"ui-console-prompt\"></span>\n\t\t\t\t\t<span class=\"ui-console-text\"></span>\n\t\t\t\t</div>\n\t\t");
+            .set('$root.browser.console.main',"<div class=\"ui-console\"><div class=\"ui-console-content\"></div></div>\n")
+            .set('$root.browser.console.line',"<div class=\"ui-content-line\">\n<span class=\"ui-console-prompt\"></span><span class=\"ui-console-text\"></span>\n</div>\n");
         //vars
     var console = exports,
         $container,

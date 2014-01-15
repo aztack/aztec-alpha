@@ -25,7 +25,7 @@
  * - toArray
  * - format
  * files:
- * - ../src/lang/string.js
+ * - /lang/string.js
  */
 
 ;define('$root.lang.string',['$root.lang.type'],function(require, exports){

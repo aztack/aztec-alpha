@@ -9,7 +9,7 @@
  * - max
  * - min
  * files:
- * - ../src/lang/number.js
+ * - /lang/number.js
  */
 
 ;define('$root.lang.number',['$root.lang.type'],function(require, exports){

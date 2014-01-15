@@ -240,7 +240,7 @@ function typename(arg) {
     } else if (isFunction(arg.getClass)) {
         return arg.getClass().typename();
     } else {
-        return _ctorName(arg);
+        return ctorName(arg);
     }
 }
 

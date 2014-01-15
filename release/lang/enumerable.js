@@ -14,7 +14,7 @@
  * - find
  * - findAll
  * files:
- * - ../src/lang/enumerable.js
+ * - /lang/enumerable.js
  */
 
 ;define('$root.lang.enumerable',['$root.lang.type','$root.lang.array'],function(require, exports){

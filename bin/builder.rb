@@ -111,12 +111,18 @@ module Aztec
             @templates = @doc.css(XTEMPLATE_ID_ATTR_SEL).inject({}) do |tpls, ele|
                 id = ele.attr XTEMPLATE_ID_ATTR
                 ele.remove_attribute XTEMPLATE_ID_ATTR
+                inline_style = ele.attr('style').to_s.gsub(%r|\s*display\s*:\s*none;*\s*|,'')
+                if inline_style.size < 4
+                    ele.remove_attribute 'style'
+                else
+                    ele.set_attribute('style', inline_style)
+                end
                 html = if ele.name.downcase == 'script'
                     ele.inner_html
                 else
                     ele.to_html
-                end.inspect
-                tpls[id] = html
+                end
+                tpls[id] = Nokogiri::XML(html,&:noblanks).to_html.inspect
                 tpls
             end
         end
@@ -189,11 +195,20 @@ module Aztec
     class JsModule
         include Comparable
         CONFIG_PATTERN = /(^\(\{\n*.*?\}\);)$/m
+
+        def self.src_dir
+            @src_dir
+        end
+
+        def self.src_dir=(v)
+            @src_dir = v
+        end
         
         def initialize(path)
             @path = path
             @source = File.read path, :encoding=>'utf-8'
             read_module_config
+            path.sub!(%r|^.*/src|,'')
             @config['files'] = [path]
             parse
         end
@@ -359,7 +374,7 @@ module Aztec
         end
 
         def load_xtemplate
-            xtpl_path = File.absolute_path @path.sub(/\.js$/,'.html')
+            xtpl_path = JsModule.src_dir + @path.sub(/\.js$/,'.html')
             return nil unless File.exists?(xtpl_path)
             XTemplate.new xtpl_path
         end
@@ -382,6 +397,7 @@ module Aztec
             @exclude = opt['exclude'] || []
             @verbose = opt['verbose'] || false
             @styles = []
+            JsModule.src_dir = src_dir
             init
         end
 
@@ -562,10 +578,12 @@ end
 if __FILE__ == $0
     require 'pp'
     require 'pry'
-    man = Aztec::JsModuleManager.new('../src',:verbose => true)
+    $ROOT = File.absolute_path(File.dirname(__FILE__)+'/../')
+    $stdout.puts "$ROOT=#{$ROOT}"
+    man = Aztec::JsModuleManager.new("#{$ROOT}/src",:verbose => true)
     man.scan
     #puts Aztec::JsModule.new(File.read("#{File.dirname(__FILE__)}/../src/ui/UIControl.js")).to_amd
-    #Aztec::JsModuleManager.new('src').scan.save_dependency_graph 'module_dependency.png'
+    Aztec::JsModuleManager.new("#{$ROOT}/src",{}).scan.save_dependency_graph 'module_dependency.png'
     #puts Aztec::JsModuleManager.new('src').scan.dependency_hash
     
     #pp man.dependency_hash
@@ -573,7 +591,7 @@ if __FILE__ == $0
     #pp man.dependency_of("$root.ui", true)
     #puts Aztec::JsModule.new("../src/aztec.js").to_amd
     #puts man['$root.browser.console'].xtemplate_styles
-    man.release(File.absolute_path('../release'), true) {|path| puts "Writting #{path}"}
+    #man.release(File.absolute_path("#{$ROOT}/release"), true) {|path| puts "Writting #{path}"}
     
     #puts man.to_ecma('$root.ui.dialog')
 end

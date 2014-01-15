@@ -29,8 +29,8 @@
  * - Class
  * - create
  * files:
- * - ../src/lang/type.js
- * - ../src/lang/type.oop.js
+ * - /lang/type.js
+ * - /lang/type.oop.js
  * imports: {}
  */
 
@@ -250,7 +250,7 @@
         } else if (isFunction(arg.getClass)) {
             return arg.getClass().typename();
         } else {
-            return _ctorName(arg);
+            return ctorName(arg);
         }
     }
     
@@ -264,7 +264,7 @@
     function hasSameTypeName(a, b) {
         return typename(a) == typename(b);
     }
-    // ../src/lang/type.oop.js
+    // /lang/type.oop.js
     /**
      *  Object-Orientated Programming Support
      */
@@ -406,29 +406,34 @@
             return _;
         }
         var _ = function() {
+            var ret;
             this.getClass = instance$getClass;
             this.toString = instance$toString;
             this.is = instance$is;
             if (isFunction(_.prototype.initialize)) {
-                this.initialize.apply(this, arguments);
+                ret = this.initialize.apply(this, arguments);
+            } else if (isFunction(_.prototype.init)) {
+                ret = this.init.apply(this, arguments);
+            }
+            if (typeof ret !== 'undefined') {
+                return ret;
             }
         };
         _.getClass = clazz$getClass;
         _.methods = clazz$methods;
         _.statics = clazz$statics;
-        _.newInstance = function() {
-            return new _();
-        };
         _.typename = function() {
-            return typename || 'Object';
+            return typename;
         };
         _.parent = function() {
-            return parent || Object;
+            return parent || _.prototype.constructor;
         };
         _.extend = clazz$extend;
         _.readonly = clazz$readonly;
-        _.prototype = new parent();
-        _.prototype.constructor = Class;
+        if (parent) {
+            _.prototype = new parent();
+            //_.prototype.constructor = Class;
+        }
         return _;
     }
     
@@ -436,9 +441,6 @@
     Class.methods = clazz$methods;
     Class.extend = clazz$extend;
     Class.readonly = clazz$readonly;
-    Class.newInstance = function() {
-        return new Class();
-    };
     Class.typename = function() {
         return 'Class';
     };
@@ -497,24 +499,9 @@
             //type.create('ClassName',Parent,{method:function(){});
             typename = isString(typename) ? typename : '';
             parent = isFunction(parent) ? parent : Object;
-            methods = getMethods(methodsOrFn);
-            init = getInitializeFn(methods);
-            return new Class(typename, parent, init).methods(methods);
+            methods = (isFunction(methodsOrFn) ? methodsOrFn() : methodsOrFn) || {};
+            return new Class(typename, parent).methods(methods);
         }
-    }
-    
-    function getInitializeFn(methods) {
-        if (isFunction(methods.initialize)) {
-            init = methods.initialize;
-            delete methods.initialize;
-        } else {
-            init = instance$noop;
-        }
-        return init;
-    }
-    
-    function getMethods(methodsOrFn) {
-        return (isFunction(methodsOrFn) ? methodsOrFn() : methodsOrFn) || {};
     }
     exports['isPrimitive'] = isPrimitive;
     exports['isUndefined'] = isUndefined;

@@ -7,6 +7,7 @@
     },
     exports: [
         forEach,
+        indexOf,
         toArray,
         equal,
         strictEqual,
@@ -17,7 +18,8 @@
 
 ///imports
 var _forEach = Array.prototype.forEach,
-    _slice = Array.prototype.slice;
+    _slice = Array.prototype.slice,
+    _indexOf = Array.prototype.indexOf;
 
 ///exports
 
@@ -38,6 +40,25 @@ var forEach = _forEach ? function(ary, fn) {
             fn(item, i);
         }
         return ary;
+    };
+
+/**
+ * indexOf
+ * @param  {Array} ary
+ * @param  {Any} obj
+ * @return {Integer}
+ */
+var indexOf = _indexOf ? function(ary, obj) {
+        return _indexOf.call(ary, obj);
+    } : function(ary, obj) {
+        var i = 0,
+        len = ary.length;
+        for (; i < len; ++i) {
+            if (ary[i] == obj) {
+                return i;
+            }
+        }
+        return -1;
     };
 
 /**
@@ -107,7 +128,8 @@ function strictEqual(a, b) {
 function compact(ary) {
     var ret = [];
     if (!_type.isArrayLike(ary)) return ret;
-    var i = 0, len = ary.length;
+    var i = 0,
+        len = ary.length;
     for (; i < len; ++i) {
         if (_type.isEmpty(ary[i])) continue;
         ret.push(arg[i]);

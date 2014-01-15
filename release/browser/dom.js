@@ -14,7 +14,7 @@
  * - internalStylesheet
  * - removeWhiteTextNode
  * files:
- * - ../src/browser/dom.js
+ * - /browser/dom.js
  */
 
 ;define('$root.browser.dom',['$root.lang.type','$root.lang.enumerable','$root.lang.string'],function(require, exports){

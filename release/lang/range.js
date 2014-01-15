@@ -9,7 +9,7 @@
  * - Range
  * - create
  * files:
- * - ../src/lang/range.js
+ * - /lang/range.js
  */
 
 ;define('$root.lang.range',['$root.lang.type','$root.lang.string'],function(require, exports){
