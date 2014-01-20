@@ -49,6 +49,7 @@ body{margin: 0;}
               font-size: .875em;
               min-height: 80px;
               min-width: 200px;
+              z-index: 10000;
           }
           .ui-title {
               background-color: #eee;

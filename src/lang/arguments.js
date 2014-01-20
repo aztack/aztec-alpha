@@ -20,7 +20,7 @@ function toArray(_arguments, n) {
  * @param  {Arguments} args
  * @return {varArg}
  */
-function varArg(args) {
+function varArg(args, context) {
     var signatures = [];
     return {
         when: function() {
@@ -32,9 +32,10 @@ function varArg(args) {
             });
             return this;
         },
-        asArgumentsOf: function(func) {
+        bind: function(func) {
             var i = 0,
                 j = 0,
+                t,
                 len1 = signatures.length,
                 len2,
                 sig,
@@ -52,12 +53,16 @@ function varArg(args) {
                         break;
                     }
                     pred = sig.types[j];
-                    if (typeof pred == 'string') {
+                    if (pred == '*') {
+                        continue;
+                    }
+                    t = typeof pred;
+                    if (t == 'string') {
                         if (typeof args[j] != pred) {
                             match = false;
                             break;
                         }
-                    } else if (typeof pred === 'function') {
+                    } else if (t === 'function') {
                         if (!pred(args[j])) {
                             match = false;
                             break;
@@ -67,6 +72,9 @@ function varArg(args) {
                 if (match) {
                     ret = calculatedArgs = sig.fn.apply(null, args);
                     func.apply(null, ret);
+                    return function() {
+                        func.apply(context, ret);
+                    };
                 }
             }
         }

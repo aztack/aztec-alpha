@@ -28,44 +28,60 @@
         
     ///xtemplate
     require('$root.browser.template')
-            .set('$root.ui.Alert',"<div class=\"ui-alert\">\n<div class=\"ui-title\">alert dialog</div>\n<div class=\"ui-body\">\n                Hello World\n            </div>\n<div class=\"ui-buttons\">\n<button class=\"ui-button\">OK</button><button class=\"ui-button\">Cancel</button>\n</div>\n</div>\n");
+            .set('$root.ui.Alert',"<div class=\"ui-alert\">\n<div class=\"ui-title\">alert dialog</div>\n<div class=\"ui-body\">\n                Hello World\n            </div>\n<div class=\"ui-buttons\">\n<button class=\"ui-button\">&#30830;&#23450;</button><button class=\"ui-button\">&#21462;&#28040;</button>\n</div>\n</div>\n");
         ///vars
     var tpl = _tpl.id$('$root.ui'),
         alertTemplate = tpl('Alert'),
         varArg = _arguments.varArg,
+        creatingAlertDialog = false,
         $alert;
-    ///helper
     
     ///impl
     var Alert = _type.create('Alert', jQuery, {
         init: function(message, title, buttons, callback) {
             if (_type.isUndefined($alert)) {
                 $alert = this.super(alertTemplate);
+                dragable($alert);
             }
-            Alert_doInit(this, message, title, buttons, callback);
-            return $alert;
+            return Alert_doInit($alert, message, title, buttons, callback);
         }
     }).statics({
         OK: 1,
         CANCEL: 2,
-        OKCANCEL: 3
+        OKCANCEL: 3,
+        DEFAULT_OK_TEXT: 'OK',
+        DEFAULT_CANCEL_TEXT: 'Cancel'
     });
     
-    //private methods
+    ///private methods
+    var $alertButtons, $alertTitle, $alertBody;
+    
     function Alert_doInit(self, message, title, buttons, callback) {
-        self.find('.ui-button').click(function(e) {
-            var index = _ary.indexOf(buttons, this);
-            if(_type.isFunction(callback)){
+        if (!$alertButtons) $alertButtons = self.find('.ui-button');
+        $alertButtons.unbind('click').click(function(e) {
+            var index = _ary.indexOf($alertButtons, this);
+            if (_type.isFunction(callback)) {
+                creatingAlertDialog = false;
                 callback.apply(self, [e, index, this]);
+            } else {
+                self.hide();
+                return;
             }
-            self.hide();
+            //do not hide if alert is called inside another alert
+            if (!creatingAlertDialog) self.hide();
         });
     
-        self.find('.ui-title').text(title);
-        self.find('.ui-body').text(message);
+        if (!$alertTitle) $alertTitle = self.find('.ui-title');
+        $alertTitle.text(title || '');
     
-        self.appendTo('body');
+        if (!$alertBody) $alertBody = self.find('.ui-body');
+        $alertBody.text(message);
+    
+        self.appendTo('body').show();
+        return self;
     }
+    
+    ///utils function
     
     /**
      * alert
@@ -81,17 +97,48 @@
      */
     function alert() {
         var _alert = varArg(arguments)
-            .when('string', function(message) {
-                return [message, '', Alert.OKCANCEL, null];
+            .when('*', function(message) {
+                return [String(message), '', Alert.OKCANCEL, null];
             }).when('string', 'function', function(message, callback) {
-                return [message, '', Alert.OKCANCEL, callback];
+                return [message, null, Alert.OKCANCEL, callback];
             }).when('string', 'string', function(message, title) {
                 return [message, title, Alert.OKCANCEL, null];
             }).when('string', 'string', 'function', function(message, title, callback) {
                 return [message, title, Alert.OKCANCEL, callback];
             }).asArgumentsOf(function(m, t, b, c) {
+                creatingAlertDialog = true;
                 return new Alert(m, t, b, c);
             });
+    }
+    
+    var Dragable = _type.create('Dragable', function() {
+    
+    });
+    
+    function dragable($ele) {
+        var offsetParent = $ele.offsetParent(),
+            dragging = false,
+            mousedownpos = {
+                x: 0,
+                y: 0
+            };
+        $ele.on('mousedown', function(e) {
+            dragging = true;
+            //position relative to document
+            var pos = $ele.offset();
+            mousedownpos.x = e.clientX - pos.left;
+            mousedownpos.y = e.clientY - pos.top;
+        }).on('mousemove', function(e) {
+            if (!dragging) return;
+            $ele.offset({
+                left: e.clientX - mousedownpos.x,
+                top: e.clientY - mousedownpos.y
+            });
+        }).on('mouseup', function() {
+            dragging = false;
+        }).on('keyup', function() {
+            dragging = false;
+        });
     }
     exports['Alert'] = Alert;
     exports['alert'] = alert;

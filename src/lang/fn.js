@@ -8,19 +8,20 @@
         _enum: $root.lang.enumerable
     },
     exports: [
-        isFunction,
         Callbacks,
         bind,
         noop,
         increase,
-        decrease
+        decrease,
+        call
     ]
 });
 
 
 ///exports
 
-var isFunction = _type.isFunction;
+var isFunction = _type.isFunction,
+    _slice = Array.prototype.slice;
 
 /**
  * Callbacks
@@ -133,4 +134,12 @@ function forge$(old, replacement, ctx) {
         var ret = old.apply(ctx, arguments);
         return replacement.apply(ctx, arguments);
     };
+}
+
+function call(maybeFunc, context) {
+    var args = _slice.call(arguments, 2);
+    if (_type.isFunction(maybeFunc)) {
+       return maybeFunc.apply(context, args);
+    }
+    return;
 }

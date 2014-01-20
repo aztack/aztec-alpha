@@ -10,6 +10,7 @@
                 font-size: .875em;
                 min-height: 80px;
                 min-width: 200px;
+                z-index: 10000;
             }
             .ui-title {
                 background-color: #eee;
@@ -47,8 +48,8 @@
                 Hello World
             </div>
             <div class="ui-buttons">
-                <button class="ui-button">OK</button>
-                <button class="ui-button">Cancel</button>
+                <button class="ui-button">确定</button>
+                <button class="ui-button">取消</button>
             </div>
         </div>
 
@@ -56,10 +57,9 @@
             define('$root.demo.ui.Alert', function(require) {
                 var _alert = require('$root.ui').alert;
                 _alert('Hello World', 'Information', function(e, i, b) {
-                    console.log(i, b);
-                });
-                _alert('Hello World', 'Information', function(e, i, b) {
-                    console.log(i, b);
+                    if (i == 0) {
+                        _alert(new Date());
+                    }
                 });
             });
         </script>
