@@ -136,6 +136,13 @@ function forge$(old, replacement, ctx) {
     };
 }
 
+/**
+ * if first parameter is a function, call it with second parameter as `this`
+ * remaining parameters as arguments
+ * @param  {Any} maybeFunc
+ * @param  {Any} context
+ * @return {Any}
+ */
 function call(maybeFunc, context) {
     var args = _slice.call(arguments, 2);
     if (_type.isFunction(maybeFunc)) {

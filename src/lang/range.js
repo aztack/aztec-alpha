@@ -11,6 +11,8 @@
     ]
 });
 
+//TODO:rewrite range class with type.create and varArg
+
 //vars
 var rangeCache = {};
 

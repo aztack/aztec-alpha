@@ -8,6 +8,7 @@ require 'nokogiri'
 require 'stringio'
 require 'fileutils'
 require 'benchmark'
+require 'css_parser'
 
 require File.expand_path('common.rb',File.dirname(__FILE__))
 
@@ -245,10 +246,12 @@ module Aztec
 
         def xtemplate_styles
             if @xtemplate.nil? or @xtemplate.styles.empty?
-                ''
+                nil
             else
                 css = @xtemplate.styles
-                "/* #{namespace} */".endl + css
+                p = CssParser::Parser.new
+                p.add_block! css.strip
+                "/* #{namespace} */".endl + p.to_s
             end
         end
 
@@ -483,10 +486,9 @@ module Aztec
                 end
                 
                 #style
-                styles.puts main.styles
+                styles.write main.styles
                 mods.each do |m|
-                    styles.puts m.styles
-                    styles.puts
+                    styles.write m.styles
                 end
             end
             css_file_path = "#{output_dir}/#{Aztec.name('.css')}"
@@ -583,7 +585,7 @@ if __FILE__ == $0
     man = Aztec::JsModuleManager.new("#{$ROOT}/src",:verbose => true)
     man.scan
     #puts Aztec::JsModule.new(File.read("#{File.dirname(__FILE__)}/../src/ui/UIControl.js")).to_amd
-    Aztec::JsModuleManager.new("#{$ROOT}/src",{}).scan.save_dependency_graph 'module_dependency.png'
+    #Aztec::JsModuleManager.new("#{$ROOT}/src",{}).scan.save_dependency_graph 'module_dependency.png'
     #puts Aztec::JsModuleManager.new('src').scan.dependency_hash
     
     #pp man.dependency_hash
@@ -591,7 +593,7 @@ if __FILE__ == $0
     #pp man.dependency_of("$root.ui", true)
     #puts Aztec::JsModule.new("../src/aztec.js").to_amd
     #puts man['$root.browser.console'].xtemplate_styles
-    #man.release(File.absolute_path("#{$ROOT}/release"), true) {|path| puts "Writting #{path}"}
+    man.release(File.absolute_path("#{$ROOT}/release"), true) {|path| puts "Writting #{path}"}
     
     #puts man.to_ecma('$root.ui.dialog')
 end

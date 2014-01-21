@@ -1,6 +1,6 @@
 ({
-	description: 'Drag Utils',
-	namespace: $root.browser.drag,
+	description: 'Dialog',
+	namespace: $root.ui.dialog.Dialog.html,
 	imports: {
 		_type: $root.lang.type,
 		_str: $root.lang.string

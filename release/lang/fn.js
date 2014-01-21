@@ -8,12 +8,12 @@
  *   _ary: $root.lang.array
  *   _enum: $root.lang.enumerable
  * exports:
- * - isFunction
  * - Callbacks
  * - bind
  * - noop
  * - increase
  * - decrease
+ * - call
  * files:
  * - /lang/fn.js
  */
@@ -26,7 +26,8 @@
     
         ///exports
     
-    var isFunction = _type.isFunction;
+    var isFunction = _type.isFunction,
+        _slice = Array.prototype.slice;
     
     /**
      * Callbacks
@@ -140,12 +141,20 @@
             return replacement.apply(ctx, arguments);
         };
     }
-    exports['isFunction'] = isFunction;
+    
+    function call(maybeFunc, context) {
+        var args = _slice.call(arguments, 2);
+        if (_type.isFunction(maybeFunc)) {
+           return maybeFunc.apply(context, args);
+        }
+        return;
+    }
     exports['Callbacks'] = Callbacks;
     exports['bind'] = bind;
     exports['noop'] = noop;
     exports['increase'] = increase;
     exports['decrease'] = decrease;
+    exports['call'] = call;
     return exports;
 });
 //end of $root.lang.fn

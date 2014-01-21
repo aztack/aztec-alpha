@@ -1,77 +1,33 @@
 /* $root */
-body{margin: 0;}
+body {
+margin: 0;
+}
 /* $root.browser.console */
 .ui-console {
-	position: fixed;
-	width: 100%;
-	bottom: 0;
-	height: 200px;
-	border: 1px solid blue;
-	overflow-y: scroll;
-	padding:2px;
+position: fixed; width: 100%; bottom: 0; height: 200px; border: 1px solid blue; overflow-y: scroll; padding: 2px;
 }
-
 .ui-console-content {
-	border: 1px solid #eee;
+border: 1px solid #eee;
 }
-
 .ui-console-line {
-	border-bottom: 1px solid 
+border-bottom: 1px solid;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /* $root.ui */
-          .ui-alert {
-              border: 1px solid #999;
-              position: absolute;
-              left: 40%;
-              top: 40%;
-              font-size: .875em;
-              min-height: 80px;
-              min-width: 200px;
-              z-index: 10000;
-          }
-          .ui-title {
-              background-color: #eee;
-              color: #000;
-              text-align: center;;
-              vertical-align: middle;
-              cursor: move;
-          }
-          .ui-body {
-              padding: 5px;
-          }
-          .ui-buttons {
-              text-align: right;
-              position: absolute;
-              bottom: 0.2em;
-              right: 0.2em;
-          }
-          .ui-button {
-              background-color: white;
-              border: 1px solid #ccc;
-              cursor: pointer;
-          }
-          .ui-button:hover {
-              background-color: #eee;
-          }
+.ui-alert {
+border: 1px solid #999; position: absolute; left: 40%; top: 40%; font-size: .875em; min-height: 80px; min-width: 200px; z-index: 10000; -webkit-user-select: none;
+}
+.ui-title {
+background-color: #eee; color: #000; text-align: center; vertical-align: middle; cursor: move; min-height: 1em;
+}
+.ui-body {
+padding: 5px; -webkit-user-select: initial;
+}
+.ui-buttons {
+text-align: right; position: absolute; bottom: 0.2em; right: 0.2em;
+}
+.ui-button {
+background-color: white; border: 1px solid #ccc; cursor: pointer;
+}
+.ui-button:hover {
+background-color: #eee;
+}

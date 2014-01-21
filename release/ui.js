@@ -7,7 +7,9 @@
  *   _str: $root.lang.string
  *   _tpl: $root.browser.template
  *   _ary: $root.lang.array
+ *   _fn: $root.lang.fn
  *   _arguments: $root.lang.arguments
+ *   _drag: $root.ui.draggable
  *   $: jQuery
  * exports:
  * - Alert
@@ -17,13 +19,15 @@
  * - /ui/dialog/Alert.js
  */
 
-;define('$root.ui',['$root.lang.type','$root.lang.string','$root.browser.template','$root.lang.array','$root.lang.arguments','jQuery'],function(require, exports){
+;define('$root.ui',['$root.lang.type','$root.lang.string','$root.browser.template','$root.lang.array','$root.lang.fn','$root.lang.arguments','$root.ui.draggable','jQuery'],function(require, exports){
     //'use strict';
     var _type = require('$root.lang.type'),
         _str = require('$root.lang.string'),
         _tpl = require('$root.browser.template'),
         _ary = require('$root.lang.array'),
+        _fn = require('$root.lang.fn'),
         _arguments = require('$root.lang.arguments'),
+        _drag = require('$root.ui.draggable'),
         $ = require('jQuery');
         
     ///xtemplate
@@ -41,9 +45,11 @@
         init: function(message, title, buttons, callback) {
             if (_type.isUndefined($alert)) {
                 $alert = this.super(alertTemplate);
-                dragable($alert);
             }
-            return Alert_doInit($alert, message, title, buttons, callback);
+            return Alert_initialize($alert, message, title, buttons, callback);
+        },
+        dispose: function() {
+            this.hide();
         }
     }).statics({
         OK: 1,
@@ -56,7 +62,7 @@
     ///private methods
     var $alertButtons, $alertTitle, $alertBody;
     
-    function Alert_doInit(self, message, title, buttons, callback) {
+    function Alert_initialize(self, message, title, buttons, callback) {
         if (!$alertButtons) $alertButtons = self.find('.ui-button');
         $alertButtons.unbind('click').click(function(e) {
             var index = _ary.indexOf($alertButtons, this);
@@ -78,6 +84,7 @@
         $alertBody.text(message);
     
         self.appendTo('body').show();
+        _drag.draggable($alertTitle, self);
         return self;
     }
     
@@ -105,40 +112,10 @@
                 return [message, title, Alert.OKCANCEL, null];
             }).when('string', 'string', 'function', function(message, title, callback) {
                 return [message, title, Alert.OKCANCEL, callback];
-            }).asArgumentsOf(function(m, t, b, c) {
+            }).bind(function(m, t, b, c) {
                 creatingAlertDialog = true;
                 return new Alert(m, t, b, c);
-            });
-    }
-    
-    var Dragable = _type.create('Dragable', function() {
-    
-    });
-    
-    function dragable($ele) {
-        var offsetParent = $ele.offsetParent(),
-            dragging = false,
-            mousedownpos = {
-                x: 0,
-                y: 0
-            };
-        $ele.on('mousedown', function(e) {
-            dragging = true;
-            //position relative to document
-            var pos = $ele.offset();
-            mousedownpos.x = e.clientX - pos.left;
-            mousedownpos.y = e.clientY - pos.top;
-        }).on('mousemove', function(e) {
-            if (!dragging) return;
-            $ele.offset({
-                left: e.clientX - mousedownpos.x,
-                top: e.clientY - mousedownpos.y
-            });
-        }).on('mouseup', function() {
-            dragging = false;
-        }).on('keyup', function() {
-            dragging = false;
-        });
+            })();
     }
     exports['Alert'] = Alert;
     exports['alert'] = alert;

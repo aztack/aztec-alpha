@@ -10,8 +10,16 @@
 ///vars
 var _slice = Array.prototype.slice;
 ///exports
-function toArray(_arguments, n) {
-    return _slice.call(_arguments, n || 0);
+
+/**
+ * toArray
+ * convert `arguments` into an array
+ * @param  {Arguments} args
+ * @param  {Integer} n
+ * @return {Array}
+ */
+function toArray(args, n) {
+    return _slice.call(args, n || 0);
 }
 
 /**
@@ -19,6 +27,8 @@ function toArray(_arguments, n) {
  * handle variadic arguments
  * @param  {Arguments} args
  * @return {varArg}
+ * @remark
+ * 
  */
 function varArg(args, context) {
     var signatures = [];

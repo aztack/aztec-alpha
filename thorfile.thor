@@ -45,7 +45,7 @@ class A < Thor
         try_write_file(path.as_file('.js'), code, force){|js|edit_it? js}
     end
 
-    desc 'new_tpl name[,desc[,force]]', 'create a xtemplate(html) file for module'
+    desc 'new_xtpl name[,desc[,force]]', 'create a xtemplate(html) file for module'
     def new_xtpl path, desc, force = false
         code = template(:xtemplate) do |ctx|
             seg = namespace_segment_of path            

@@ -8,6 +8,7 @@
         _ary: $root.lang.array,
         _fn: $root.lang.fn,
         _arguments: $root.lang.arguments,
+        _drag: $root.ui.draggable,
         $: jQuery
     },
     exports: [
@@ -29,9 +30,11 @@ var Alert = _type.create('Alert', jQuery, {
     init: function(message, title, buttons, callback) {
         if (_type.isUndefined($alert)) {
             $alert = this.super(alertTemplate);
-            dragable($alert);
         }
-        return Alert_doInit($alert, message, title, buttons, callback);
+        return Alert_initialize($alert, message, title, buttons, callback);
+    },
+    dispose: function() {
+        this.hide();
     }
 }).statics({
     OK: 1,
@@ -44,7 +47,7 @@ var Alert = _type.create('Alert', jQuery, {
 ///private methods
 var $alertButtons, $alertTitle, $alertBody;
 
-function Alert_doInit(self, message, title, buttons, callback) {
+function Alert_initialize(self, message, title, buttons, callback) {
     if (!$alertButtons) $alertButtons = self.find('.ui-button');
     $alertButtons.unbind('click').click(function(e) {
         var index = _ary.indexOf($alertButtons, this);
@@ -66,6 +69,7 @@ function Alert_doInit(self, message, title, buttons, callback) {
     $alertBody.text(message);
 
     self.appendTo('body').show();
+    _drag.draggable($alertTitle, self);
     return self;
 }
 
@@ -73,7 +77,7 @@ function Alert_doInit(self, message, title, buttons, callback) {
 
 /**
  * alert
- * @return {[type]} [description]
+ * @return {Undefined}
  * @remark
  *  alert('message');
  *  alert('message',callback);
@@ -84,7 +88,7 @@ function Alert_doInit(self, message, title, buttons, callback) {
  *  alert('message','title',Alert.OKCANCEL,callback)
  */
 function alert() {
-    var _alert = varArg(arguments)
+    varArg(arguments)
         .when('*', function(message) {
             return [String(message), '', Alert.OKCANCEL, null];
         }).when('string', 'function', function(message, callback) {
@@ -97,68 +101,4 @@ function alert() {
             creatingAlertDialog = true;
             return new Alert(m, t, b, c);
         })();
-}
-
-var mouseMoveEvent = 'mousemove',
-    mouseDownEvent = 'mousedown',
-    mouseUpEvent = 'mouseup';
-
-var Dragable = _type.create('Dragable', {
-    init: function($who, opts) {
-        var self = this;
-        this.$ = $who;
-        this.options = opts || {};
-        this.offsetParent = $who.offsetParent();
-        $who.on(mouseDownEvent, function(e) {
-            Dragable_onMouseDown(self, e);
-        });
-    }
-}).statics({
-    MouseMoveEvent: mouseMoveEvent,
-    MouseDownEvent: mouseDownEvent,
-    MouseUpEvent: mouseUpEvent,
-    createOptions: {
-        onMouseDown: null,
-        onMouseMove: null,
-        onMouseUp: null
-    }
-});
-
-
-
-function Dragable_onMouseDown(self, e) {
-    var onMoveFn = self.options.onMouseMove,
-        $ele = self.$,
-        mouseDownPosition = {},
-        elePos = $ele.offset(); //position relative to document
-
-    mouseDownPosition.x = e.clientX - elePos.left;
-    mouseDownPosition.y = e.clientY - elePos.top;
-
-    _fn.call(self.options.onMouseDown, $ele, e, mouseDownPosition);
-
-    if (_type.isFunction(self.options.onMouseMove)) {
-        $ele.on(mouseMoveEvent, function(e) {
-            onMoveFn.call($ele, e, {
-                left: e.clientX - mouseDownPosition.x,
-                top: e.clientY - mouseDownPosition.y
-            }, mouseDownPosition);
-        });
-    }
-    $ele.bind(mouseUpEvent, function(e) {
-        Dragable_onMouseUp(self, e);
-    });
-}
-
-function Dragable_onMouseUp(self, e) {
-    self.$.unbind(mouseMoveEvent).unbind(mouseUpEvent);
-    _fn.call(self.options.onMosueUp, self.$, e);
-}
-
-function dragable($ele) {
-    return new Dragable($ele, {
-        onMouseMove: function(e, offset) {
-            $ele.offset(offset);
-        }
-    });
 }
