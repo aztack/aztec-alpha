@@ -10,6 +10,7 @@
  * exports:
  * - Callbacks
  * - bind
+ * - bindNew
  * - noop
  * - increase
  * - decrease
@@ -93,8 +94,14 @@
     }
     
     /**
+     * A do-nothing-function
+     * @return {Undefined}
+     */
+    function noop() {}
+    
+    /**
      * bind
-     * bind fn to context just like calling fn on context
+     * bind fn to context just like calling this fn on context
      * @param  {Function} fn function to be bind to the context
      * @param  {Any}   context this value
      * @return {Function}
@@ -113,47 +120,106 @@
         };
     }
     
-    
     /**
-     * A do-nothing-function
-     * @return {Undefined}
+     * if first parameter is a function, call it with second parameter as `this`
+     * remaining parameters as arguments
+     * @param  {Any} maybeFunc
+     * @param  {Any} context
+     * @return {Any}
      */
-    function noop() {}
-    
-    function increase(x) {
-        return x + 1;
-    }
-    
-    function decrease(x) {
-        return x - 1;
-    }
-    
-    function forge0(old, replacement, ctx) {
-        return function() {
-            var ret = replacement.apply(null, arguments);
-            return old.apply(ctx, ret);
-        };
-    }
-    
-    function forge$(old, replacement, ctx) {
-        return function() {
-            var ret = old.apply(ctx, arguments);
-            return replacement.apply(ctx, arguments);
-        };
-    }
-    
-    function call(maybeFunc, context) {
+    function call(fn, context) {
+        if (!_type.isFunction(fn)) return;
         var args = _slice.call(arguments, 2);
-        if (_type.isFunction(maybeFunc)) {
-           return maybeFunc.apply(context, args);
+        return fn.apply(context, args);
+    }
+    
+    function checkVarCtorArguments(args) {
+        var argLen = args.length;
+        if (argLen === 2) {
+            args = _type.isArray(args[1]) ? args[1] : [args];
+        } else if (argLen === 1) {
+            args = [];
+        } else if (argLen > 2) {
+            args = Array.prototype.slice.call(args, 1);
+        } else {
+            throw Error('`varCtor` needs at least 1 parameter');
         }
-        return;
+        return args;
+    }
+    
+    function bindNew(ctor) {
+        var args = checkVarCtorArguments(arguments),
+            len = args.length;
+    
+        switch (len) {
+            case 0:
+                return function() {
+                    return new ctor();
+                };
+            case 1:
+                return function() {
+                    return new ctor(args[0]);
+                };
+            case 2:
+                return function() {
+                    return new ctor(args[0], args[1]);
+                };
+            case 3:
+                return function() {
+                    return new ctor(args[0], args[1], args[2]);
+                };
+            case 4:
+                return function() {
+                    return new ctor(args[0], args[1], args[2], args[3]);
+                };
+            case 5:
+                return function() {
+                    return new ctor(args[0], args[1], args[2], args[3], args[4]);
+                };
+            case 6:
+                return function() {
+                    return new ctor(args[0], args[1], args[2], args[3], args[4], args[5]);
+                };
+            case 7:
+                return function() {
+                    return new ctor(args[0], args[1], args[2], args[3], args[4], args[5], args[6]);
+                };
+            default:
+                throw Error("`varCtor` supports up to 7 args, you provide " + len);
+        }
+    }
+    
+    function callNew(ctor) {
+        var args = checkVarCtorArguments(arguments),
+            len = args.length;
+    
+        switch (len) {
+            case 0:
+                return new ctor();
+            case 1:
+                return new ctor(args[0]);
+            case 2:
+                return new ctor(args[0], args[1]);
+            case 3:
+                return new ctor(args[0], args[1], args[2]);
+            case 4:
+                return new ctor(args[0], args[1], args[2], args[3]);
+            case 5:
+                return new ctor(args[0], args[1], args[2], args[3], args[4]);
+            case 6:
+                return new ctor(args[0], args[1], args[2], args[3], args[4], args[5]);
+            case 7:
+                return new ctor(args[0], args[1], args[2], args[3], args[4], args[5], args[6]);
+            default:
+                throw Error("`varCtor` supports up to 7 args, you provide " + len);
+        }
     }
     exports['Callbacks'] = Callbacks;
     exports['bind'] = bind;
+    exports['bindNew'] = bindNew;
     exports['noop'] = noop;
-    exports['increase'] = increase;
-    exports['decrease'] = decrease;
+//     exports['increase'] = increase;
+//     exports['decrease'] = decrease;
     exports['call'] = call;
     return exports;
 });

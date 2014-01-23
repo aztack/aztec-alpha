@@ -92,8 +92,8 @@
     
     /**
      * alert
-     * @return {[type]} [description]
-     * @remark
+     * @return {Undefined
+    } * @remark
      *  alert('message');
      *  alert('message',callback);
      *  alert('message','title');
@@ -103,7 +103,7 @@
      *  alert('message','title',Alert.OKCANCEL,callback)
      */
     function alert() {
-        var _alert = varArg(arguments)
+        return varArg(arguments)
             .when('*', function(message) {
                 return [String(message), '', Alert.OKCANCEL, null];
             }).when('string', 'function', function(message, callback) {

@@ -10,7 +10,9 @@
         mix,
         keys,
         values,
-        map
+        map,
+        tryget,
+        tryset
     ]
 });
 
@@ -62,12 +64,14 @@ function values(obj) {
  * @param {String} path
  * @param {Any} v, default value if
  * @returns {Any}
+ * @remark
+ *     tryget({a:[{b:42}]},'a.0.b', -1) => 42
  */
 function tryget(o, path, v) {
     if (_type.isEmpty(o) || path.indexOf('.') < 0) return v;
 
-    var parts = path.split("."),
-        part, x, len = parts.length;
+    var parts = path.split('.'),
+        part, len = parts.length;
 
     for (var t = o, i = 0; i < len; ++i) {
         part = parts[i];
@@ -78,4 +82,31 @@ function tryget(o, path, v) {
         }
     }
     return t;
+}
+
+/**
+ * tryset
+ * @param  {Any} obj
+ * @param  {String} path, dot separated property name
+ * @param  {Any} v, value to be set to
+ * @return {Any} obj
+ * @remark
+ *     tryset({a:[{b:42}]},'a.0.b', 43).a[0].b => 43
+ */
+function tryset(obj, path, v) {
+    if (arguments.length !== 3) {
+        throw Error('`tryget` needs 3 parameters');
+    }
+
+    var parts = path.split('.'),
+        part, len = parts.length - 1;
+
+    for (var t = obj, i = 0; i < len; ++i) {
+        part = parts[i];
+        if (part in t) {
+            t = t[parts[i]];
+        } else return obj;
+    }
+    t[parts[i]] = v;
+    return obj;
 }

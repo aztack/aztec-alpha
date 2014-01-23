@@ -17,7 +17,9 @@
     var _type = require('$root.lang.type'),
         _str = require('$root.lang.string');
     
-        //vars
+        //TODO:rewrite range class with type.create and varArg
+    
+    //vars
     var rangeCache = {};
     
     //helper

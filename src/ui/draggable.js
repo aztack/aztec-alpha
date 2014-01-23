@@ -4,6 +4,7 @@
     imports: {
         _type: $root.lang.type,
         _fn: $root.lang.fn,
+        _arguments: $root.lang.arguments,
         $: jQuery
     },
     exports: [
@@ -12,10 +13,13 @@
     ]
 });
 
-var mouseMoveEvent = 'mousemove',
-    mouseDownEvent = 'mousedown',
-    mouseUpEvent = 'mouseup',
-    keyupEvent = 'keyup';
+var mouseMoveEvent = 'mousemove.draggable',
+    mouseDownEvent = 'mousedown.draggable',
+    mouseUpEvent = 'mouseup.draggable',
+    keyupEvent = 'keyup.draggable',
+    scrollEvent = 'scroll.draggable';
+
+var varArg = _arguments.varArg;
 
 /**
  * Draggable
@@ -74,11 +78,14 @@ function Draggable_onMouseDown(self, e) {
 
     _fn.call(self.options.onMouseDown, $ele, e, mouseDownPosition);
 
+    var dx = $parent.scrollLeft(),
+        dy = $parent.scrollTop(),
+        p = $parent;
     if (_type.isFunction(self.options.onMouseMove)) {
         $parent.on(mouseMoveEvent, function(e) {
-            var offset = {
-                left: e.clientX - mouseDownPosition.x,
-                top: e.clientY - mouseDownPosition.y
+            offset = {
+                left: e.clientX - mouseDownPosition.x + dx,
+                top: e.clientY - mouseDownPosition.y + dy
             };
 
             //call restriction function on `offset`
@@ -88,6 +95,11 @@ function Draggable_onMouseDown(self, e) {
             //in callback we can set offset of dragged element
             //or do some intresting stuff
             onMoveFn.call(self, e, offset, mouseDownPosition);
+        });
+        if ($parent[0] === document.documentElement) p = $(window);
+        p.on(scrollEvent, function() {
+            dx = p.scrollLeft();
+            dy = p.scrollTop();
         });
     }
 
@@ -113,7 +125,19 @@ function Draggable_finalize(self) {
         .unbind(keyupEvent);
     self.$.unbind(mouseUpEvent)
         .unbind(keyupEvent);
+    if (self.$offsetParent[0] === document.documentElement) {
+        $(window).unbind(scrollEvent);
+    } else {
+        self.$offsetParent.unbind(scrollEvent);
+    }
 }
+
+var defaultOptions = {
+    onMouseMove: function(e, offset) {
+        this.$dragged.offset(offset);
+    },
+    draggingRestriction: Draggable.DefaultDraggingRestriction
+};
 
 /**
  * draggable
@@ -124,12 +148,32 @@ function Draggable_finalize(self) {
  * @return {Draggable}
  */
 function draggable(handle, dragged, opts) {
-    var options = $.extend(true, {
-            onMouseMove: function(e, offset) {
-                this.$dragged.offset(offset);
-            },
-            draggingRestriction: Draggable.DefaultDraggingRestriction
-        }, opts);
-
-    return new Draggable(handle, dragged, options);
+    opts = opts || {};
+    return varArg(arguments)
+        .when('*', '*', _type.isPlainObject, function(arg1, arg2, arg3) {
+            var h = $(arg1),
+                d = $(arg2),
+                o = $.extend(true, arg3, defaultOptions);
+            return [h, d, o];
+        })
+        .when('*', '*', '*', function(arg1, arg2, arg3) {
+            var h = $(arg1),
+                d = $(arg2);
+            return [h, d, defaultOptions];
+        })
+        .when('*', '*', function(arg1, arg2) {
+            var h = $(arg1),
+                d = $(arg2);
+            return [h, d, defaultOptions];
+        })
+        .when('*', function(arg1) {
+            var h = $(handle);
+            return [h, h, undefined];
+        })
+        .when(function() {
+            throw Error('function `draggable` need at least one parameter');
+        })
+        .bind(function(h, d, o) {
+            return new Draggable(h, d, o);
+        })();
 }

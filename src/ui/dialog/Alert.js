@@ -77,8 +77,8 @@ function Alert_initialize(self, message, title, buttons, callback) {
 
 /**
  * alert
- * @return {Undefined}
- * @remark
+ * @return {Undefined
+} * @remark
  *  alert('message');
  *  alert('message',callback);
  *  alert('message','title');
@@ -88,7 +88,7 @@ function Alert_initialize(self, message, title, buttons, callback) {
  *  alert('message','title',Alert.OKCANCEL,callback)
  */
 function alert() {
-    varArg(arguments)
+    return varArg(arguments)
         .when('*', function(message) {
             return [String(message), '', Alert.OKCANCEL, null];
         }).when('string', 'function', function(message, callback) {

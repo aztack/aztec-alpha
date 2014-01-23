@@ -336,11 +336,17 @@ module Aztec
         def read_module_config
             i = @source.index(CONFIG_PATTERN)
             raise "#{@path} has not module config!" if i.nil? or i < 0
-            first_node = ::RKelly::Parser.new.parse @source[CONFIG_PATTERN]
-            @meta = parenthetical_node = first_node.value[0].value
-            config = Utils::JsModuleConfigToJsonVisitor.new.accept(parenthetical_node.value);
-            config = config.chop if config.end_with? ';'
-            @config = JsModuleConfig.new config
+            cfg = @source[CONFIG_PATTERN]
+            begin
+                first_node = ::RKelly::Parser.new.parse cfg
+                @meta = parenthetical_node = first_node.value[0].value
+                config = Utils::JsModuleConfigToJsonVisitor.new.accept(parenthetical_node.value);
+                config = config.chop if config.end_with? ';'
+                @config = JsModuleConfig.new config
+            rescue => e
+                $stderr.puts cfg
+                raise "There is syntax error(s) in above module config!"
+            end
         end
 
         def decl_nodes

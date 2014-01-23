@@ -162,6 +162,7 @@
         return ret.getPropertyValue(prop);
     }
     
+    //TODO:test
     function findOffsetParent(node) {
         var docEle = document.documentElement,
             offsetParent = node.offsetParent || docEle;
