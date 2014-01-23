@@ -50,9 +50,7 @@
      *                 //two params which is not string and number at the same time
      *                 return [String(a), Number(b)]
      *             })
-     *             .bind(function(name, age){
-     *                 return new Person(name,age);
-     *             })
+     *             .invokeNew(Person);
      *     }
      */
     function varArg(args, context) {
@@ -118,13 +116,13 @@
                 return _fn.bind.apply(null, context, args);
             },
             bindNew: function(ctor) {
-                return _fn.bindNew(ctor, getArgs());
+                return _fn.bindApplyNew(ctor, getArgs());
             },
-            call: function(func) {
+            invoke: function(func) {
                 return func.apply(context, getArgs());
             },
-            callNew: function(ctor) {
-                return _fn.callNew(ctor, getArgs());
+            invokeNew: function(ctor) {
+                return _fn.applyNew(ctor, getArgs());
             }
         };
     }

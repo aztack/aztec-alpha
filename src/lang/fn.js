@@ -4,7 +4,6 @@
     namespace: $root.lang.fn,
     imports: {
         _type: $root.lang.type,
-        _ary: $root.lang.array,
         _obj: $root.lang.object
     },
     exports: [
@@ -12,6 +11,7 @@
         noop,
         bind,
         call,
+        apply,
         bindCallNew,
         bindApplyNew,
         callNew,
@@ -51,13 +51,13 @@ function Callbacks() {
     };
 
     /**
-     * fire
+     * fireAll
      * fire all registered functions with given args on context
      * @param  {Any} context
      * @param  {Array} args
      * @return {Callbacks}
      */
-    proto.fire = function(context, args) {
+    proto.fireAll = function(context, args) {
         var i = 0,
             fn,
             len = list.length;
@@ -68,24 +68,37 @@ function Callbacks() {
         return this;
     };
 
-    /**
-     * remove
-     * remove given callback functions from list
-     * @return {Callbacks}
-     */
-    proto.remove = function() {
+    proto.fire = function(context, args) {
         var i = 0,
-            pos, fn,
-            len = arguments.length;
+            fn,
+            len = list.length;
         for (; i < len; ++i) {
-            fn = arguments[i];
-            if (!_type.isFunction(fn)) return this;
-            pos = list.indexOf(fn);
-            if (pos >= 0) {
-                list.splice(pos, 1);
+            fn = list[i];
+            if(fn.apply(context, args) === false) {
+                break;
             }
         }
         return this;
+    };
+
+    /**
+     * remove
+     * remove given callback from list or callback at given position
+     * @return {Callbacks}
+     */
+    proto.remove = function(callbackOrIndex) {
+        var index;
+        if(_type.isFunction(callbackOrIndex)){
+            index = list.indexOf(callbackOrIndex);
+        } else if(_type.isInteger(callbackOrIndex)) {
+            index = callbackOrIndex;
+        }
+        list.splice(index, 1);
+        return this;
+    };
+
+    proto.get = function(index){
+        return list[index];
     };
     return proto;
 }
@@ -108,12 +121,14 @@ function bind(fn, context) {
         throw TypeError("first argument must be a function");
     }
 
-    var len = 1 + (arguments.length >= 2),
-        args = _ary.toArray(arguments, len);
+    var args = _slice.call(arguments, 2);
 
     return function() {
-        var args2 = args.concat(_ary.toArray(arguments));
-        fn.call(context, args2);
+        var args2 = args;
+        if (arguments.length > 0) {
+            args2 = args.concat(_slice.call(arguments));
+        }
+        return fn.apply(context, args2);
     };
 }
 

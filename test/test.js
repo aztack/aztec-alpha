@@ -79,6 +79,13 @@ function test(ns, fn) {
                     return check(ret === v, v, ret);
                 }
             },
+            error: function (errorType, fn) {
+                try{
+                    fn();
+                }catch(e) {
+                    return check(e instanceof errorType, true, true);
+                }
+            },
             hasProperty: function(v, fn) {
                 var ret = fn();
                 return check(v in ret, v, ret);

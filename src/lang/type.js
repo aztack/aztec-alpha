@@ -14,6 +14,7 @@
         isArray,
         isFunction,
         isNumber,
+        isInteger,
         isFinitNumber,
         isBoolean,
         isPlainObject,
