@@ -13,6 +13,8 @@
  * - map
  * - tryget
  * - tryset
+ * - pairs
+ * - fromPairs
  * files:
  * - /lang/object.js
  */
@@ -116,12 +118,35 @@
         t[parts[i]] = v;
         return obj;
     }
+    
+    function pairs(obj) {
+        var ret = [];
+        for (var k in obj) {
+            if (obj.hasOwnProperty(k)) {
+                ret.push([k, obj[k]]);
+            }
+        }
+        return ret;
+    }
+    
+    function fromPairs(paris) {
+        var obj = {}, i = 0,
+            len = pairs.length,
+            o;
+        for (; i < len; ++i) {
+            o = pairs[i];
+            obj[o[0]] = o[1];
+        }
+        return obj;
+    }
     exports['mix'] = mix;
     exports['keys'] = keys;
     exports['values'] = values;
 //     exports['map'] = map;
     exports['tryget'] = tryget;
     exports['tryset'] = tryset;
+    exports['pairs'] = pairs;
+    exports['fromPairs'] = fromPairs;
     return exports;
 });
 //end of $root.lang.object

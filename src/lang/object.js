@@ -12,7 +12,9 @@
         values,
         map,
         tryget,
-        tryset
+        tryset,
+        pairs,
+        fromPairs
     ]
 });
 
@@ -108,5 +110,26 @@ function tryset(obj, path, v) {
         } else return obj;
     }
     t[parts[i]] = v;
+    return obj;
+}
+
+function pairs(obj) {
+    var ret = [];
+    for (var k in obj) {
+        if (obj.hasOwnProperty(k)) {
+            ret.push([k, obj[k]]);
+        }
+    }
+    return ret;
+}
+
+function fromPairs(paris) {
+    var obj = {}, i = 0,
+        len = pairs.length,
+        o;
+    for (; i < len; ++i) {
+        o = pairs[i];
+        obj[o[0]] = o[1];
+    }
     return obj;
 }

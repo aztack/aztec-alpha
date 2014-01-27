@@ -12,21 +12,27 @@
         all,
         some,
         find,
-        findAll
+        findAll,
+        map,
+        compact,
+        pluck,
+        _
     ]
 });
+
+var _slice = Array.prototype.slice;
 
 ///helper
 
 function _array_each(ary, fn, thisValue, stopWhenFnReturnFalse) {
     var i = 0,
-        len = ary.len,
+        len = ary.length,
         ret;
     if (typeof stopWhenFnReturnFalse == 'undefined') {
         stopWhenFnReturnFalse = false;
     }
     for (; i < len; ++i) {
-        ret = fn.call(thisValue, ary[i], i);
+        ret = fn.call(thisValue, ary[i], i, i, ary);
         if (ret === false && stopWhenFnReturnFalse) break;
     }
     return ary;
@@ -42,7 +48,7 @@ function _object_each(obj, fn, thisValue, stopWhenFnReturnFalse) {
     }
 
     for (key in obj) {
-        ret = fn.call(thisValue, key, obj[key], i);
+        ret = fn.call(thisValue, obj[key], key, i++, obj);
         if (ret === false && stopWhenFnReturnFalse) break;
     }
     return obj;
@@ -55,8 +61,8 @@ function _object_each(obj, fn, thisValue, stopWhenFnReturnFalse) {
  * iterate over an array or object
  * @return {object} return array or object being iterated
  */
-function each() {
-    return _type.isArray(any) ? _array_each.call(null, arguments) : _object_each.call(null, arguments);
+function each(obj) {
+    return _type.isArray(obj) ? _array_each.apply(null, arguments) : _object_each.apply(null, arguments);
 }
 
 /**
@@ -68,8 +74,8 @@ function each() {
  */
 function inject(obj, init, fn) {
     if (_type.isEmpty(obj)) return init;
-    _enum.each(obj, function(k, v, i) {
-        init = fn(init, k, v, i);
+    each(obj, function(v, k, i) {
+        init = fn(init, v, k, i);
     });
     return init;
 }
@@ -77,17 +83,19 @@ function inject(obj, init, fn) {
 /**
  * some
  * return true if one or more item in objs pass fn test(fn return true)
- * @param  {Array}   objs [description]
- * @param  {Function} fn   [description]
- * @return {[type]}        [description]
+ * @param  {Array}   objs
+ * @param  {Function} fn
+ * @return {Boolean}
  */
 function some(objs, fn) {
-    var i = 0,
-        len = objs.length;
-    for (; i < len; ++i) {
-        if (fn.call(null, objs[i]) === true) return true;
-    }
-    return true;
+    var ret = false;
+    each(objs, function(v, k, i) {
+        if (fn.call(objs, v, k, i) === true) {
+            ret = true;
+            return false;
+        }
+    }, objs, true);
+    return ret;
 }
 
 /**
@@ -98,12 +106,14 @@ function some(objs, fn) {
  * @return {Boolean}
  */
 function all(objs, fn) {
-    var i = 0,
-        len = objs.length;
-    for (; i < len; ++i) {
-        if (fn.call(null, objs[i]) === false) return false;
-    }
-    return true;
+    var ret = true;
+    each(objs, function(v, k, i) {
+        if (fn.call(objs, v, k, i) === false) {
+            ret = false;
+            return false;
+        }
+    }, objs, true);
+    return ret;
 }
 
 /**
@@ -111,16 +121,18 @@ function all(objs, fn) {
  * return first which pass fn test(fn return true)
  * @param  {Array}   objs
  * @param  {Function} fn
- * @return {Any}
+ * @return {Object}
  */
 function find(objs, fn) {
-    var i = 0,
-        len = objs.length;
-    for (; i < len; ++i) {
-        if (fn.call(null, objs[i]) === true) {
-            return objs[i];
+    var ret = {};
+    each(objs, function(v, k, i) {
+        if (fn.call(objs, v, k, i) === true) {
+            ret.key = k;
+            ret.value = v;
+            ret.index = i;
+            return false;
         }
-    }
+    }, objs, true);
     return ret;
 }
 
@@ -132,13 +144,120 @@ function find(objs, fn) {
  * @return {Array}
  */
 function findAll(objs, fn) {
-    var i = 0,
-        len = objs.length,
-        ret = [];
-    for (; i < len; ++i) {
-        if (fn.call(null, objs[i]) === true) {
-            ret.unshift(objs[i]);
+    var ret = [];
+    each(objs, function(v, k, i) {
+        if (fn.call(objs, v, k, i) === true) {
+            ret.push({
+                key: k,
+                value: v,
+                index: i
+            });
         }
+    }, objs, true);
+    return ret;
+}
+
+/**
+ * map
+ * @param  {Array|Object}   objs
+ * @param  {Function} fn
+ * @param  {Any}   context
+ * @return {Array|Object}
+ */
+function map(objs, fn, context) {
+    var ret;
+    if (_type.isArray(objs)) {
+        ret = [];
+        _array_each(objs, function(v, k, i) {
+            ret.push(fn.call(context, v, k, i));
+        });
+    } else {
+        ret = {};
+        _object_each(objs, function(v, k, i) {
+            ret[k] = fn.call(context, v, k, i);
+        });
     }
     return ret;
 }
+
+/**
+ * pluck
+ * @param  {Object|Array} objs
+ * @param  {String} key
+ * @return {[type]}
+ */
+function pluck(objs, key) {
+    var f;
+    if (key[0] == '&') {
+        key = key.substring(1);
+        f = function(e, i) {
+            return e[key].call(e);
+        };
+    } else {
+        f = function(e, i) {
+            return e[key];
+        };
+    }
+    return map(objs, f);
+}
+
+
+/**
+ * compact
+ * @param  {Array|Object} objs
+ * @return {Array}
+ */
+function compact(objs) {
+    var ret;
+    if (_type.isArray(objs)) {
+        ret = [];
+        _array_each(objs, function(v, k, i) {
+            if (v === null || typeof v == 'undefined') return;
+            ret.push(v);
+        });
+    } else {
+        ret = {};
+        _object_each(objs, function(v, k, i) {
+            if (v === null || typeof v == 'undefined') return;
+            ret[k] = v;
+        });
+    }
+    return ret;
+}
+
+var _ = (function() {
+    var proto = {
+        value: function() {
+            return this.value;
+        }
+    }, fn, Chain,
+        fns = {
+            'each': each,
+            'inject': inject,
+            'some': some,
+            'all': all,
+            'find': find,
+            'findAll': findAll,
+            'map': map,
+            'pluck': pluck,
+            'compact': compact,
+        };
+
+    each(fns, function(fn, name) {
+        proto[name] = function() {
+            var args = _slice.call(arguments);
+            args.unshift(this.value);
+            this.value = fn.apply(this, args);
+            return this;
+        };
+    });
+
+    Chain = function(objs) {
+        this.value = objs;
+    };
+    Chain.prototype = proto;
+
+    return function(objs) {
+        return new Chain(objs);
+    };
+})();

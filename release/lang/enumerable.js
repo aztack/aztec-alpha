@@ -13,6 +13,10 @@
  * - some
  * - find
  * - findAll
+ * - map
+ * - compact
+ * - pluck
+ * - _
  * files:
  * - /lang/enumerable.js
  */
@@ -22,7 +26,9 @@
     var _type = require('$root.lang.type'),
         _ary = require('$root.lang.array');
     
-        ///helper
+        var _slice = Array.prototype.slice;
+    
+    ///helper
     
     function _array_each(ary, fn, thisValue, stopWhenFnReturnFalse) {
         var i = 0,
@@ -32,7 +38,7 @@
             stopWhenFnReturnFalse = false;
         }
         for (; i < len; ++i) {
-            ret = fn.call(thisValue, ary[i], i);
+            ret = fn.call(thisValue, ary[i], i, ary);
             if (ret === false && stopWhenFnReturnFalse) break;
         }
         return ary;
@@ -48,7 +54,7 @@
         }
     
         for (key in obj) {
-            ret = fn.call(thisValue, key, obj[key], i);
+            ret = fn.call(thisValue, obj[key], key, obj);
             if (ret === false && stopWhenFnReturnFalse) break;
         }
         return obj;
@@ -61,8 +67,8 @@
      * iterate over an array or object
      * @return {object} return array or object being iterated
      */
-    function each() {
-        return _type.isArray(any) ? _array_each.call(null, arguments) : _object_each.call(null, arguments);
+    function each(obj) {
+        return _type.isArray(obj) ? _array_each.apply(null, arguments) : _object_each.apply(null, arguments);
     }
     
     /**
@@ -83,9 +89,9 @@
     /**
      * some
      * return true if one or more item in objs pass fn test(fn return true)
-     * @param  {Array}   objs [description]
-     * @param  {Function} fn   [description]
-     * @return {[type]}        [description]
+     * @param  {Array}   objs
+     * @param  {Function} fn
+     * @return {Boolean}
      */
     function some(objs, fn) {
         var i = 0,
@@ -148,12 +154,76 @@
         }
         return ret;
     }
+    
+    function map(objs, fn, context) {
+        var ret = [];
+        each(objs, function(e, i) {
+            ret.push(fn.call(context, e, i));
+        }, context);
+        return ret;
+    }
+    
+    /**
+     * pluck
+     * @param  {Object|Array} objs
+     * @param  {String} key
+     * @return {[type]}
+     */
+    function pluck(objs, key) {
+        return map(objs, function(e, i) {
+            return e[key];
+        });
+    }
+    
+    
+    function compact(objs) {
+        var ret = [];
+        each(objs, function(e, i) {
+            if (e === null || typeof e == 'undefined') return;
+            ret.push(e);
+        });
+        return ret;
+    }
+    
+    var _ = (function() {
+        var proto = {}, fn, F,
+        fns = {
+            'each': each,
+            'inject': inject,
+            'some': some,
+            'all': all,
+            'find': find,
+            'findAll': findAll,
+            'map': map,
+            'pluck': pluck,
+            'compact': compact
+        };
+        for (var key in fns) {
+            fn = fns[key];
+            proto[key] = function() {
+                var args = _slice.call(arguments);
+                args.unshift(this.objs);
+                fn.apply(this, args);
+            };
+        }
+    
+        F = function(objs) {
+           this.objs = objs; 
+        };
+        F.prototype = proto;
+    
+        return F;
+    })();
     exports['each'] = each;
     exports['inject'] = inject;
     exports['all'] = all;
     exports['some'] = some;
     exports['find'] = find;
     exports['findAll'] = findAll;
+    exports['map'] = map;
+    exports['compact'] = compact;
+    exports['pluck'] = pluck;
+    exports['_'] = _;
     return exports;
 });
 //end of $root.lang.enumerable

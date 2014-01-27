@@ -15,6 +15,7 @@
  * - isArray
  * - isFunction
  * - isNumber
+ * - isInteger
  * - isFinitNumber
  * - isBoolean
  * - isPlainObject
@@ -514,6 +515,7 @@
     exports['isArray'] = isArray;
     exports['isFunction'] = isFunction;
     exports['isNumber'] = isNumber;
+    exports['isInteger'] = isInteger;
     exports['isFinitNumber'] = isFinitNumber;
     exports['isBoolean'] = isBoolean;
     exports['isPlainObject'] = isPlainObject;
