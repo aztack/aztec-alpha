@@ -89,12 +89,5 @@ test("$root.lang.type", function(require, specs) {
                 return v + k;
             });
         })
-        .___('enum#_')
-        .it.should.equal([0, 2, 6, 12, 20], function() {
-            return _([1, 2, 3, 4, 5])
-                .map(function(e, i) {
-                    return e * i;
-                }).value;
-        })
         .done();
 });

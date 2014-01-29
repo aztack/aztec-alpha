@@ -15,8 +15,7 @@
         findAll,
         map,
         compact,
-        pluck,
-        _
+        pluck
     ]
 });
 
@@ -224,40 +223,3 @@ function compact(objs) {
     }
     return ret;
 }
-
-var _ = (function() {
-    var proto = {
-        value: function() {
-            return this.value;
-        }
-    }, fn, Chain,
-        fns = {
-            'each': each,
-            'inject': inject,
-            'some': some,
-            'all': all,
-            'find': find,
-            'findAll': findAll,
-            'map': map,
-            'pluck': pluck,
-            'compact': compact,
-        };
-
-    each(fns, function(fn, name) {
-        proto[name] = function() {
-            var args = _slice.call(arguments);
-            args.unshift(this.value);
-            this.value = fn.apply(this, args);
-            return this;
-        };
-    });
-
-    Chain = function(objs) {
-        this.value = objs;
-    };
-    Chain.prototype = proto;
-
-    return function(objs) {
-        return new Chain(objs);
-    };
-})();

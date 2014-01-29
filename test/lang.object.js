@@ -15,7 +15,7 @@ test("$root.lang.object", function(require, specs) {
             return obj.keys({
                 1: true,
                 undefined: true,
-                true: true
+                'true': true
             });
         })
         .___('object#keys')

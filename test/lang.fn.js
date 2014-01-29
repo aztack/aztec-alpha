@@ -4,7 +4,7 @@ test('lang.fn', function(require, specs) {
     var obj = {
         c: 4,
         fn: {
-            do :
+            'do' :
             function() {
                 console.log(obj);
             }
@@ -111,7 +111,7 @@ test('lang.fn', function(require, specs) {
         })
         .___('fn#stop')
         .it.maybe.anything(true, function() {
-            _fn.stop('fn.do', obj).fn.do();
+            _fn.stop('fn.do', obj).fn['do']();
         })
         .done();
 });

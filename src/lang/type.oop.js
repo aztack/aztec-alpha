@@ -173,6 +173,8 @@ function Class(typename, parent) {
     _.readonly = clazz$readonly;
     if (parent) {
         _.prototype = new parent();
+        //this will make extends jQuery failed
+        //cause jQuery will call constructor to create new instance
         //_.prototype.constructor = Class;
     }
     return _;
