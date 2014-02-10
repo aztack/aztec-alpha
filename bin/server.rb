@@ -100,6 +100,10 @@ end
 
 __END__
 @@test
+<html>
+<body>
 <script type="text/javascript" src="/scripts/<%=@mod%>"></script>
 <script type="text/javascript" src="/static/test/test.js"></script>
 <script type="text/javascript" src="/static/test/<%=@mod%>.js"></script>
+</body>
+</html>

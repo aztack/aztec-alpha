@@ -1,17 +1,25 @@
-({
-    description: 'Query Selector',
-    namespace: $root.browser.query,
-    imports: {
-        _type: $root.lang.type,
-        _str: $root.lang.string,
-        _ary: $root.lang.array
-    },
-    exports: [
-        $,
-        _querySelectorAll
-    ]
-});
-/*
+/**
+ * ---
+ * description: Query Selector
+ * namespace: $root.browser.query
+ * imports:
+ *   _type: $root.lang.type
+ *   _str: $root.lang.string
+ *   _ary: $root.lang.array
+ * exports:
+ * - $
+ * - _querySelectorAll
+ * files:
+ * - /browser/query.js
+ */
+
+;define('$root.browser.query',['$root.lang.type','$root.lang.string','$root.lang.array'],function(require, exports){
+    //'use strict';
+    var _type = require('$root.lang.type'),
+        _str = require('$root.lang.string'),
+        _ary = require('$root.lang.array');
+    
+    /*
 http://www.w3.org/TR/CSS2/grammar.html
 
 ruleset
@@ -159,73 +167,32 @@ var Nodes = _type.create('Nodes', {
 
 function _createElementFromHtml(html) {}
 
-function _querySelectorAll(selector, parents) {
+function _querySelectorAll(selector, parent) {
     var result = {
         original: selector,
         selector: selector,
         result: {}
-    }, nodes = [], combinator;
-    parents = parents || [document];
+    }, nodes = [];
+    parent = parent || document;
 
     if (_matchCombinator(result)) {
-        combinator = result.combinator;
-        if (combinator == ' ') {
-            var before = _querySelectorAll(result.before, parents);
-            return before ? _querySelectorAll(result.after, before) : undefined;
-        } else if(combinator == '+') {
-
-        } else if(combinator == '>') {
-            
-        }
+        var before = _querySelectorAll(result.before, parent);
+        return before ? _querySelectorAll(result.after, before) : undefined;
 
     } else if (_matchUniversalSelector(result)) {
 
     } else if (_matchTag(result)) {
-        nodes = callOnEachElement(parents, 'getElementsByTagName', [result.tag]);
+        nodes = parent.getElementsByTagName(result.tag);
     } else if (_matchID(result)) {
-        nodes = callOnEachElement(parents, 'getElementById', [result.id]);
+        nodes = parent.getElementById(result.id);
     } else if (_matchClassName(result)) {
-        nodes = callOnEachElement(parents, 'getElementsByClassName', [result.className]);
+
     } else if (_matchAttribute(result)) {
-        nodes = callOnEachElement(parents, function(name, value, op) {
-            var v;
-            if (!this.hasAttribute(name)) {
-                return null;
-            }
-            v = this.getAttribute(name);
-            switch (op) {
-                case "*=":
-                    if (v.indexOf(value)) return this;
-                    break;
-                case "~=":
-                    //TODO
-                    if (v.split('-').indexOf(value)) return this;
-                    break;
-                default:
-                    return this;
-            }
-            return null;
-        }, [result.attrName, result.attrValue, result.operator]);
+
     } else if (_matchPesudoClass(result)) {
 
     } else throw new Error('syntax error in selector:"' + selector + '"');
-    return nodes;
-}
-
-function callOnEachElement(nodes, fn, args) {
-    var ret, func;
-    if (_type.isString(fn)) {
-        func = nodes[0][fn];
-    }
-    if (nodes.length === 1) {
-        return func.apply(nodes[0], args);
-    } else {
-        _ary.forEach(nodes, function(node) {
-            var e = func.apply(node, args);
-            if (e) ret.concat(e);
-        });
-    }
-    return ret;
+    return new Nodes(nodes);
 }
 
 
@@ -248,3 +215,8 @@ function $(arg, parent) {
     }
 }
 ///exports
+    exports['$'] = $;
+    exports['_querySelectorAll'] = _querySelectorAll;
+    return exports;
+});
+//end of $root.browser.query

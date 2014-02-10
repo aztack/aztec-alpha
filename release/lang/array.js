@@ -57,7 +57,7 @@
             return _indexOf.call(ary, obj);
         } : function(ary, obj) {
             var i = 0,
-            len = ary.length;
+                len = ary.length;
             for (; i < len; ++i) {
                 if (ary[i] == obj) {
                     return i;
@@ -116,7 +116,7 @@
             if (a[i] === b[i]) {
                 continue;
             } else if (_type.isArray(a[i], b[i])) {
-                if (!equal(a[i], b[i])) return false;
+                if (!strictEqual(a[i], b[i])) return false;
             } else {
                 return false;
             }

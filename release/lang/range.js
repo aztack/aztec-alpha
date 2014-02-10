@@ -1,12 +1,11 @@
 /**
  * ---
- * description: Range
+ * description: Range, immutable
  * namespace: $root.lang.range
  * imports:
  *   _type: $root.lang.type
  *   _str: $root.lang.string
  * exports:
- * - Range
  * - create
  * files:
  * - /lang/range.js
@@ -26,7 +25,7 @@
     
     function checkRangeBounds(from, to) {
         if (!_type.isFiniteNumber(from, to)) {
-            throw Error('Arguments `from` and `to` must be finit integer in create(from, to)!');
+            throw Error('Arguments `from` and `to` must be finit integer!');
         }
     }
     
@@ -87,6 +86,9 @@
             },
             toString: function(left, right) {
                 return [left || '[', from, ',', to, right || ']'];
+            },
+            indexOf: function(i) {
+                return this.convers(i) ? i - from : -1;
             }
         };
     }
@@ -112,7 +114,6 @@
         }
         return r;
     }
-    exports['Range'] = Range;
     exports['create'] = create;
     return exports;
 });

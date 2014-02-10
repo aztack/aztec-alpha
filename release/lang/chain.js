@@ -3,45 +3,64 @@
  * description: Chain
  * namespace: $root.lang.chain
  * imports:
- *   _type: $root.lang.type
  *   _enum: $root.lang.enumerable
- * exports: []
+ *   _object: $root.lang.object
+ * exports:
+ * - _
  * files:
  * - /lang/chain.js
  */
 
-;define('$root.lang.chain',['$root.lang.type','$root.lang.enumerable'],function(require, exports){
+;define('$root.lang.chain',['$root.lang.enumerable','$root.lang.object'],function(require, exports){
     //'use strict';
-    var _type = require('$root.lang.type'),
-        _enum = require('$root.lang.enumerable');
+    var _enum = require('$root.lang.enumerable'),
+        _object = require('$root.lang.object');
     
-        ///exports
-    var _ = (function() {
-        var proto = {
-            value: function() {
-                return this.value;
+    var _slice = Array.prototype.slice,
+    proto = {
+        value: function() {
+            return this.value;
+        },
+        set: function(v, force) {
+            if (typeof v != 'function' || force === true) {
+                this.value = v;
+            } else {
+                this.value = v();
             }
-        }, fn, Chain;
-    
-        each(_enum, function(fn, name) {
-            proto[name] = function() {
-                var args = _slice.call(arguments);
-                args.unshift(this.value);
-                this.value = fn.apply(this, args);
-                return this;
-            };
-        });
-    
-        Chain = function(objs) {
-            this.value = objs;
+            return this;
+        }
+    };
+
+function addMethodToProto(names, methods) {
+    _enum.each(names, function(value, name) {
+        proto[name] = function() {
+            var args = _slice.call(arguments);
+            args.unshift(this.value);
+            this.value = methods[name].apply(this, args);
+            return this;
         };
-        Chain.prototype = proto;
-    
-        return function(objs) {
-            return new Chain(objs);
-        };
-    })();
-    
+    });
+}
+
+addMethodToProto(_enum, _enum);
+addMethodToProto(['mix',
+    'keys',
+    'values',
+    'tryget',
+    'tryset',
+    'pairs'
+], _object);
+
+function Chain(objs) {
+    this.value = objs;
+}
+Chain.prototype = proto;
+
+///exports
+function _(objs) {
+    return new Chain(objs);
+}
+    exports['_'] = _;
     return exports;
 });
 //end of $root.lang.chain
