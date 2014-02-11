@@ -4,11 +4,17 @@ test("$root.browser.query", function(require, specs) {
 		.___("query#_querySelectorAll")
 		.it.maybe.anything(0, function() {
 			document.body.innerHTML = [
-			'<div>',
-			'<span><a id="a"></a></span>',
+			'<div id="ad">',
+			'<div class="klass">',
+			'<span><a id="ae"></a></span>',
+			'</div>',
 			'</div>'
 			].join('');
-			query._querySelectorAll('div span a');
+			//console.log(query._querySelectorAll('div span a'));
+			//console.log(query._querySelectorAll('div#ad'));
+			//console.log(query._querySelectorAll('.klass a#ae'));
+			//console.log(query._querySelectorAll('[id*=a]'));
+			console.log(query._querySelectorAll('div:nth(1)'));
 		})
 		.done();
 });
