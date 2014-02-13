@@ -377,3 +377,16 @@ function compose() {
         return ret;
     };
 }
+
+function debounce(fn, delay, context) {
+	var timer = null;
+	return function() {
+		var args = Array.prototype.slice.call(arguments);
+		clearTimeout(timer);
+		timer = setTimeout(function() {
+			clearTimeout(timer);
+			timer = null;
+			fn.apply(context, args);
+		}, delay);
+	};
+}
