@@ -4,19 +4,45 @@
  * namespace: $root.lang.arguments
  * imports:
  *   _fn: $root.lang.fn
+ *   _type: $root.lang.type
  * exports:
  * - toArray
  * - varArg
+ * - varArgTypeMapping
  * files:
  * - /lang/arguments.js
+ * - /lang/arguments.ext.js
  */
 
-;define('$root.lang.arguments',['$root.lang.fn'],function(require, exports){
+;define('$root.lang.arguments',[
+    '$root.lang.fn',
+    '$root.lang.type'
+], function (require, exports){
     //'use strict';
-    var _fn = require('$root.lang.fn');
+    var _fn = require('$root.lang.fn'),
+        _type = require('$root.lang.type');
     
         ///vars
-    var _slice = Array.prototype.slice;
+    var _slice = Array.prototype.slice,
+        varArgTypeMapping = {
+            "string": "string",
+            "undefined": "undefined",
+            "null": _type.isNull,
+            "array": _type.isArray,
+            "nullOrUndefined": _type.isNullOrUndefined,
+            "empty": _type.isEmpty,
+            "number": "number",
+            "int": _type.isInteger,
+            "integer": _type.isInteger,
+            "function": "function",
+            "boolean": "boolean",
+            "object": "object",
+            "plainObject": _type.isPlainObject,
+            "primitive": _type.isPrimitive,
+            "regexp": _type.isRegExp,
+            "emptyObject": _type.isEmptyObject,
+            "regex": _type.isRegExp
+        };
     ///exports
     
     /**
@@ -82,21 +108,23 @@
                     }
     
                     //param type check
-                    t = typeof pred;
-                    if (t == 'string') {
-                        if (typeof args[j] != pred) {
+                    t = varArgTypeMapping[pred];
+                    if (typeof t == 'string') {
+                        if (typeof args[j] != t) {
                             match = false;
                             break;
                         }
-                    } else if (t === 'function') {
-                        if (!pred(args[j])) {
+                    } else if (typeof t == 'function' || typeof pre == 'function') {
+                        if (!t(args[j])) {
                             match = false;
                             break;
                         }
+                    } else {
+                        throw Error('unsupported type:' + pred + ' in function varArg');
                     }
                 }
                 if (match) {
-                    return sig.fn.apply(null, args);
+                    return sig.fn.apply(context, args);
                 }
             }
             return [];
@@ -113,7 +141,9 @@
             },
             bind: function(func) {
                 var args = getArgs();
-                return _fn.bind.apply(null, context, args);
+                return typeof func == 'undefined' ? _fn.noop : function() {
+                    return _fn.apply(func, context, args);
+                };
             },
             bindNew: function(ctor) {
                 return _fn.bindApplyNew(ctor, getArgs());
@@ -123,11 +153,44 @@
             },
             invokeNew: function(ctor) {
                 return _fn.applyNew(ctor, getArgs());
+            },
+            args: function() {
+                return getArgs();
             }
         };
     }
+    // /lang/arguments.ext.js
+    /**
+     * Arguments Module Extension
+     */
+    /* varArgTypeMapping must be exist */
+    if (!varArgTypeMapping) return;
+    
+    var vat = varArgTypeMapping;
+    
+    vat.gt0 = function(n) {
+      return _type.isNumber(n) && n > 0;
+    };
+    
+    vat.lt0 = function(n) {
+      return _type.isNumber(n) && n < 0;
+    };
+    
+    vat.egt0 = function(n) {
+      return _type.isNumber(n) && n >= 0;
+    };
+    
+    vat.elt0 = function(n) {
+      return _type.isNumber(n) && n <= 0;
+    };
+    
+    vat.pattern = vat['string|regexp'] = vat['regexp|string'] = function(s) {
+      return _type.isString(s) || _type.isRegExp(s);
+    };
+    
     exports['toArray'] = toArray;
     exports['varArg'] = varArg;
+    exports['varArgTypeMapping'] = varArgTypeMapping;
     return exports;
 });
 //end of $root.lang.arguments

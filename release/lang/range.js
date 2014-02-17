@@ -11,7 +11,10 @@
  * - /lang/range.js
  */
 
-;define('$root.lang.range',['$root.lang.type','$root.lang.string'],function(require, exports){
+;define('$root.lang.range',[
+    '$root.lang.type',
+    '$root.lang.string'
+], function (require, exports){
     //'use strict';
     var _type = require('$root.lang.type'),
         _str = require('$root.lang.string');
@@ -114,6 +117,7 @@
         }
         return r;
     }
+    
     exports['create'] = create;
     return exports;
 });

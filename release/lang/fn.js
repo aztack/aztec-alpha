@@ -28,7 +28,10 @@
  * - /lang/fn.js
  */
 
-;define('$root.lang.fn',['$root.lang.type','$root.lang.object'],function(require, exports){
+;define('$root.lang.fn',[
+    '$root.lang.type',
+    '$root.lang.object'
+], function (require, exports){
     //'use strict';
     var _type = require('$root.lang.type'),
         _obj = require('$root.lang.object');
@@ -382,6 +385,20 @@
             return ret;
         };
     }
+    
+    function debounce(fn, delay, context) {
+      var timer = null;
+      return function() {
+        var args = Array.prototype.slice.call(arguments);
+        clearTimeout(timer);
+        timer = setTimeout(function() {
+          clearTimeout(timer);
+          timer = null;
+          fn.apply(context, args);
+        }, delay);
+      };
+    }
+    
     exports['Callbacks'] = Callbacks;
     exports['noop'] = noop;
     exports['bind'] = bind;

@@ -4,10 +4,8 @@
  * namespace: $root.browser.template
  * imports:
  *   _type: $root.lang.type
- *   _str: $root.lang.string
  *   _dom: $root.browser.dom
- *   _$: jQuery
- *   _hb: Handlebars
+ *   $: jQuery
  * exports:
  * - collect
  * - set
@@ -17,13 +15,15 @@
  * - /browser/template.js
  */
 
-;define('$root.browser.template',['$root.lang.type','$root.lang.string','$root.browser.dom','jQuery','Handlebars'],function(require, exports){
+;define('$root.browser.template',[
+    '$root.lang.type',
+    '$root.browser.dom',
+    'jQuery'
+], function (require, exports){
     //'use strict';
     var _type = require('$root.lang.type'),
-        _str = require('$root.lang.string'),
         _dom = require('$root.browser.dom'),
-        _$ = require('jQuery'),
-        _hb = require('Handlebars');
+        $ = require('jQuery');
     
         //vars
     var templates = {},
@@ -105,6 +105,7 @@
     //collect template in current page when dom is ready
     //dynamic created template may not collected
     $(collect);
+    
     exports['collect'] = collect;
     exports['set'] = set;
     exports['get'] = get;

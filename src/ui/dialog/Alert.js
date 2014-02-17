@@ -1,6 +1,6 @@
 ({
     description: 'Alert',
-    namespace: $root.ui,
+    namespace: $root.ui.Alert,
     imports: {
         _type: $root.lang.type,
         _str: $root.lang.string,
@@ -48,7 +48,7 @@ var Alert = _type.create('Alert', jQuery, {
 var $alertButtons, $alertTitle, $alertBody;
 
 function Alert_initialize(self, message, title, buttons, callback) {
-    if (!$alertButtons) $alertButtons = self.find('.ui-button');
+    if (!$alertButtons) $alertButtons = self.sigil('.button');
     $alertButtons.unbind('click').click(function(e) {
         var index = _ary.indexOf($alertButtons, this);
         if (_type.isFunction(callback)) {
@@ -62,10 +62,10 @@ function Alert_initialize(self, message, title, buttons, callback) {
         if (!creatingAlertDialog) self.hide();
     });
 
-    if (!$alertTitle) $alertTitle = self.find('.ui-title');
+    if (!$alertTitle) $alertTitle = self.sigil('.title');
     $alertTitle.text(title || '');
 
-    if (!$alertBody) $alertBody = self.find('.ui-body');
+    if (!$alertBody) $alertBody = self.sigil('.body');
     $alertBody.text(message);
 
     self.appendTo('body').show();

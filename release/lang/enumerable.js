@@ -20,7 +20,10 @@
  * - /lang/enumerable.js
  */
 
-;define('$root.lang.enumerable',['$root.lang.type','$root.lang.array'],function(require, exports){
+;define('$root.lang.enumerable',[
+    '$root.lang.type',
+    '$root.lang.array'
+], function (require, exports){
     //'use strict';
     var _type = require('$root.lang.type'),
         _ary = require('$root.lang.array');
@@ -126,15 +129,21 @@
      * return first which pass fn test(fn return true)
      * @param  {Array}   objs
      * @param  {Function} fn
+     * @param  {Boolean} returnValueOnly
      * @return {Object}
      */
-    function find(objs, fn) {
-        var ret = {};
+    function find(objs, fn, returnValueOnly) {
+        returnValueOnly = typeof returnValueOnly == 'undefined' ? true : false;
+        var ret = returnValueOnly ? null : {};
         each(objs, function(v, k, i) {
             if (fn.call(objs, v, k, i) === true) {
-                ret.key = k;
-                ret.value = v;
-                ret.index = i;
+                if (returnValueOnly) {
+                    ret = v;
+                } else {
+                    ret.key = k;
+                    ret.value = v;
+                    ret.index = i;
+                }
                 return false;
             }
         }, objs, true);
@@ -146,17 +155,23 @@
      * return array of item which pass fn test(fn return true)
      * @param  {Array}   objs
      * @param  {Function} fn
+     * @param  {Boolean} returnValueOnly
      * @return {Array}
      */
-    function findAll(objs, fn) {
+    function findAll(objs, fn, returnValueOnly) {
+        returnValueOnly = typeof returnValueOnly == 'undefined' ? true : false;
         var ret = [];
         each(objs, function(v, k, i) {
             if (fn.call(objs, v, k, i) === true) {
-                ret.push({
-                    key: k,
-                    value: v,
-                    index: i
-                });
+                if (returnValueOnly) {
+                    ret.push(v);
+                } else {
+                    ret.push({
+                        key: k,
+                        value: v,
+                        index: i
+                    });
+                }
             }
         }, objs, true);
         return ret;
@@ -191,19 +206,35 @@
      * @param  {String} key
      * @return {[type]}
      */
-    function pluck(objs, key) {
+    function pluck(objs, key, doNotReturn) {
         var f;
+        if (typeof doNotReturn == 'undefined') {
+            doNotReturn = false;
+        }
         if (key[0] == '&') {
             key = key.substring(1);
             f = function(e, i) {
-                return e[key].call(e);
+                return e[key] ? e[key].call(e) : undefined;
             };
         } else {
             f = function(e, i) {
                 return e[key];
             };
         }
-        return map(objs, f);
+        if (doNotReturn) {
+            if (_type.isArray(objs)) {
+                _array_each(objs, function(v, k, i) {
+                    f.call(context, v, k, i);
+                });
+            } else {
+                ret = {};
+                _object_each(objs, function(v, k, i) {
+                    f.call(context, v, k, i);
+                });
+            }
+        } else {
+            return map(objs, f);
+        }
     }
     
     
@@ -229,6 +260,7 @@
         }
         return ret;
     }
+    
     exports['each'] = each;
     exports['inject'] = inject;
     exports['all'] = all;

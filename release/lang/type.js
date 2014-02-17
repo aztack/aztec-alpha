@@ -35,7 +35,7 @@
  * imports: {}
  */
 
-;define('$root.lang.type',[],function(require, exports){
+;define('$root.lang.type',[], function (require, exports){
     //'use strict';
     
     
@@ -506,6 +506,7 @@
             return new Class(typename, parent).methods(methods);
         }
     }
+    
     exports['isPrimitive'] = isPrimitive;
     exports['isUndefined'] = isUndefined;
     exports['isNull'] = isNull;

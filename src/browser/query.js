@@ -45,18 +45,17 @@ combinator
 
 ///vars
 var supportNativeQuerySelector = (function() {
-    var ele = document.createElement('div');
+    var ele = document.createElement('div'), result;
     if (!_type.isFunction(ele.querySelectorAll)) {
         return false;
     }
     ele.innerHTML = '<div class="klass"></div>';
-    return ele.querySelectorAll('.klass').length === 1;
+    result = ele.querySelectorAll('.klass').length === 1;
+    ele = null;
+    return result;
 })();
 ///helper
 
-function _isHtmlFragment(str) {
-    return false;
-}
 
 var unicodeId = '(?:[:\\w\\u00a1-\\uFFFF-]|\\\\[^\\s0-9a-f])',
     reClassName = new RegExp('\\.(' + unicodeId + '+)'),
@@ -66,7 +65,12 @@ var unicodeId = '(?:[:\\w\\u00a1-\\uFFFF-]|\\\\[^\\s0-9a-f])',
     reCombinator = /\s*([>\+~`!@\$%\^&=\{\}\\;</]+)\s*/,
     reCombinatorChildren = /(\S+)(\s+)(\S+)/,
     reAttribute = /\[\s*((?:[:\w\u00a1-\uFFFF-]|\\[^\s0-9a-f])+)(?:\s*([*^$!~|]?=)(?:\s*(?:(["']?)(.*?)\3)))?\s*\](?!\])/,
-    rePesudo = /:+((?:[\w\u00a1-\uFFFF-]|\\[^\s0-9a-f])+)(?:\((?:(["']?)((?:\([^\)]+\)|[^\(\)]*)+)\2)\))?/;
+    rePesudo = /:+((?:[\w\u00a1-\uFFFF-]|\\[^\s0-9a-f])+)(?:\((?:(["']?)((?:\([^\)]+\)|[^\(\)]*)+)\2)\))?/,
+    reHtmlFragment = /^<.*>$/;
+
+function _isHtmlFragment(str) {
+    return !!str.match(reHtmlFragment);
+}
 
 function _matchCombinator(selector) {
     var a = {}, matched = false;
@@ -262,9 +266,15 @@ function _querySelectorAll0(selector, parents) {
         }, [result.attrName, result.attrValue, result.operator]);
     } else if (_matchPesudoClass(selector, result)) {
 
-    } else throw new Error('syntax error in selector:"' + selector + '"');
+    } else {
+        throw new Error('syntax error in selector:"' + selector + '"');
+    }
 
-    return _querySelectorAll(result.selector, nodes);
+    if (!result.selector || result.selector.match(/^\s+$/)) {
+        return nodes;
+    } else {
+        return _querySelectorAll(result.selector, nodes);
+    }
 }
 
 function _querySelectorAll(selector, parents) {

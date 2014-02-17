@@ -10,7 +10,10 @@
  * - /browser/keyboard.js
  */
 
-;define('$root.browser.keyboard',['$root.lang.type','$root.lang.string'],function(require, exports){
+;define('$root.browser.keyboard',[
+    '$root.lang.type',
+    '$root.lang.string'
+], function (require, exports){
     //'use strict';
     var _type = require('$root.lang.type'),
         _str = require('$root.lang.string');
@@ -31,6 +34,7 @@
     
     
     ///exports
+    
     
     return exports;
 });

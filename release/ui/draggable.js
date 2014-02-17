@@ -14,7 +14,12 @@
  * - /ui/draggable.js
  */
 
-;define('$root.ui.draggable',['$root.lang.type','$root.lang.fn','$root.lang.arguments','jQuery'],function(require, exports){
+;define('$root.ui.draggable',[
+    '$root.lang.type',
+    '$root.lang.fn',
+    '$root.lang.arguments',
+    'jQuery'
+], function (require, exports){
     //'use strict';
     var _type = require('$root.lang.type'),
         _fn = require('$root.lang.fn'),
@@ -158,7 +163,7 @@
     function draggable(handle, dragged, opts) {
         opts = opts || {};
         return varArg(arguments)
-            .when('*', '*', _type.isPlainObject, function(arg1, arg2, arg3) {
+            .when('*', '*', 'plainObject', function(arg1, arg2, arg3) {
                 var h = $(arg1),
                     d = $(arg2),
                     o = $.extend(true, arg3, defaultOptions);
@@ -185,6 +190,7 @@
                 return new Draggable(h, d, o);
             })();
     }
+    
     exports['draggable'] = draggable;
     exports['Draggable'] = Draggable;
     return exports;

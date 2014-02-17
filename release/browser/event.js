@@ -14,7 +14,10 @@
  * - /browser/event.emitter.js
  */
 
-;define('$root.browser.event',['$root.lang.type','$root.lang.fn'],function(require, exports){
+;define('$root.browser.event',[
+    '$root.lang.type',
+    '$root.lang.fn'
+], function (require, exports){
     //'use strict';
     var _type = require('$root.lang.type'),
         _fn = require('$root.lang.fn');
@@ -159,6 +162,7 @@
         listeners.fire(this, args);
         return this;
     };
+    
     exports['stopEvent'] = stopEvent;
     exports['EventEmitter'] = EventEmitter;
     return exports;

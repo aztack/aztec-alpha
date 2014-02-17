@@ -84,18 +84,21 @@ module Aztec
     end
 
     class XTemplate
-        XTEMPLATE_ID_ATTR = 'data-xtemplate'
-        XTEMPLATE_ID_ATTR_SEL = '[data-xtemplate]'
+        XTEMPLATE_ID_ATTR = 'xtemplate'
+        XTEMPLATE_ID_ATTR_SEL = '[xtemplate]'
+        XTEMPLATE_SIGIL_ATTR = 'sigil'
+        XTEMPLATE_SIGIL_ATTR_SEL = '[sigil]'
 
         def initialize(path)
             @path = path
             @source = File.read path, :encoding => 'utf-8'
             @doc = ::Nokogiri::HTML @source
             collect_styles
-            collect_template
+            collect_templates
+            collect_sigils
         end
 
-        attr_reader :styles, :templates
+        attr_reader :styles, :templates, :sigils
 
         private
         def collect_styles
@@ -108,23 +111,48 @@ module Aztec
             end
         end
 
-        def collect_template
-            @templates = @doc.css(XTEMPLATE_ID_ATTR_SEL).inject({}) do |tpls, ele|
-                id = ele.attr XTEMPLATE_ID_ATTR
-                ele.remove_attribute XTEMPLATE_ID_ATTR
-                inline_style = ele.attr('style').to_s.gsub(%r|\s*display\s*:\s*none;*\s*|,'')
-                if inline_style.size < 4
-                    ele.remove_attribute 'style'
-                else
-                    ele.set_attribute('style', inline_style)
+        def collect_templates
+            template_nodes = @doc.css(XTEMPLATE_ID_ATTR_SEL)
+            @templates = if template_nodes.size > 0
+                template_nodes.inject({}) do |tpls, ele|
+                    id = ele.attr XTEMPLATE_ID_ATTR
+                    ele.remove_attribute XTEMPLATE_ID_ATTR
+                    inline_style = ele.attr('style').to_s.gsub(%r|\s*display\s*:\s*none;*\s*|,'')
+                    if inline_style.size < 4
+                        ele.remove_attribute 'style'
+                    else
+                        ele.set_attribute('style', inline_style)
+                    end
+                    html = if ele.name.downcase == 'script'
+                        ele.inner_html
+                    else
+                        ele.to_html
+                    end
+                    id = id.split(',').first
+                    tpls[id] = Nokogiri::XML(html,&:noblanks).to_html.inspect
+                    tpls
                 end
-                html = if ele.name.downcase == 'script'
-                    ele.inner_html
-                else
-                    ele.to_html
+            else
+                ''
+            end
+        end
+
+        def collect_sigils
+            sigil_nodes = @doc.css(XTEMPLATE_SIGIL_ATTR_SEL)
+            @sigils = if sigil_nodes.size > 0
+                sigil_nodes.inject({}) do |sigils, ele|
+                    #binding.pry
+                    sigil = ele.attr XTEMPLATE_SIGIL_ATTR
+                    ele.remove_attribute XTEMPLATE_SIGIL_ATTR
+                    sigils[sigil] = if sigil[0] == '.'
+                        '.' + ele.attr('class').split(' ').first
+                    elsif sigil[0] == '#'
+                        '#' + ele.attr('id')
+                    end
+                    sigils
                 end
-                tpls[id] = Nokogiri::XML(html,&:noblanks).to_html.inspect
-                tpls
+            else
+                ''
             end
         end
     end
@@ -264,10 +292,12 @@ module Aztec
             tpl = is_root ?  "<%=@meta%>\n<%=@original%>\n" : Utils.load_template(:amd)
             eruby = Erubis::Eruby.new tpl
             ctx = Erubis::Context.new
+            module_name = @config.namespace.split('.').last
+
             ctx[:name] = name
             imports = @config.imports
             if not imports.size.zero?
-                ctx[:imports] = imports.values.map(&:single_quote).join(',')
+                ctx[:imports] = imports.values.map{|e|"\n" + "'#{e}'".indent(4)}.join(',') + "\n"
                 requires = @config.imports.map{|k,v| "#{k} = require('#{v}')"}.join(",\n" + ' '*8)
                 ctx[:requires] = "var #{requires};"
             else
@@ -284,6 +314,26 @@ module Aztec
             else
                 ''
             end
+            #puts module_name + ":" + ctx[:xtemplate]
+            
+            ctx[:sigils] = if module_name[0] =~/[A-Z]/ and
+                declared?(module_name) and 
+                not @xtemplate.nil?
+                size = @xtemplate.sigils.size
+                if size > 0
+                    js = ["\n///sigils","#{module_name}.sigils = {"]
+                    js << @xtemplate.sigils.inject([%Q["length": #{size}].indent(4)]) do |all, (sigil, selector)|
+                        all << %Q["#{sigil}": "#{selector}"].indent(4)
+                    end.join(",\n")
+                    js << '};'
+                    js.join("\n").indent(4)
+                else
+                    "///sigils defined in xtemplates but variable or function '#{module_name}' not found"
+                end
+            else
+                ''
+            end
+            #puts module_name + ":" + ctx[:sigils]
             
             ctx[:meta] = @config.to_ecma.to_multiline_comment.endl
             #preprocess
@@ -418,7 +468,13 @@ module Aztec
                 for ex in @exclude
                     next if js_file[ex]
                 end
-                add_module js_file
+                begin
+                    $stdout.puts js_file
+                    add_module js_file
+                rescue =>ex
+                    $stderr.puts "Error in #{js_file}"
+                    raise ex
+                end
             end
             self
         end
@@ -539,12 +595,15 @@ module Aztec
 
         def css(mods)
             css = mods.inject("") do |code, mod|
-            if self[mod].nil?
-                code
-            else
-                code << self[mod].xtemplate_styles
+                binding.pry if code.nil?
+                if self[mod].nil?
+                    code
+                else
+                    styles = self[mod].xtemplate_styles
+                    code << styles if not styles.nil?
+                    code
+                end
             end
-        end
         end
 
         def save_dependency_graph(filename)

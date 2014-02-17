@@ -28,7 +28,9 @@
  * - /lang/string.js
  */
 
-;define('$root.lang.string',['$root.lang.type'],function(require, exports){
+;define('$root.lang.string',[
+    '$root.lang.type'
+], function (require, exports){
     //'use strict';
     var _type = require('$root.lang.type');
     
@@ -189,6 +191,7 @@
             });
         };
     })();
+    
     exports['toInt'] = toInt;
     exports['toFloat'] = toFloat;
     exports['capitalize'] = capitalize;

@@ -21,7 +21,10 @@
  * - /lang/date.js
  */
 
-;define('$root.lang.date',['$root.lang.type','$root.lang.string'],function(require, exports){
+;define('$root.lang.date',[
+    '$root.lang.type',
+    '$root.lang.string'
+], function (require, exports){
     //'use strict';
     var _type = require('$root.lang.type'),
         _str = require('$root.lang.string');
@@ -97,6 +100,7 @@
         }
         return days;
     }
+    
     exports['secondsOfMinute'] = secondsOfMinute;
     exports['secondsOfHour'] = secondsOfHour;
     exports['secondsOfDay'] = secondsOfDay;

@@ -17,7 +17,9 @@
  * - /lang/array.js
  */
 
-;define('$root.lang.array',['$root.lang.type'],function(require, exports){
+;define('$root.lang.array',[
+    '$root.lang.type'
+], function (require, exports){
     //'use strict';
     var _type = require('$root.lang.type');
     
@@ -164,6 +166,7 @@
         }
         return ret;
     }
+    
     exports['forEach'] = forEach;
     exports['indexOf'] = indexOf;
     exports['toArray'] = toArray;

@@ -6,12 +6,32 @@
     },
     exports: [
         toArray,
-        varArg
+        varArg,
+        varArgTypeMapping
     ]
 });
 
 ///vars
-var _slice = Array.prototype.slice;
+var _slice = Array.prototype.slice,
+    varArgTypeMapping = {
+        "string": "string",
+        "undefined": "undefined",
+        "null": _type.isNull,
+        "array": _type.isArray,
+        "nullOrUndefined": _type.isNullOrUndefined,
+        "empty": _type.isEmpty,
+        "number": "number",
+        "int": _type.isInteger,
+        "integer": _type.isInteger,
+        "function": "function",
+        "boolean": "boolean",
+        "object": "object",
+        "plainObject": _type.isPlainObject,
+        "primitive": _type.isPrimitive,
+        "regexp": _type.isRegExp,
+        "emptyObject": _type.isEmptyObject,
+        "regex": _type.isRegExp
+    };
 ///exports
 
 /**
@@ -77,21 +97,23 @@ function varArg(args, context) {
                 }
 
                 //param type check
-                t = typeof pred;
-                if (t == 'string') {
-                    if (typeof args[j] != pred) {
+                t = varArgTypeMapping[pred];
+                if (typeof t == 'string') {
+                    if (typeof args[j] != t) {
                         match = false;
                         break;
                     }
-                } else if (t === 'function') {
-                    if (!pred(args[j])) {
+                } else if (typeof t == 'function' || typeof pre == 'function') {
+                    if (!t(args[j])) {
                         match = false;
                         break;
                     }
+                } else {
+                    throw Error('unsupported type:' + pred + ' in function varArg');
                 }
             }
             if (match) {
-                return sig.fn.apply(null, args);
+                return sig.fn.apply(context, args);
             }
         }
         return [];
@@ -108,7 +130,9 @@ function varArg(args, context) {
         },
         bind: function(func) {
             var args = getArgs();
-            return _fn.bind.apply(null, context, args);
+            return typeof func == 'undefined' ? _fn.noop : function() {
+                return _fn.apply(func, context, args);
+            };
         },
         bindNew: function(ctor) {
             return _fn.bindApplyNew(ctor, getArgs());
@@ -118,6 +142,9 @@ function varArg(args, context) {
         },
         invokeNew: function(ctor) {
             return _fn.applyNew(ctor, getArgs());
+        },
+        args: function() {
+            return getArgs();
         }
     };
 }

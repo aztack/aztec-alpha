@@ -2,23 +2,32 @@
 body {
 margin: 0;
 }
-/* $root.ui */
+/* $root.ui.Alert */
 .ui-alert {
 border: 1px solid #999; position: absolute; left: 40%; top: 40%; font-size: .875em; min-height: 80px; min-width: 200px; z-index: 10000; background-color: white;
 }
-.ui-title {
+.ui-alert-title {
 background-color: #eee; color: #000; text-align: center; vertical-align: middle; cursor: move; min-height: 1em; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; -o-user-select: none; user-select: none;
 }
-.ui-body {
+.ui-alert-body {
 padding: 5px;
 }
-.ui-buttons {
+.ui-alert-buttons {
 text-align: right; position: absolute; bottom: 0.2em; right: 0.2em;
 }
-.ui-button {
+.ui-alert-button {
 background-color: white; border: 1px solid #ccc; cursor: pointer;
 }
-.ui-button:hover {
+.ui-alert-button:hover {
 background-color: #eee;
 }
-/* $root.ui.dialog.Dialog.html */
+/* $root.ui.TagInput */
+.ui-taginput-tag {
+display: inline-block;
+}
+.ui-taginput-tags-and-input {
+padding: 2px;
+}
+.ui-taginput-input {
+width: 120px;
+}

@@ -3,10 +3,8 @@
     namespace: $root.browser.template,
     imports: {
         _type: $root.lang.type,
-        _str: $root.lang.string,
         _dom: $root.browser.dom,
-        _$: jQuery,
-        _hb: Handlebars
+        $: jQuery
     },
     exports: [
         collect,

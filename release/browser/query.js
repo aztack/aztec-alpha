@@ -13,7 +13,11 @@
  * - /browser/query.js
  */
 
-;define('$root.browser.query',['$root.lang.type','$root.lang.string','$root.lang.array'],function(require, exports){
+;define('$root.browser.query',[
+    '$root.lang.type',
+    '$root.lang.string',
+    '$root.lang.array'
+], function (require, exports){
     //'use strict';
     var _type = require('$root.lang.type'),
         _str = require('$root.lang.string'),
@@ -53,29 +57,32 @@ combinator
 
 ///vars
 var supportNativeQuerySelector = (function() {
-    var ele = document.createElement('div');
+    var ele = document.createElement('div'), result;
     if (!_type.isFunction(ele.querySelectorAll)) {
         return false;
     }
     ele.innerHTML = '<div class="klass"></div>';
-    return ele.querySelectorAll('.klass').length === 1;
+    result = ele.querySelectorAll('.klass').length === 1;
+    ele = null;
+    return result;
 })();
 ///helper
 
-function _isHtmlFragment(str) {
-    return false;
-}
 
 var unicodeId = '(?:[:\\w\\u00a1-\\uFFFF-]|\\\\[^\\s0-9a-f])',
-    reClassName = new RegExp('\\.(' + unicodeId + ')+'),
+    reClassName = new RegExp('\\.(' + unicodeId + '+)'),
     reTag = new RegExp('(' + unicodeId + '+)'),
     reID = new RegExp('\\#(' + unicodeId + '+)'),
-
     reUniversal = /(\*)/,
     reCombinator = /\s*([>\+~`!@\$%\^&=\{\}\\;</]+)\s*/,
     reCombinatorChildren = /(\S+)(\s+)(\S+)/,
     reAttribute = /\[\s*((?:[:\w\u00a1-\uFFFF-]|\\[^\s0-9a-f])+)(?:\s*([*^$!~|]?=)(?:\s*(?:(["']?)(.*?)\3)))?\s*\](?!\])/,
-    rePesudo = /a/;
+    rePesudo = /:+((?:[\w\u00a1-\uFFFF-]|\\[^\s0-9a-f])+)(?:\((?:(["']?)((?:\([^\)]+\)|[^\(\)]*)+)\2)\))?/,
+    reHtmlFragment = /^<.*>$/;
+
+function _isHtmlFragment(str) {
+    return !!str.match(reHtmlFragment);
+}
 
 function _matchCombinator(selector) {
     var a = {}, matched = false;
@@ -106,8 +113,8 @@ function _matchCombinator(selector) {
 
 function _matchUniversalSelector(selector) {
     var a = {}, matched = false;
-    selector.replace(reUniversal, function(raw, star) {
-        if (star) {
+    selector.replace(reUniversal, function(raw, star, pos, match) {
+        if (star && pos === 0) {
             matched = true;
             a.universal = true;
             return '';
@@ -119,8 +126,9 @@ function _matchUniversalSelector(selector) {
 
 function _matchTag(selector) {
     var a = {}, matched = false;
-    selector.replace(reTag, function(raw, tag) {
-        if (tag) {
+    selector.replace(reTag, function(raw, tag, pos, match) {
+        if (tag.indexOf('#') >= 0 || tag.indexOf('.') >= 0 || tag.indexOf(':') >= 0 || tag.indexOf('[') >= 0) return raw;
+        if (tag && pos === 0) {
             matched = true;
             a.tag = tag;
             return '';
@@ -132,10 +140,13 @@ function _matchTag(selector) {
 
 function _matchID(selector) {
     var a = {}, matched = false;
-    selector.replace(reID, function(raw, id) {
+    selector.replace(reID, function(raw, id, pos, match) {
         if (id) {
             matched = true;
             a.id = id;
+            if (pos !== 0) {
+                a.tag = match.replace(raw, '');
+            }
             return '';
         }
         return raw;
@@ -145,10 +156,13 @@ function _matchID(selector) {
 
 function _matchClassName(selector) {
     var a = {}, matched = false;
-    selector.replace(reClassName, function(raw, className) {
+    selector.replace(reClassName, function(raw, className, pos, match) {
         if (className) {
             matched = true;
             a.className = className;
+            if (pos !== 0) {
+                a.tag = match.replace(raw, '');
+            }
             return '';
         }
         return raw;
@@ -158,13 +172,16 @@ function _matchClassName(selector) {
 
 function _matchAttribute(selector) {
     var a = {}, matched = false;
-    selector.replace(reAttribute, function(raw, name, operator, quote, value) {
-        if (name && operator) {
+    selector.replace(reAttribute, function(raw, name, operator, quote, value, pos, match) {
+        if (name) {
             matched = true;
             a.attrName = name;
             a.operator = operator;
             a.attrValue = value;
             a.quote = quote;
+            if (pos !== 0) {
+                a.tag = match.replace(raw, '');
+            }
             return '';
         }
         return raw;
@@ -174,6 +191,20 @@ function _matchAttribute(selector) {
 
 function _matchPesudoClass(selector) {
     var a = {}, matched = false;
+    selector.replace(rePesudo, function(raw, name, quote, params, pos, match) {
+        if (name) {
+            matched = true;
+            a.name = name;
+            a.quote = quote;
+            a.param = a.param;
+            if (pos !== 0) {
+                a.tag = match.replace(raw, '');
+            }
+            return '';
+        }
+        return raw;
+    });
+    return matched ? a : matched;
 }
 
 
@@ -205,7 +236,7 @@ function _querySelectorAll0(selector, parents) {
         combinator = result.combinator;
         var before = _querySelectorAll(result.before, parents);
         if (combinator == ' ') {
-            nodes = (before && before.length > 0) ? _querySelectorAll(result.after, before) : undefined;
+            nodes = before ? _querySelectorAll(result.after, before) : undefined;
             result.selector = result.selector.replace(result.before + combinator, '');
         } else if (combinator == '+') {
 
@@ -215,12 +246,12 @@ function _querySelectorAll0(selector, parents) {
 
     } else if (_matchUniversalSelector(selector, result)) {
 
-    } else if (_matchID(selector, result)) {
-        nodes = callOnEachElement(parents, 'getElementById', [result.id]);
     } else if (_matchTag(selector, result)) {
         nodes = callOnEachElement(parents, 'getElementsByTagName', [result.tag]);
         combinator = result.combinator || '';
         result.selector = result.selector.replace(result.tag + combinator, '');
+    } else if (_matchID(selector, result)) {
+        nodes = callOnEachElement(parents, 'getElementById', [result.id]);
     } else if (_matchClassName(selector, result)) {
         nodes = callOnEachElement(parents, 'getElementsByClassName', [result.className]);
     } else if (_matchAttribute(selector, result)) {
@@ -247,9 +278,15 @@ function _querySelectorAll0(selector, parents) {
         }, [result.attrName, result.attrValue, result.operator]);
     } else if (_matchPesudoClass(selector, result)) {
 
-    } else throw new Error('syntax error in selector:"' + selector + '"');
+    } else {
+        throw new Error('syntax error in selector:"' + selector + '"');
+    }
 
-    return _querySelectorAll(result.selector, nodes);
+    if (!result.selector || result.selector.match(/^\s+$/)) {
+        return nodes;
+    } else {
+        return _querySelectorAll(result.selector, nodes);
+    }
 }
 
 function _querySelectorAll(selector, parents) {
@@ -277,49 +314,109 @@ function _querySelectorAll(selector, parents) {
         nodes = callOnEachElement(parents, 'getElementsByTagName', [res.tag]);
         selector = selector.replace(res.tag, '');
     } else if ((res = _matchID(selector))) {
-        nodes = callOnEachElement(parents, 'getElementById', [res.tag]);
-    } else if ((res = _matchClassName()(selector))) {
-        nodes = callOnEachElement(parents, 'getElementsByClassName', [res.tag]);
+        nodes = callOnEachElement(parents, 'getElementById', [res.id]);
+        nodes = filterWithTagName(nodes, res.tag);
+    } else if ((res = _matchClassName(selector))) {
+        nodes = callOnEachElement(parents, 'getElementsByClassName', [res.className]);
+        nodes = filterWithTagName(nodes, res.tag);
     } else if ((res = _matchAttribute(selector))) {
         nodes = callOnEachElement(parents, function(name, value, op) {
-            var v;
-            if (!this.hasAttribute(name)) {
-                return null;
-            }
-            v = this.getAttribute(name);
-            switch (op) {
-                case "*=":
-                    if (v.indexOf(value)) return this;
-                    break;
-                case "~=":
-                    if (v.split(' ').indexOf(value)) return this;
-                    break;
-                case "|=":
-                    if (v === value || v.indexOf(val + "-") === 0) return this;
-                    break;
-                default:
-                    return this;
-            }
-            return null;
-        }, [result.attrName, result.attrValue, result.operator]);
+            var node = this,
+                ret = [];
+            traverseNode(node, function() {
+                var v;
+                if (!this.hasAttribute(name)) {
+                    return null;
+                }
+                if (!op) {
+                    ret.push(this);
+                } else {
+                    v = this.getAttribute(name);
+                    switch (op) {
+                        case '=':
+                            if (v == value) ret.push(this);
+                            break;
+                        case "*=":
+                            if (v.indexOf(value) >= 0) ret.push(this);
+                            break;
+                        case "~=":
+                            if (v.split(' ').indexOf(value) >= 0) ret.push(this);
+                            break;
+                        case "|=":
+                            if (v === value || v.indexOf(val + "-") === 0) ret.push(this);
+                            break;
+                        default:
+                            ret.push(this);
+                    }
+                }
+            });
+            return ret;
+        }, [res.attrName, res.attrValue, res.operator]);
+        nodes = filterWithTagName(nodes, res.tag);
     } else if ((res = _matchPesudoClass(selector))) {
+        nodes = callOnEachElement(parent, function() {
 
+        });
+        nodes = filterWithTagName(nodes, res.tag);
     }
 
     return recursive ? _querySelectorAll(selector, parents) : nodes;
 }
 
+function traverseNode(node, fn) {
+    var t = node.childNodes,
+        i = 0,
+        len = t.length,
+        ret;
+    for (; i < len; i++) {
+        if (t[i].nodeType == 1) {
+            ret = fn.call(t[i]);
+            r = traverseNode(t[i], fn);
+            if (r && r.length > 0) {
+                ret = ret.concat(r);
+            }
+        }
+    }
+    return ret;
+}
+
 function callOnEachElement(nodes, fn, args) {
-    var ret, func;
+    var ret, func = fn;
     if (_type.isString(fn)) {
         func = nodes[0][fn];
     }
+    if (!func) {
+        func = document[fn];
+        nodes = [document];
+    }
     if (nodes.length === 1) {
-        return func.apply(nodes[0], args);
+        ret = func.apply(nodes[0], args);
+        return typeof ret.length == 'undefined' ? [ret] : ret;
     } else {
+        ret = [];
         _ary.forEach(nodes, function(node) {
             var e = func.apply(node, args);
-            if (e) ret.concat(e);
+            if (e && e.length > 0) {
+                _ary.forEach(e, function(a) {
+                    if (ret.indexOf(a) >= 0) return;
+                    ret.push(a);
+                });
+            }
+        });
+    }
+    return ret;
+}
+
+function filterWithTagName(nodes, tag) {
+    var ret;
+    if (!tag) return nodes;
+    ret = [];
+    if (!nodes || nodes.length === 0) return ret;
+    if (nodes.length === 1) {
+        return nodes[0].tagName.toLowerCase() == tag ? nodes : ret;
+    } else {
+        _ary.forEach(nodes, function(node) {
+            if (node.tagName.toLowerCase() == tag) ret.push(node);
         });
     }
     return ret;
@@ -336,15 +433,16 @@ function $(arg, parent) {
             return _createElementFromHtml(arg);
         } else if (supportNativeQuerySelector) {
             nodeList = parent.querySelectorAll(arg);
-            return new Nodes(nodeList);
+            return nodeList;
         } else {
-            return _querySelectorAll(arg, parent);
+            return _querySelectorAll(arg, [parent]);
         }
     } else if (_type.isArrayLike(arg)) {
-        return new Nodes(arg);
+        return arg;
     }
 }
 ///exports
+    
     exports['$'] = $;
     exports['_querySelectorAll'] = _querySelectorAll;
     return exports;

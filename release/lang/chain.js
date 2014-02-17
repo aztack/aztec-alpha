@@ -11,7 +11,10 @@
  * - /lang/chain.js
  */
 
-;define('$root.lang.chain',['$root.lang.enumerable','$root.lang.object'],function(require, exports){
+;define('$root.lang.chain',[
+    '$root.lang.enumerable',
+    '$root.lang.object'
+], function (require, exports){
     //'use strict';
     var _enum = require('$root.lang.enumerable'),
         _object = require('$root.lang.object');
@@ -60,6 +63,7 @@ Chain.prototype = proto;
 function _(objs) {
     return new Chain(objs);
 }
+    
     exports['_'] = _;
     return exports;
 });

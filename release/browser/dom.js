@@ -18,7 +18,11 @@
  * - /browser/dom.js
  */
 
-;define('$root.browser.dom',['$root.lang.type','$root.lang.enumerable','$root.lang.string'],function(require, exports){
+;define('$root.browser.dom',[
+    '$root.lang.type',
+    '$root.lang.enumerable',
+    '$root.lang.string'
+], function (require, exports){
     //'use strict';
     var _type = require('$root.lang.type'),
         _enum = require('$root.lang.enumerable'),
@@ -171,6 +175,7 @@
         }
         return offsetParent || docEle;
     }
+    
     exports['script'] = script;
     exports['stylesheet'] = stylesheet;
     exports['internalScript'] = internalScript;

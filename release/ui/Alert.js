@@ -1,102 +1,48 @@
 /**
  * ---
- * description: TagInput
- * namespace: $root.ui
+ * description: Alert
+ * namespace: $root.ui.Alert
  * imports:
  *   _type: $root.lang.type
  *   _str: $root.lang.string
  *   _tpl: $root.browser.template
- *   _enum: $root.lang.enumerable
+ *   _ary: $root.lang.array
  *   _fn: $root.lang.fn
  *   _arguments: $root.lang.arguments
- *   $: jQuery
- *   _ary: $root.lang.array
  *   _drag: $root.ui.draggable
+ *   $: jQuery
  * exports:
- * - Tag
- * - TagInput
  * - Alert
  * - alert
+ * priority: 1
  * files:
- * - /ui/TagInput.js
  * - /ui/dialog/Alert.js
  */
 
-;define('$root.ui',['$root.lang.type','$root.lang.string','$root.browser.template','$root.lang.enumerable','$root.lang.fn','$root.lang.arguments','jQuery','$root.lang.array','$root.ui.draggable'],function(require, exports){
+;define('$root.ui.Alert',[
+    '$root.lang.type',
+    '$root.lang.string',
+    '$root.browser.template',
+    '$root.lang.array',
+    '$root.lang.fn',
+    '$root.lang.arguments',
+    '$root.ui.draggable',
+    'jQuery'
+], function (require, exports){
     //'use strict';
     var _type = require('$root.lang.type'),
         _str = require('$root.lang.string'),
         _tpl = require('$root.browser.template'),
-        _enum = require('$root.lang.enumerable'),
+        _ary = require('$root.lang.array'),
         _fn = require('$root.lang.fn'),
         _arguments = require('$root.lang.arguments'),
-        $ = require('jQuery'),
-        _ary = require('$root.lang.array'),
-        _drag = require('$root.ui.draggable');
+        _drag = require('$root.ui.draggable'),
+        $ = require('jQuery');
         
     ///xtemplate
     require('$root.browser.template')
-            .set('$root.ui.TagInput.tag',"<div class=\"ui-taginput\"><div class=\"ui-taginput-tag\">\n<span class=\"ui-taginput-tagtext\"></span><a class=\"ui-taginput-button\" href=\"javascript:;\"></a>\n</div></div>\n")
-            .set('$root.ui.TagInput.tags-and-input',"<div class=\"ui-taginput\"><div class=\"ui-taginput-tags\" comment=\"\">\n<input type=\"text\" value=\"\"><script>\n            define('$root.demo.ui.TagInput', function(require) {\n                var TagInput = require('$root.ui').TagInput;\n                (new TagInput()).appendTo('body');\n            });\n        </script>\n</div></div>\n");
+            .set('$root.ui.Alert',"<div class=\"ui-alert\">\n<div class=\"ui-alert-title\" sigil=\".title\">alert dialog</div>\n<div class=\"ui-alert-body\" sigil=\".body\">\n                Hello World\n            </div>\n<div class=\"ui-alert-buttons\" sigil=\".buttons\">\n<button class=\"ui-alert-button\" sigil=\".button\">&#30830;&#23450;</button><button class=\"ui-alert-button\" sigil=\".button\">&#21462;&#28040;</button>\n</div>\n</div>\n");
         ///vars
-    var tpl = _tpl.id$('$root.ui.TagInput'),
-        tagInputTemplate = tpl('tags-and-input'),
-        tagTemplate = tpl('tag'),
-        varArg = _arguments.varArg;
-    
-    ///helper
-    
-    
-    ///impl
-    var Tag = _type.create('Tag', jQuery, {
-        init: function(text) {
-            this.super(tagTemplate);
-        },
-        text: function(val) {
-            var ret = this.find('ui-taginput-tagtext').text(val);
-            return _type.isString(ret) ? ret : this;
-        }
-    });
-    
-    var TagInput = _type.create('TagInput', jQuery, {
-        init: function(container, options) {
-            this.super(container);
-            this.options = options;
-            return TagInput_initialize(this);
-        },
-        appendTag: function(text, opts) {
-            var tag = new Tag(text, opts);
-            return this.find('ui-tagInput-tags').append(tag);
-        },
-        removeTags: function(indexOrText) {
-            var tags = _type.isEmpty(indexOrText) ? this.tags() : this.findTag(indexOrText);
-            _enum.plunk(tags, "&remove", true);
-            return this;
-        },
-        tags: function(){
-            return this.container.find('ui-taginput-tags').children();
-        },
-        findTag: function(text) {
-            return varArg(arguments, this)
-                .when('string|regexp', function(pattern) {
-                    return _enum.findAll(this.tags(), function(tag) {
-                        return tag.getText().match(text);
-                    });
-                })
-                .when('int', function(i) {
-                    return this.tags().tags[i] || [];
-                }).args();
-        }
-    }).statics({});
-    
-    function TagInput_initialize(self) {
-    
-    }
-    // /ui/dialog/Alert.js
-    /**
-     * Alert
-     */
-    ///vars
     var tpl = _tpl.id$('$root.ui'),
         alertTemplate = tpl('Alert'),
         varArg = _arguments.varArg,
@@ -126,7 +72,7 @@
     var $alertButtons, $alertTitle, $alertBody;
     
     function Alert_initialize(self, message, title, buttons, callback) {
-        if (!$alertButtons) $alertButtons = self.find('.ui-button');
+        if (!$alertButtons) $alertButtons = self.sigil('.button');
         $alertButtons.unbind('click').click(function(e) {
             var index = _ary.indexOf($alertButtons, this);
             if (_type.isFunction(callback)) {
@@ -140,10 +86,10 @@
             if (!creatingAlertDialog) self.hide();
         });
     
-        if (!$alertTitle) $alertTitle = self.find('.ui-alert-title');
+        if (!$alertTitle) $alertTitle = self.sigil('.title');
         $alertTitle.text(title || '');
     
-        if (!$alertBody) $alertBody = self.find('.ui-alert-body');
+        if (!$alertBody) $alertBody = self.sigil('.body');
         $alertBody.text(message);
     
         self.appendTo('body').show();
@@ -180,10 +126,17 @@
                 return new Alert(m, t, b, c);
             })();
     }
-    exports['Tag'] = Tag;
-    exports['TagInput'] = TagInput;
+        
+    ///sigils
+    Alert.sigils = {
+        "length": 4,
+        ".title": ".ui-alert-title",
+        ".body": ".ui-alert-body",
+        ".buttons": ".ui-alert-buttons",
+        ".button": ".ui-alert-button"
+    };
     exports['Alert'] = Alert;
     exports['alert'] = alert;
     return exports;
 });
-//end of $root.ui
+//end of $root.ui.Alert

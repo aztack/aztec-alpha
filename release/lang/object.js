@@ -19,7 +19,10 @@
  * - /lang/object.js
  */
 
-;define('$root.lang.object',['$root.lang.type','$root.lang.enumerable'],function(require, exports){
+;define('$root.lang.object',[
+    '$root.lang.type',
+    '$root.lang.enumerable'
+], function (require, exports){
     //'use strict';
     var _type = require('$root.lang.type'),
         _enum = require('$root.lang.enumerable');
@@ -139,6 +142,7 @@
         }
         return obj;
     }
+    
     exports['mix'] = mix;
     exports['keys'] = keys;
     exports['values'] = values;

@@ -10,7 +10,7 @@
  * - /lang/json.js
  */
 
-;define('$root.lang.json',[],function(require, exports){
+;define('$root.lang.json',[], function (require, exports){
     //'use strict';
     
     
@@ -332,6 +332,7 @@
             throw new SyntaxError('JSON.parse');
         }
     }
+    
     exports['parse'] = parse;
     exports['stringify'] = stringify;
     return exports;

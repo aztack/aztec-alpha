@@ -12,7 +12,9 @@
  * - /lang/number.js
  */
 
-;define('$root.lang.number',['$root.lang.type'],function(require, exports){
+;define('$root.lang.number',[
+    '$root.lang.type'
+], function (require, exports){
     //'use strict';
     var _type = require('$root.lang.type');
     
@@ -86,6 +88,7 @@
             return min$.apply(Math, arguments);
         }
     }
+    
     exports['random'] = random;
     exports['max'] = max;
     exports['min'] = min;

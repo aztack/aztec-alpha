@@ -150,7 +150,7 @@ var defaultOptions = {
 function draggable(handle, dragged, opts) {
     opts = opts || {};
     return varArg(arguments)
-        .when('*', '*', _type.isPlainObject, function(arg1, arg2, arg3) {
+        .when('*', '*', 'plainObject', function(arg1, arg2, arg3) {
             var h = $(arg1),
                 d = $(arg2),
                 o = $.extend(true, arg3, defaultOptions);
