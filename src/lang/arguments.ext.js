@@ -32,3 +32,11 @@ vat.elt0 = function(n) {
 vat.pattern = vat['string|regexp'] = vat['regexp|string'] = function(s) {
 	return _type.isString(s) || _type.isRegExp(s);
 };
+
+vat.jquery = function(jq){
+	return jq instanceof jQuery;
+};
+
+vat.element = function(ele) {
+	return ele && ele.nodeType === 1;
+};

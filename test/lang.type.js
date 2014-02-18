@@ -23,17 +23,17 @@ test("$root.lang.type", function(require, specs) {
 
     Student.methods({
         initialize: function(name, grade) {
-            this.super(name);
+            this.base(name);
             this.grade = grade;
         },
         greeting: function() {
-            return this.super() + '!';
+            return this.base() + '!';
         }
     });
 
     TopStudent.methods({
         initialize: function(name, grade, rank) {
-            this.super(name, grade);
+            this.base(name, grade);
             this.rank = rank;
         }
     });

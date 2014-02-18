@@ -48,6 +48,16 @@ function instance$toString() {
     return '#<' + type + s.join('') + '>';
 }
 
+function instance$methods() {
+    var ret = [];
+    for(var m in this) {
+        if(typeof this[m] == 'function' && this.hasOwnProperty(m)) {
+            ret.push(m);
+        }
+    }
+    return ret;
+}
+
 /**
  * Every instance create with class which create with type.Class or type.create
  * will has a getClass function to get it's class object
@@ -67,7 +77,7 @@ var clazz$parent = clazz$getClass;
  */
 function clazz$methods(methods) {
     var name, parentProto = this.parent().prototype;
-    this.super = instance$noop;
+    this.base = instance$noop;
     for (name in methods) {
         if (!methods.hasOwnProperty(name)) continue;
 
@@ -80,23 +90,23 @@ function clazz$methods(methods) {
 
         //if parent already defined a method with the same name
         //we need to wrap provided function to make call to
-        //this.super() possible by replace this.super to
+        //this.base() possible by replace this.base to
         //parent method on the fly
         this.prototype[name] = (function(name, method) {
             return function() {
-                //bakcup existing property named super
-                var t = this.super,
+                //bakcup existing property named base
+                var t = this.base,
                     r;
 
-                //make this.super to parent's method
-                //so you can call this.super() in your method
-                this.super = parentProto[name];
+                //make this.base to parent's method
+                //so you can call this.base() in your method
+                this.base = parentProto[name];
 
                 //call the method
                 r = method.apply(this, arguments);
 
-                //restore super property
-                this.super = t;
+                //restore base property
+                this.base = t;
                 return r;
             };
         }(name, methods[name]));
@@ -147,18 +157,22 @@ function Class(typename, parent) {
         return _;
     }
     var _ = function() {
-        var ret;
+        var ret, init;
         this.getClass = instance$getClass;
         this.toString = instance$toString;
+        this.methods = instance$methods;
         this.is = instance$is;
         if (isFunction(_.prototype.initialize)) {
-            ret = this.initialize.apply(this, arguments);
+            init = this.initialize;
+            ret = init.apply(this, arguments);
         } else if (isFunction(_.prototype.init)) {
-            ret = this.init.apply(this, arguments);
+            init = this.init;
+            if(!isFunction(init)) {
+                init = _.prototype.init;
+            }
+            ret = init.apply(this, arguments);
         }
-        if (typeof ret !== 'undefined') {
-            return ret;
-        }
+        return ret;
     };
     _.getClass = clazz$getClass;
     _.methods = clazz$methods;

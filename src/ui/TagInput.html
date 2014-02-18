@@ -2,14 +2,28 @@
     <head>
         <title>TagInput</title>
         <style>
+            .ui-taginput {
+                border: 1px solid gray;
+                display: inline-block;
+            }
             .ui-taginput-tag {
                 display: inline-block; /* prevent tag being cut into two parts in two lines */
+                border: 1px solid gray;
+                margin: 1px;
+                +zoom:1;
+                +display: inline;
             }
-            .ui-taginput-tags-and-input {
+            .ui-taginput-tagtext {
                 padding: 2px;
             }
-            .ui-taginput-input {
+            .ui-taginput-tags {
+                margin: 2px 0;
+                display: inline;
+            }
+            .ui-taginput input {
                 width: 120px; /* fixed width */
+                border: 1px solid #eee;
+                margin: 1px;
             }
         </style>
         <script src="/scripts/$root.ui.TagInput"></script>
@@ -17,22 +31,30 @@
     </head>
 
     <body>
-        <div xtemplate="$root.ui.TagInput.tag,delete" class="ui-taginput" sigil=".tag" style="display:none">
+        <div xtemplate="$root.ui.TagInput.tag,delete" class="ui-taginput-tag" sigil=".tag" sigil-class="Tag" style="display:none">
             <span class="ui-taginput-tagtext" sigil=".text"></span>
             <a class= "ui-taginput-button" href="javascript:;"></a>
         </div>
 
-        <div xtemplate="$root.ui.TagInput.tags-and-input,delete" class="ui-taginput" style="display:none">
-            <div class="ui-taginput-tags" sigil=".tags" comment=""></div>
-            <input type="text" value=""/>
+        <div xtemplate="$root.ui.TagInput.tags-and-input,delete" class="ui-taginput" sigil-class="TagInput" style="display:none">
+            <div class="ui-taginput-tags" sigil=".tags">
+            </div><input type="text" value=""/>
         </div>
 
         <script>
             define('$root.demo.ui.TagInput', function(require) {
-                var TagInput = require('$root.ui.TagInput').TagInput;
-                var a = new TagInput();
-                a.appendTag('html5').appendTag('css3');
+                TagInput = require('$root.ui.TagInput').TagInput;
+                Tag = require('$root.ui.TagInput').Tag;
+                a = new TagInput();
+                a.appendTag('html5').appendTag('css3')
+                tag = Tag('javascript');
+                a.appendTag(tag);
+                tag = new Tag('!');
+                a.appendTag(tag);
                 a.appendTo('body');
+                setTimeout(function(){
+                    a.removeTags(0);
+                },2000);
             });
         </script>
     </body>

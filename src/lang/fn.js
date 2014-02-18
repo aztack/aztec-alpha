@@ -17,6 +17,7 @@
         callNew,
         applyNew,
         breakpoint,
+        log,
         stop,
         ntimes,
         once,
@@ -154,6 +155,8 @@ function call(fn, context) {
 
 function apply(fn, context, args) {
     if (!_type.isFunction(fn)) return;
+    //ie7 and 8 require 2nd argument for Function.prototype.apply must be a array or arguments
+    args = _slice.call(args);
     return fn.apply(context, args);
 }
 
@@ -247,8 +250,16 @@ function applyNew(ctor, args) {
     }
 }
 
-function breakpoint() {
+function breakpoint(fn) {
     debugger;
+    return fn.apply(this, arguments);
+}
+
+function log(fn) {
+    if (typeof console !== 'undefined' && typeof console.log == 'function') {
+        console.log(arguments);
+    }
+    fn.apply(this, arguments);
 }
 
 /**
@@ -291,7 +302,7 @@ function stop(path, context, sniffer) {
  * @param  {Function} fn
  * @return {Function}
  */
-function ntimes(n, fn) {
+function ntimes(fn, n) {
     var ret;
     return function() {
         if (n > 0) {
@@ -379,14 +390,14 @@ function compose() {
 }
 
 function debounce(fn, delay, context) {
-	var timer = null;
-	return function() {
-		var args = Array.prototype.slice.call(arguments);
-		clearTimeout(timer);
-		timer = setTimeout(function() {
-			clearTimeout(timer);
-			timer = null;
-			fn.apply(context, args);
-		}, delay);
-	};
+    var timer = null;
+    return function() {
+        var args = Array.prototype.slice.call(arguments);
+        clearTimeout(timer);
+        timer = setTimeout(function() {
+            clearTimeout(timer);
+            timer = null;
+            fn.apply(context, args);
+        }, delay);
+    };
 }

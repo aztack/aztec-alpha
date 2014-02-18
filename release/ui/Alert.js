@@ -41,7 +41,7 @@
         
     ///xtemplate
     require('$root.browser.template')
-            .set('$root.ui.Alert',"<div class=\"ui-alert\">\n<div class=\"ui-alert-title\" sigil=\".title\">alert dialog</div>\n<div class=\"ui-alert-body\" sigil=\".body\">\n                Hello World\n            </div>\n<div class=\"ui-alert-buttons\" sigil=\".buttons\">\n<button class=\"ui-alert-button\" sigil=\".button\">&#30830;&#23450;</button><button class=\"ui-alert-button\" sigil=\".button\">&#21462;&#28040;</button>\n</div>\n</div>\n");
+            .set('$root.ui.Alert',"<div class=\"ui-alert\">\n<div class=\"ui-alert-title\">alert dialog</div>\n<div class=\"ui-alert-body\">\n                Hello World\n            </div>\n<div class=\"ui-alert-buttons\">\n<button class=\"ui-alert-button\">&#30830;&#23450;</button><button class=\"ui-alert-button\">&#21462;&#28040;</button>\n</div>\n</div>\n");
         ///vars
     var tpl = _tpl.id$('$root.ui'),
         alertTemplate = tpl('Alert'),
@@ -53,7 +53,7 @@
     var Alert = _type.create('Alert', jQuery, {
         init: function(message, title, buttons, callback) {
             if (_type.isUndefined($alert)) {
-                $alert = this.super(alertTemplate);
+                $alert = this.base(alertTemplate);
             }
             return Alert_initialize($alert, message, title, buttons, callback);
         },
@@ -135,6 +135,7 @@
         ".buttons": ".ui-alert-buttons",
         ".button": ".ui-alert-button"
     };
+
     exports['Alert'] = Alert;
     exports['alert'] = alert;
     return exports;

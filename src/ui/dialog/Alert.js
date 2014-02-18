@@ -29,7 +29,7 @@ var tpl = _tpl.id$('$root.ui'),
 var Alert = _type.create('Alert', jQuery, {
     init: function(message, title, buttons, callback) {
         if (_type.isUndefined($alert)) {
-            $alert = this.super(alertTemplate);
+            $alert = this.base(alertTemplate);
         }
         return Alert_initialize($alert, message, title, buttons, callback);
     },

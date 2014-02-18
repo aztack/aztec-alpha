@@ -5,7 +5,7 @@
  * notransform: true
  * files:
  * - /jquery-1.10.2.js
- * - /jquery.sigil.js
+ * - /jquery.ext.js
  * imports: {}
  * exports: []
  */
@@ -9801,25 +9801,25 @@ if ( typeof module === "object" && module && typeof module.exports === "object" 
 
 })( window );
 
-// /jquery.sigil.js
+// /jquery.ext.js
 /**
  * jQuery Sigil Extension
  */
 
 
 if (typeof jQuery !== 'undefined') {
-  jQuery.fn.sigil = function(sigil) {
-    var clazz, selector;
-    if (typeof this.getClass == 'function') {
-      clazz = this.getClass();
-      sigils = clazz.sigils;
-      if (sigils && sigils.length > 0) {
-        selector = clazz.sigils[sigil];
-        if (selector) {
-          return this.find(selector);
+    jQuery.fn.sigil = function(sigil) {
+        var clazz, selector;
+        if (typeof this.getClass == 'function') {
+            clazz = this.getClass();
+            sigils = clazz.sigils;
+            if (sigils && sigils.length > 0) {
+                selector = clazz.sigils[sigil];
+                if (selector) {
+                    return this.find(selector);
+                }
+            }
         }
-      }
-    }
-    return this.find(sigil);
-  };
+        return this.find(sigil);
+    };
 }

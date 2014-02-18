@@ -27,10 +27,17 @@
     
         //vars
     var templates = {},
-        XTEMPLATE_ID_ATTR = 'data-xtemplate',
-        XTEMPLATE_ID_ATTR_SEL = '[data-xtemplate]';
+        XTEMPLATE_ID_ATTR = 'xtemplate',
+        XTEMPLATE_ID_ATTR_SEL = '[xtemplate]',
+        INTERNAL_ATTRS = [
+            /(\s*)sigil-class=".*?"(\s*)/g,
+            /(\s*)sigil=".*?"(\s*)/g
+        ];
     
     //helper
+    function stripAttr(matched, precedeSpace, succeedSpace) {
+        return precedeSpace && succeedSpace ? ' ' : '';
+    }
     
     //exports
     
@@ -59,6 +66,13 @@
             if (data.length > 0 && data[1] == 'delete') {
                 ele.parentNode.removeChild(ele);
             }
+    
+            var j = 0,
+                len = INTERNAL_ATTRS.length;
+            for (; j < len; ++j) {
+                html = html.replace(INTERNAL_ATTRS[j], stripAttr);
+            }
+    
             if (_type.isUndefined(templates[id]) || force) {
                 set(id, html);
             }

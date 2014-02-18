@@ -8,7 +8,6 @@
  * exports:
  * - toArray
  * - varArg
- * - varArgTypeMapping
  * files:
  * - /lang/arguments.js
  * - /lang/arguments.ext.js
@@ -56,6 +55,35 @@
         return _slice.call(args, n || 0);
     }
     
+    function check(pred, arg) {
+        var t = varArgTypeMapping[pred],
+            regexMatch;
+        if (typeof t == 'string') {
+            if (typeof arg != t) {
+                return false;
+            }
+        } else if (typeof pred == 'function') {
+            if (!pred(arg)) {
+                return false;
+            }
+        } else if (typeof t == 'function') {
+            if (!t(arg)) {
+                return false;
+            }
+        } else {
+            regexMatch = pred.match(/array<(.*?)>/);
+            if (regexMatch) {
+                if (arg.length > 0) {
+                    if (!check(varArgTypeMapping[regexMatch[1]], arg[0])) {
+                        return false;
+                    }
+                }
+            } else {
+                throw Error('unsupported type:' + pred + ' in function varArg');
+            }
+        }
+        return true;
+    }
     /**
      * varArg
      * handle variadic arguments
@@ -91,6 +119,7 @@
                 sig,
                 pred,
                 match,
+                regexMatch,
                 ret;
     
             for (; i < len1; ++i) {
@@ -106,25 +135,19 @@
                     if (pred == '*') {
                         continue;
                     }
-    
-                    //param type check
-                    t = varArgTypeMapping[pred];
-                    if (typeof t == 'string') {
-                        if (typeof args[j] != t) {
-                            match = false;
-                            break;
-                        }
-                    } else if (typeof t == 'function' || typeof pre == 'function') {
-                        if (!t(args[j])) {
-                            match = false;
-                            break;
-                        }
-                    } else {
-                        throw Error('unsupported type:' + pred + ' in function varArg');
-                    }
+                    match = check(pred, args[j]);
+                    if (!match) break;
                 }
                 if (match) {
-                    return sig.fn.apply(context, args);
+                    ret = sig.fn.apply(context, args);
+                    if(ret) {
+                        if(typeof ret.length == 'undefined'){
+                            return [ret];
+                        } else {
+                            return toArray(ret);
+                        }
+                    }
+                    return ret;
                 }
             }
             return [];
@@ -156,6 +179,9 @@
             },
             args: function() {
                 return getArgs();
+            },
+            resolve: function() {
+                getArgs();
             }
         };
     }
@@ -188,9 +214,16 @@
       return _type.isString(s) || _type.isRegExp(s);
     };
     
+    vat.jquery = function(jq){
+      return jq instanceof jQuery;
+    };
+    
+    vat.element = function(ele) {
+      return ele && ele.nodeType === 1;
+    };
+    
     exports['toArray'] = toArray;
     exports['varArg'] = varArg;
-    exports['varArgTypeMapping'] = varArgTypeMapping;
     return exports;
 });
 //end of $root.lang.arguments

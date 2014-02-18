@@ -37,8 +37,8 @@
         
     ///xtemplate
     require('$root.browser.template')
-            .set('$root.ui.TagInput.tag',"<div class=\"ui-taginput\" sigil=\".tag\">\n<span class=\"ui-taginput-tagtext\" sigil=\".text\"></span><a class=\"ui-taginput-button\" href=\"javascript:;\"></a>\n</div>\n")
-            .set('$root.ui.TagInput.tags-and-input',"<div class=\"ui-taginput\">\n<div class=\"ui-taginput-tags\" sigil=\".tags\" comment=\"\"></div>\n<input type=\"text\" value=\"\">\n</div>\n");
+            .set('$root.ui.TagInput.tag',"<div class=\"ui-taginput-tag\">\n<span class=\"ui-taginput-tagtext\"></span><a class=\"ui-taginput-button\" href=\"javascript:;\"></a>\n</div>\n")
+            .set('$root.ui.TagInput.tags-and-input',"<div class=\"ui-taginput\">\n<div class=\"ui-taginput-tags\">\n            </div>\n<input type=\"text\" value=\"\">\n</div>\n");
         ///vars
     var tpl = _tpl.id$('$root.ui.TagInput'),
         tagInputTemplate = tpl('tags-and-input'),
@@ -50,58 +50,109 @@
     
     ///impl
     var Tag = _type.create('Tag', jQuery, {
-        init: function(text) {
-            this.super(tagTemplate);
+        init: function() {
+            var va;
+            if (this instanceof Tag) {
+                va = varArg(arguments, this)
+                    .when(function() {
+                        this.base(tagTemplate);
+                    })
+                    .when('array<element>', function(ary) {
+                        this.base(ary[0]);
+                    })
+                    .when('element', function(ele) {
+                        this.base(ele);
+                    })
+                    .when('string', function(text) {
+                        this.base(tagTemplate);
+                        this.text(String(text));
+                    });
+                va.resolve();
+                return this;
+            } else {
+                return _fn.applyNew(Tag, arguments);
+            }
         },
         text: function(val) {
-            var ret = this.sigil('.text').text(val);
-            return _type.isString(ret) ? ret : this;
+            var t = this.sigil('.text'),
+                ret;
+            if (typeof val === 'undefined') {
+                return t.text();
+            } else {
+                t.text(val);
+                return this;
+            }
         }
     });
     
     var TagInput = _type.create('TagInput', jQuery, {
         init: function(container, options) {
-            this.super(container||tagInputTemplate);
+            this.base(container || tagInputTemplate);
             this.options = options;
             return TagInput_initialize(this);
         },
-        appendTag: function(text, opts) {
-            var tag = new Tag(text, opts);
-            this.sigil('.tags').append(tag);
-            return this;
-        },
-        removeTags: function(indexOrText) {
-            var tags = _type.isEmpty(indexOrText) ? this.tags() : this.findTag(indexOrText);
-            _enum.plunk(tags, "&remove", true);
-            return this;
-        },
-        tags: function(){
-            return this.sigil('.tags').children();
-        },
-        findTag: function(text) {
-            return varArg(arguments, this)
-                .when('string|regexp', function(pattern) {
-                    return _enum.findAll(this.tags(), function(tag) {
-                        return tag.getText().match(text);
-                    });
+        appendTag: function(tag) {
+            varArg(arguments, this)
+                .when('element', function(ele) {
+                    return ele;
                 })
-                .when('int', function(i) {
-                    return this.tags().tags[i] || [];
-                }).args();
+                .when('jquery', function(ele) {
+                    return ele;
+                })
+                .when('*', function(text) {
+                    var tag = new Tag(),
+                        t = String(text);
+                    return tag.text(t);
+                })
+                .bind(function(tag) {
+                    this.sigil('.tags').append(tag);
+                })();
+            return this;
+        },
+        removeTags: function() {
+            var tags = this.tags.apply(this, arguments);
+            _enum.pluck(tags, "&remove", true);
+            return this;
+        },
+        tags: function() {
+            var all = this.sigil('.tags').children(),
+                va = varArg(arguments, this)
+                    .when(function() {
+                        return all;
+                    })
+                    .when('string|regexp', function(pattern) {
+                        return _enum.findAll(all, function(tag) {
+                            return !!$(tag).text().match(pattern);
+                        });
+                    })
+                    .when('int', function(i) {
+                        return all.splice(i, 1);
+                    });
+            return va.args();
         }
     }).statics({});
     
     function TagInput_initialize(self) {
-    
+        var prevNode = self.find('input')[0].previousSibling;
+        if (prevNode.nodeType === 3) {
+            if (prevNode.remove) {
+                prevNode.remove();
+            } else {
+                prevNode.removeNode();
+            }
+        }
     }
         
     ///sigils
+    Tag.sigils = {
+        "length": 1,
+        ".text": ".ui-taginput-tagtext"
+    };
     TagInput.sigils = {
-        "length": 3,
-        ".tag": ".ui-taginput",
-        ".text": ".ui-taginput-tagtext",
+        "length": 1,
         ".tags": ".ui-taginput-tags"
     };
+
     exports['Tag'] = Tag;
     exports['TagInput'] = TagInput;
     return exports;

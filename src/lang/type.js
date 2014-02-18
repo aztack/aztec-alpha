@@ -124,6 +124,7 @@ function containsNullOrUndefined() {
  */
 function isEmptyObject(arg) {
     var i;
+    if(typeof arg != 'object') return false;
     for (i in arg) {
         return false;
     }

@@ -3,7 +3,61 @@
 	<head>
 		<title>Global CSS</title>
 		<style>
-		body{margin: 0;}
+		/* css normalization */
+		html {
+		    color: #000;
+		    background: #fff;
+		}
+		body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,form,fieldset,legend,input,textarea,p,th,td {
+		    margin:0;
+		    padding:0
+		}
+		body{
+			margin: 0;
+			color: #333;
+    		background: #fff;
+		}
+
+		table{
+		    border-collapse:collapse;
+		    border-spacing:0
+		}
+		fieldset, img{
+		    border:0
+		}
+		ol,ul {
+		    list-style:none
+		}
+		textarea {
+		    overflow: auto;
+		    vertical-align: top;
+		    resize:none;
+		}
+		a {
+		    text-decoration: none;
+		}
+		a:hover {
+		    text-decoration: underline;
+		}
+		noscript {
+		    display: block;
+		    background: #FFFBE1;
+		    text-align: center;
+		    clear: both;
+		    line-height: 2.5;
+		    color: #c00;
+		    font-size: 12px;
+		    font-weight: bold;
+		}
+
+		.noselectable {
+			-webkit-user-select: none;  /* Chrome all / Safari all */
+			-moz-user-select: none;     /* Firefox all */
+			-ms-user-select: none;      /* IE 10+ */
+			/* No support for these yet, use at own risk */
+			-o-user-select: none;
+			user-select: none;
+		}
 		</style>
 	</head>
 </html>

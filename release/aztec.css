@@ -21,13 +21,23 @@ background-color: white; border: 1px solid #ccc; cursor: pointer;
 .ui-alert-button:hover {
 background-color: #eee;
 }
-/* $root.ui.TagInput */
-.ui-taginput-tag {
-display: inline-block;
+/* $root.ui.Menu */
+.ui-menu {
+position: absolute; left: 0px; top: 0px;
 }
-.ui-taginput-tags-and-input {
+/* $root.ui.TagInput */
+.ui-taginput {
+border: 1px solid gray; display: inline-block;
+}
+.ui-taginput-tag {
+display: inline-block; border: 1px solid gray; margin: 1px; +zoom: 1; +display: inline;
+}
+.ui-taginput-tagtext {
 padding: 2px;
 }
-.ui-taginput-input {
-width: 120px;
+.ui-taginput-tags {
+margin: 2px 0; display: inline;
+}
+.ui-taginput input {
+width: 120px; border: 1px solid #eee; margin: 1px;
 }

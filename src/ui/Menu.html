@@ -1,0 +1,80 @@
+<html>
+    <head>
+        <title>Menu</title>
+        <style>
+            .ui-menu {
+                position: absolute;
+                left: 0px;
+                top: 0px;
+                margin: 0;
+                padding: 0;
+                border: 1px solid gray;
+                cursor: pointer;
+                min-width: 100px;
+                box-shadow: 2px 2px 2px #888;
+                background-color: #fff;
+            }
+            .ui-menu-item {
+                list-style: none;
+                padding: 0;
+                margin: 2px;
+                display: block;
+            }
+            .ui-menu-item a{
+                text-decoration: none;
+                color: #000;
+            }
+            .ui-menu-item a:hover{
+                color: #fff;
+            }
+            .ui-menu-item:hover {
+                background-color: gray;
+                color: #fff;
+            }
+            .ui-menu-item:hover a{
+                color: #fff;
+                text-decoration: none;
+            }
+        </style>
+        <script src="/scripts/$root.ui.Menu"></script>
+        <link rel="stylesheet" type="text/css" href="/styles/$root.ui.Menu">
+    </head>
+
+    <body>
+        <ul xtemplate="$root.ui.Menu.menu,delete" class="ui-menu" sigil=".tag" sigil-class="Menu" style="display:none">
+            
+        </ul>
+
+        <li xtemplate="$root.ui.Menu.item,delete" class="ui-menu-item unselectable" sigil-class="MenuItem" style="display:none">
+            <span class="ui-menu-item-text" sigil=".item-container"></span>
+        </li>
+
+        <span xtemplate="$root.ui.Menu.icon,delete" sigil=".text" class="ui-menu-item-icon" href="javascript:;" sigil=".icon"></span>
+
+        <a xtemplate="$root.ui.Menu.text,delete" class="ui-menu-item-text" href="javascript:;" style="display:none"></a>
+
+        <span xtemplate="$root.ui.Menu.checkbox,delete" class="ui-menu-item.checkbox" style="display:none">
+            <input type="checkbox" />
+        </span>
+        <div id="parent" style="position:relative;top:200px;left:100px;background-color:#eee;width:100px;height:100px;">
+            
+        </div>
+
+        <script>
+            define('$root.demo.ui.Menu', function(require) {
+                Menu = require('$root.ui.Menu').Menu;
+                menu = new Menu();
+                menu.addItems([
+                    "New File",
+                    "Save ..",
+                    "Save As .."
+                ]);
+                menu.show(100,100);
+
+                menu2 = new Menu();
+                menu2.addItems([1,2,3]);
+                menu2.show($('#parent'), 10, 10);
+            });
+        </script>
+    </body>
+</html>

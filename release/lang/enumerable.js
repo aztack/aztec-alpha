@@ -224,12 +224,12 @@
         if (doNotReturn) {
             if (_type.isArray(objs)) {
                 _array_each(objs, function(v, k, i) {
-                    f.call(context, v, k, i);
+                    f.call(null, v, k, i);
                 });
             } else {
                 ret = {};
                 _object_each(objs, function(v, k, i) {
-                    f.call(context, v, k, i);
+                    f.call(null, v, k, i);
                 });
             }
         } else {
