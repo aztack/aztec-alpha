@@ -19,6 +19,7 @@
         isBoolean,
         isPlainObject,
         isEmptyObject,
+        isElement,
         typename,
         hasSameTypeName,
         Boolean,
@@ -131,6 +132,9 @@ function isEmptyObject(arg) {
     return true;
 }
 
+function isElement(arg) {
+    return arg.nodeType === 1;
+}
 /**
  * isEmpty
  * return true if arg is undefined or null or zero length or plain object with no property

@@ -1,0 +1,21 @@
+<html>
+    <head>
+        <title>ComboBox</title>
+        <style>
+        </style>
+        <script src="/scripts/$root.ui.ComboBox"></script>
+    </head>
+
+    <body>
+    <div xtemplate="$root.ui.ComboBox.box,delete" style="display:none">
+        
+    </div>
+        <script>
+            define('$root.demo.ui.ComboBox', function(require) {
+                ComboBox = require('$root.ui.ComboBox').ComboBox;
+                a = new ComboBox();
+                
+            });
+        </script>
+    </body>
+</html>

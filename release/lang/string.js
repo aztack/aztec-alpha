@@ -24,6 +24,7 @@
  * - quote
  * - toArray
  * - format
+ * - isHtmlFragment
  * files:
  * - /lang/string.js
  */
@@ -192,6 +193,10 @@
         };
     })();
     
+    function isHtmlFragment(s) {
+        return typeof s == 'string' && s.charAt(0) === '<' && s.charAt( s.length - 1 ) === '>' && s.length >= 3;
+    }
+    
     exports['toInt'] = toInt;
     exports['toFloat'] = toFloat;
     exports['capitalize'] = capitalize;
@@ -210,6 +215,7 @@
     exports['quote'] = quote;
     exports['toArray'] = toArray;
     exports['format'] = format;
+    exports['isHtmlFragment'] = isHtmlFragment;
     return exports;
 });
 //end of $root.lang.string

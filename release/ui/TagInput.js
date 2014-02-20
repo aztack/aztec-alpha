@@ -38,7 +38,7 @@
     ///xtemplate
     require('$root.browser.template')
             .set('$root.ui.TagInput.tag',"<div class=\"ui-taginput-tag\">\n<span class=\"ui-taginput-tagtext\"></span><a class=\"ui-taginput-button\" href=\"javascript:;\"></a>\n</div>\n")
-            .set('$root.ui.TagInput.tags-and-input',"<div class=\"ui-taginput\">\n<div class=\"ui-taginput-tags\">\n            </div>\n<input type=\"text\" value=\"\">\n</div>\n");
+            .set('$root.ui.TagInput.tags-and-input',"<div class=\"ui-taginput\">\n<div class=\"ui-taginput-tags\"></div>\n<input type=\"text\" value=\"\">\n</div>\n");
         ///vars
     var tpl = _tpl.id$('$root.ui.TagInput'),
         tagInputTemplate = tpl('tags-and-input'),
@@ -100,13 +100,11 @@
                     return ele;
                 })
                 .when('*', function(text) {
-                    var tag = new Tag(),
-                        t = String(text);
-                    return tag.text(t);
+                    return new Tag().text(String(text));
                 })
-                .bind(function(tag) {
+                .invoke(function(tag) {
                     this.sigil('.tags').append(tag);
-                })();
+                });
             return this;
         },
         removeTags: function() {

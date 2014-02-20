@@ -20,6 +20,7 @@
  * - isBoolean
  * - isPlainObject
  * - isEmptyObject
+ * - isElement
  * - typename
  * - hasSameTypeName
  * - Boolean
@@ -141,6 +142,9 @@
         return true;
     }
     
+    function isElement(arg) {
+        return arg.nodeType === 1;
+    }
     /**
      * isEmpty
      * return true if arg is undefined or null or zero length or plain object with no property
@@ -344,7 +348,7 @@
     
             //if parent class does not define method with this name
             //just added it to prototype(instance method)
-            if (!parentProto.hasOwnProperty(name)) {
+            if (!parentProto[name]) {
                 this.prototype[name] = methods[name];
                 continue;
             }
@@ -364,6 +368,7 @@
                     this.base = parentProto[name];
     
                     //call the method
+                    /*! you probably wanto step into this method call when you debugging */
                     r = method.apply(this, arguments);
     
                     //restore base property
@@ -392,13 +397,20 @@
     
     function clazz$extend() {
         var len = arguments.length,
-            name, m;
+            name, methods;
+        if(len < 2) {
+            name = this.typename ? this.typename() + '$' : '';
+        } else {
+            name = arguments[0];
+            methods = arguments[1];
+        }
         if (len === 0) {
-            return new Class('', this);
+            return new Class(name, this);
         } else if (len === 1) {
+            name = this.typename ? this.typename() + '$' : '';
             return new Class('', this).methods(arguments[1]);
         }
-        return new Class(arguments[0], this).methods(arguments[1]);
+        return new Class(name, this).methods(methods);
     }
     
     function clazz$readonly(name, initValue, force) {
@@ -538,6 +550,7 @@
     exports['isBoolean'] = isBoolean;
     exports['isPlainObject'] = isPlainObject;
     exports['isEmptyObject'] = isEmptyObject;
+    exports['isElement'] = isElement;
     exports['typename'] = typename;
     exports['hasSameTypeName'] = hasSameTypeName;
 //     exports['Boolean'] = Boolean;

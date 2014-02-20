@@ -38,24 +38,22 @@
         </style>
         <script src="/scripts/$root.ui.Menu"></script>
         <link rel="stylesheet" type="text/css" href="/styles/$root.ui.Menu">
+        <link rel="stylesheet" type="text/css" href="/styles/$root.ui.Alert">
     </head>
 
     <body>
-        <ul xtemplate="$root.ui.Menu.menu,delete" class="ui-menu" sigil=".tag" sigil-class="Menu" style="display:none">
+        <ul xtemplate="$root.ui.Menu.menu,delete" class="ui-menu" sigil=".tag" sigil-class="$root.ui.Menu" style="display:none">
             
         </ul>
 
-        <li xtemplate="$root.ui.Menu.item,delete" class="ui-menu-item unselectable" sigil-class="MenuItem" style="display:none">
+        <li xtemplate="$root.ui.Menu.item,delete" 
+            class="ui-menu-item unselectable" 
+            sigil-class="MenuItem" 
+            style="display:none">
             <span class="ui-menu-item-text" sigil=".item-container"></span>
         </li>
 
-        <span xtemplate="$root.ui.Menu.icon,delete" sigil=".text" class="ui-menu-item-icon" href="javascript:;" sigil=".icon"></span>
 
-        <a xtemplate="$root.ui.Menu.text,delete" class="ui-menu-item-text" href="javascript:;" style="display:none"></a>
-
-        <span xtemplate="$root.ui.Menu.checkbox,delete" class="ui-menu-item.checkbox" style="display:none">
-            <input type="checkbox" />
-        </span>
         <div id="parent" style="position:relative;top:200px;left:100px;background-color:#eee;width:100px;height:100px;">
             
         </div>
@@ -69,11 +67,14 @@
                     "Save ..",
                     "Save As .."
                 ]);
-                menu.show(100,100);
+                menu.showAt(100,100);
+                menu.delegate('li','click',function(e){
+                    console.log(e);
+                })
 
                 menu2 = new Menu();
                 menu2.addItems([1,2,3]);
-                menu2.show($('#parent'), 10, 10);
+                menu2.showAt($('#parent'), 10, 10);
             });
         </script>
     </body>

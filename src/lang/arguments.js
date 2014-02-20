@@ -2,7 +2,8 @@
     description: 'Arguments Utils',
     namespace: $root.lang.arguments,
     imports: {
-        _fn: $root.lang.fn
+        _fn: $root.lang.fn,
+        _type: $root.lang.type
     },
     exports: [
         toArray,

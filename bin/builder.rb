@@ -104,8 +104,8 @@ module Aztec
         def collect_styles
             style_nodes = @doc.css('style')
             @styles = if style_nodes.size > 0
-                css = style_nodes.map(&:text).join('\n')
-                css.dedent_block.sub(/^\n*/,'').rstrip
+                css = style_nodes.map(&:text).join('\n').strip
+                css.size == 0 ? '' : css.dedent_block.sub(/^\n*/,'').rstrip
             else
                 ''
             end

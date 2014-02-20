@@ -3,9 +3,11 @@
     namespace: $root.ui.Menu,
     imports: {
         _type: $root.lang.type,
+        _str: $root.lang.string,
         _arguments: $root.lang.arguments,
         _tpl: $root.browser.template,
         _enum: $root.lang.enumerable,
+        _list: $root.ui.List,
         $: jQuery
     },
     exports: [
@@ -26,40 +28,47 @@ var tpl = _tpl.id$('$root.ui.Menu'),
 
 ///impl
 var MenuItem = _type.create('MenuItem', jQuery, {
-    init: function() {
-        this.base(menuItemTemplate);
+    init: function(arg) {
+        if (_str.isHtmlFragment(arg) || arg instanceof jQuery) {
+            this.base(arg);
+        } else {
+            this.base(menuItemTemplate);
+            this.text(arg);
+        }
     },
-    text: function(text) {
-        var t = $(textTemplate);
-        t.text(text);
-        this.sigil('.item-container').append(t);
+    text: function(arg) {
+        var t, ctn = this.sigil('.item-container');
+        if (!_str.isHtmlFragment(arg)) {
+            ctn.text(arg);
+        } else {
+            t = $(textTemplate);
+            t.text(arg);
+            ctn.append(t);
+        }
         return this;
     }
 });
 
-var Menu = _type.create('Menu', jQuery, {
-    init: function() {
+var Menu = _type.create('Menu', _list.List, {
+    init: function(options) {
+        options = options || {};
         this.base(menuTemplate);
-    },
-    addItem: function(text) {
-        var item = new MenuItem();
-        item.text(text);
-        this.append(item);
-        return this;
+        this.addClass('ui-menu');
+        this.setItemType(options.itemType || MenuItem);
     },
     addItems: function(texts) {
         _enum.each(texts, function(text) {
-            this.addItem(text);
+            this.add(text);
         }, this);
         return this;
     },
-    show: function() {
+    showAt: function() {
         var body = document.body;
         varArg(arguments, this)
-            .when(function(){
+            .when(function() {
                 return [body, this.css('left'), this.css('top')];
             })
-            .when('int','int',function(x, y){
+            .when('int', 'int', function(x, y) {
                 return [body, x, y];
             })
             .when('jquery', 'int', 'int', function(parent, x, y) {
@@ -71,9 +80,10 @@ var Menu = _type.create('Menu', jQuery, {
                     top: y
                 });
             });
-        return this.base();
+        return this;
     }
 });
 
+Menu.List = _list.List;
 
 ///exports

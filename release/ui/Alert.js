@@ -56,9 +56,6 @@
                 $alert = this.base(alertTemplate);
             }
             return Alert_initialize($alert, message, title, buttons, callback);
-        },
-        dispose: function() {
-            this.hide();
         }
     }).statics({
         OK: 1,
@@ -128,13 +125,7 @@
     }
         
     ///sigils
-    Alert.sigils = {
-        "length": 4,
-        ".title": ".ui-alert-title",
-        ".body": ".ui-alert-body",
-        ".buttons": ".ui-alert-buttons",
-        ".button": ".ui-alert-button"
-    };
+// sigils defined in xtemplate but variable or function $root.ui.Alert not found
 
     exports['Alert'] = Alert;
     exports['alert'] = alert;

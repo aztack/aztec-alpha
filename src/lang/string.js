@@ -23,7 +23,8 @@
         enclose,
         quote,
         toArray,
-        format
+        format,
+        isHtmlFragment
     ]
 });
 
@@ -185,3 +186,7 @@ var format = (function() {
         });
     };
 })();
+
+function isHtmlFragment(s) {
+    return typeof s == 'string' && s.charAt(0) === '<' && s.charAt( s.length - 1 ) === '>' && s.length >= 3;
+}

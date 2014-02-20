@@ -77,9 +77,7 @@ var TagInput = _type.create('TagInput', jQuery, {
                 return ele;
             })
             .when('*', function(text) {
-                var tag = new Tag(),
-                    t = String(text);
-                return tag.text(t);
+                return new Tag().text(String(text));
             })
             .invoke(function(tag) {
                 this.sigil('.tags').append(tag);

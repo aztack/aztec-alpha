@@ -1,6 +1,105 @@
 /* $root */
+html {
+color: #000; background: #fff;
+}
 body {
-margin: 0;
+margin: 0; padding: 0;
+}
+div {
+margin: 0; padding: 0;
+}
+dl {
+margin: 0; padding: 0;
+}
+dt {
+margin: 0; padding: 0;
+}
+dd {
+margin: 0; padding: 0;
+}
+ul {
+margin: 0; padding: 0;
+}
+ol {
+margin: 0; padding: 0;
+}
+li {
+margin: 0; padding: 0;
+}
+h1 {
+margin: 0; padding: 0;
+}
+h2 {
+margin: 0; padding: 0;
+}
+h3 {
+margin: 0; padding: 0;
+}
+h4 {
+margin: 0; padding: 0;
+}
+h5 {
+margin: 0; padding: 0;
+}
+h6 {
+margin: 0; padding: 0;
+}
+form {
+margin: 0; padding: 0;
+}
+fieldset {
+margin: 0; padding: 0;
+}
+legend {
+margin: 0; padding: 0;
+}
+input {
+margin: 0; padding: 0;
+}
+textarea {
+margin: 0; padding: 0;
+}
+p {
+margin: 0; padding: 0;
+}
+th {
+margin: 0; padding: 0;
+}
+td {
+margin: 0; padding: 0;
+}
+body {
+margin: 0; color: #333; background: #fff;
+}
+table {
+border-collapse: collapse; border-spacing: 0;
+}
+fieldset {
+border: 0;
+}
+img {
+border: 0;
+}
+ol {
+list-style: none;
+}
+ul {
+list-style: none;
+}
+textarea {
+overflow: auto; vertical-align: top; resize: none;
+}
+a {
+text-decoration: none;
+}
+a:hover {
+text-decoration: underline;
+}
+noscript {
+display: block; background: #FFFBE1; text-align: center; clear: both; line-height: 2.5; color: #c00; font-size: 12px; font-weight: bold;
+}
+.noselectable {
+-webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; -o-user-select: none; user-select: none;
 }
 /* $root.ui.Alert */
 .ui-alert {
@@ -23,7 +122,22 @@ background-color: #eee;
 }
 /* $root.ui.Menu */
 .ui-menu {
-position: absolute; left: 0px; top: 0px;
+position: absolute; left: 0px; top: 0px; margin: 0; padding: 0; border: 1px solid gray; cursor: pointer; min-width: 100px; box-shadow: 2px 2px 2px #888; background-color: #fff;
+}
+.ui-menu-item {
+list-style: none; padding: 0; margin: 2px; display: block;
+}
+.ui-menu-item a {
+text-decoration: none; color: #000;
+}
+.ui-menu-item a:hover {
+color: #fff;
+}
+.ui-menu-item:hover {
+background-color: gray; color: #fff;
+}
+.ui-menu-item:hover a {
+color: #fff; text-decoration: none;
 }
 /* $root.ui.TagInput */
 .ui-taginput {
@@ -40,4 +154,11 @@ margin: 2px 0; display: inline;
 }
 .ui-taginput input {
 width: 120px; border: 1px solid #eee; margin: 1px;
+}
+/* $root.ui.TextField */
+.ui-textfield {
+border: 1px solid gray; padding: 0; margin: 0; outline: none;
+}
+.placeholder {
+color: #aaa;
 }

@@ -56,6 +56,7 @@ function collect(force) {
             ele.parentNode.removeChild(ele);
         }
 
+        //remove internal attribute nodes
         var j = 0,
             len = INTERNAL_ATTRS.length;
         for (; j < len; ++j) {

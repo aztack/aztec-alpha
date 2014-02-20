@@ -32,9 +32,6 @@ var Alert = _type.create('Alert', jQuery, {
             $alert = this.base(alertTemplate);
         }
         return Alert_initialize($alert, message, title, buttons, callback);
-    },
-    dispose: function() {
-        this.hide();
     }
 }).statics({
     OK: 1,

@@ -83,7 +83,7 @@ function clazz$methods(methods) {
 
         //if parent class does not define method with this name
         //just added it to prototype(instance method)
-        if (!parentProto.hasOwnProperty(name)) {
+        if (!parentProto[name]) {
             this.prototype[name] = methods[name];
             continue;
         }
@@ -103,6 +103,7 @@ function clazz$methods(methods) {
                 this.base = parentProto[name];
 
                 //call the method
+                /*! you probably wanto step into this method call when you debugging */
                 r = method.apply(this, arguments);
 
                 //restore base property
@@ -131,13 +132,20 @@ function clazz$statics(props) {
 
 function clazz$extend() {
     var len = arguments.length,
-        name, m;
+        name, methods;
+    if(len < 2) {
+        name = this.typename ? this.typename() + '$' : '';
+    } else {
+        name = arguments[0];
+        methods = arguments[1];
+    }
     if (len === 0) {
-        return new Class('', this);
+        return new Class(name, this);
     } else if (len === 1) {
+        name = this.typename ? this.typename() + '$' : '';
         return new Class('', this).methods(arguments[1]);
     }
-    return new Class(arguments[0], this).methods(arguments[1]);
+    return new Class(name, this).methods(methods);
 }
 
 function clazz$readonly(name, initValue, force) {
