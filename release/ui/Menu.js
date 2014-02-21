@@ -38,7 +38,7 @@
     ///xtemplate
     require('$root.browser.template')
             .set('$root.ui.Menu.menu',"<ul class=\"ui-menu\"></ul>\n")
-            .set('$root.ui.Menu.item',"<li class=\"ui-menu-item unselectable\"><span class=\"ui-menu-item-text\"></span></li>\n");
+            .set('$root.ui.Menu.item',"<li class=\"ui-menu-item unselectable\"><span class=\"ui-menu-item-text\"><a href=\"javascript:;\"></a></span></li>\n");
         ///vars
     var tpl = _tpl.id$('$root.ui.Menu'),
         menuTemplate = tpl('menu'),
@@ -58,17 +58,16 @@
                 this.base(menuItemTemplate);
                 this.text(arg);
             }
+            this.addClass('ui-menut-item');
         },
         text: function(arg) {
-            var t, ctn = this.sigil('.item-container');
-            if (!_str.isHtmlFragment(arg)) {
-                ctn.text(arg);
+            var t = this.sigil('.text');
+            if (_type.isNullOrUndefined(arg)) {
+                return t.text();
             } else {
-                t = $(textTemplate);
-                t.text(arg);
-                ctn.append(t);
+                t.text(text);
+                return this;
             }
-            return this;
         }
     });
     
@@ -77,11 +76,14 @@
             options = options || {};
             this.base(menuTemplate);
             this.addClass('ui-menu');
-            this.setItemType(options.itemType || MenuItem);
+            this.setItemType(options.menuItemType || Menu.DefaultMenuItemType);
+            Menu_initialize(this);
         },
         addItems: function(texts) {
             _enum.each(texts, function(text) {
-                this.add(text);
+                var item = new this.itemType();
+                item.text(text);
+                this.add(item);
             }, this);
             return this;
         },
@@ -105,17 +107,32 @@
                 });
             return this;
         }
+    }).statics({
+        DefaultMenuItemType: MenuItem,
+        Events: {
+            OnItemSelected: 'OnItemSelected.Menu'
+        }
     });
     
-    Menu.List = _list.List;
+    function Menu_initialize(self) {
+        self.on('click', function(e) {
+            var index = self.indexOf(e.target),
+                item;
+            if (index < 0) {
+                item = $(e.target).closest(self.children().get(0).tagName);
+                index = self.indexOf(item);
+            }
+            item = self.getItemAt(index);
+            self.trigger(Menu.Events.OnItemSelected, [item, index]);
+        });
+    }
     
     ///exports
         
     ///sigils
 // sigils defined in xtemplate but variable or function $root.ui.Menu not found
     MenuItem.sigils = {
-        "length": 1,
-        ".item-container": ".ui-menu-item-text"
+        "length": 0
     };
 
     exports['Menu'] = Menu;

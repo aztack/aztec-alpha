@@ -190,7 +190,7 @@
      * Arguments Module Extension
      */
     /* varArgTypeMapping must be exist */
-    if (!varArgTypeMapping) {
+    if (varArgTypeMapping) {
     
       var vat = varArgTypeMapping;
     

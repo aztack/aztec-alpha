@@ -8,6 +8,7 @@
  * - isUndefined
  * - isNull
  * - isNullOrUndefined
+ * - isUndefinedOrNull
  * - containsNullOrUndefined
  * - isEmpty
  * - isRegExp
@@ -112,6 +113,8 @@
     function isNullOrUndefined(arg) {
         return arg === null || typeof arg == 'undefined';
     }
+    
+    var isUndefinedOrNull = isNullOrUndefined;
     
     /**
      * containNullOrUndefined
@@ -538,6 +541,7 @@
     exports['isUndefined'] = isUndefined;
     exports['isNull'] = isNull;
     exports['isNullOrUndefined'] = isNullOrUndefined;
+    exports['isUndefinedOrNull'] = isUndefinedOrNull;
     exports['containsNullOrUndefined'] = containsNullOrUndefined;
     exports['isEmpty'] = isEmpty;
     exports['isRegExp'] = isRegExp;

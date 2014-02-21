@@ -29,23 +29,22 @@ var tpl = _tpl.id$('$root.ui.Menu'),
 ///impl
 var MenuItem = _type.create('MenuItem', jQuery, {
     init: function(arg) {
-        if (_str.isHtmlFragment(arg) || arg instanceof jQuery) {
+        if (_str.isHtmlFragment(arg) || arg instanceof jQuery || _type.isElement(arg)) {
             this.base(arg);
         } else {
             this.base(menuItemTemplate);
             this.text(arg);
         }
+        this.addClass('ui-menut-item');
     },
     text: function(arg) {
-        var t, ctn = this.sigil('.item-container');
-        if (!_str.isHtmlFragment(arg)) {
-            ctn.text(arg);
+        var t = this.sigil('text');
+        if (_type.isNullOrUndefined(arg)) {
+            return t.text();
         } else {
-            t = $(textTemplate);
             t.text(arg);
-            ctn.append(t);
+            return this;
         }
-        return this;
     }
 });
 
@@ -54,11 +53,14 @@ var Menu = _type.create('Menu', _list.List, {
         options = options || {};
         this.base(menuTemplate);
         this.addClass('ui-menu');
-        this.setItemType(options.itemType || MenuItem);
+        this.setItemType(options.menuItemType || Menu.DefaultMenuItemType);
+        Menu_initialize(this);
     },
     addItems: function(texts) {
         _enum.each(texts, function(text) {
-            this.add(text);
+            var item = new this.itemType();
+            item.text(text);
+            this.add(item);
         }, this);
         return this;
     },
@@ -82,8 +84,25 @@ var Menu = _type.create('Menu', _list.List, {
             });
         return this;
     }
+}).statics({
+    DefaultMenuItemType: MenuItem,
+    Events: {
+        OnItemSelected: 'OnItemSelected.Menu'
+    }
 });
 
-Menu.List = _list.List;
+function Menu_initialize(self) {
+    self.on('click', function(e) {
+        var index = self.indexOf(e.target),
+            item;
+        if (index < 0) {
+            item = $(e.target).closest(self.children().get(0).tagName);
+            index = self.indexOf(item);
+        }
+        if( index < 0) return;
+        item = self.getItemAt(index);
+        self.trigger(Menu.Events.OnItemSelected, [item, index]);
+    });
+}
 
 ///exports

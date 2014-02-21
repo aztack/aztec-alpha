@@ -141,12 +141,26 @@ module Aztec
             return if sigil_class.nil? or sigil_class.empty?
             @sigils[sigil_class] = xtemplate_node.css(XTEMPLATE_SIGIL_ATTR_SEL).inject({}) do |sigils, ele|
                 sigil = ele.attr XTEMPLATE_SIGIL_ATTR
-                sigils[sigil] = if sigil[0] == '.'
-                    '.' + ele.attr('class').split(' ').first
-                elsif sigil[0] == '#'
-                    '#' + ele.attr('id')
-                else
-                    sigil
+                begin
+                    sigils[sigil] = if sigil[0] == '.'
+                        clazz = ele.attr('class')
+                        if clazz.nil? or clazz.empty?
+                            throw "#{sigil} has no corresponding class attribute!"
+                        else
+                            '.' + clazz.split(' ').first
+                        end
+                    elsif sigil[0] == '#'
+                        id = ele.attr('id')
+                        if id.nil? or id.empty?
+                            throw "#{sigil} has no corresponding id attribute"
+                        else
+                            '#' + id
+                        end
+                    else
+                        ele.name
+                    end
+                rescue => e
+
                 end
                 sigils
             end

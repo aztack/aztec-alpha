@@ -3,6 +3,7 @@
 	namespace: $root.ui.ComboBox,
 	imports: {
 		_type: $root.lang.type,
+		_fn: $root.lang.fn,
 		_tpl: $root.browser.template,
 		_arguments: $root.lang.arguments,
 		_menu: $root.ui.Menu,
@@ -23,15 +24,44 @@ var Menu = _menu.Menu,
 
 ///exports
 var ComboBox = _type.create('ComboBox', jQuery, {
-	init: function(){
+	init: function() {
 		this.base(boxTemplate);
 		this.textfield = new TextField();
 		this.menu = new Menu();
-		this.append(this.textField);
+		this.append(this.textfield);
+		this.menu.hide();
 		this.append(this.menu);
+		this.addClass('ui-combobox');
+		ComboBox_initialize(this);
 	},
-	showDropdown: function() {
-		
+	showMenu: function() {
+		var tf = this.textfield,
+			w = this.textfield.width(),
+			l = tf.css('left');
+		this.menu.show().css({
+			left: l,
+			width: w
+		});
+
+	},
+	hideMenu: function() {
+		this.menu.hide();
 	}
-}).statics({
-});
+}).statics({});
+
+function ComboBox_initialize(self) {
+	var menu = self.menu,
+		hideMenu = _fn.bindTimeout(self.hideMenu, self, 100),
+		showMenu = _fn.bind(self.showMenu, self);
+
+	menu.css('position', 'relative');
+
+	self.textfield
+		.focus(showMenu)
+		.blur(hideMenu);
+
+	menu.on(Menu.Events.OnItemSelected, function(e, item, index) {
+		var text = item.text();
+		self.textfield.val(text);
+	});
+}

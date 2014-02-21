@@ -3,9 +3,6 @@
         <title>Menu</title>
         <style>
             .ui-menu {
-                position: absolute;
-                left: 0px;
-                top: 0px;
                 margin: 0;
                 padding: 0;
                 border: 1px solid gray;
@@ -50,7 +47,9 @@
             class="ui-menu-item unselectable" 
             sigil-class="MenuItem" 
             style="display:none">
-            <span class="ui-menu-item-text" sigil=".item-container"></span>
+            <span class="ui-menu-item-text">
+                <a href="javascript:;" sigil="text"></a>
+            </span>
         </li>
 
 
@@ -67,13 +66,13 @@
                     "Save ..",
                     "Save As .."
                 ]);
-                menu.showAt(100,100);
-                menu.delegate('li','click',function(e){
-                    console.log(e);
+                menu.showAt(100, 100);
+                menu.on(Menu.Events.OnItemSelected, function(e, item, index) {
+                    console.log(item.getClass().typename(),item.text(), index);
                 })
 
                 menu2 = new Menu();
-                menu2.addItems([1,2,3]);
+                menu2.addItems([1, 2, 3]);
                 menu2.showAt($('#parent'), 10, 10);
             });
         </script>

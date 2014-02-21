@@ -10,6 +10,7 @@
         Callbacks,
         noop,
         bind,
+        bindTimeout,
         call,
         apply,
         bindCallNew,
@@ -137,6 +138,25 @@ function bind(fn, context) {
             args2 = args.concat(_slice.call(arguments));
         }
         return fn.apply(context, args2);
+    };
+}
+
+function bindTimeout(fn, context, ms) {
+    if (!isFunction(fn)) {
+        throw TypeError(firstArgMustBeFn);
+    }
+
+    var args = _slice.call(arguments, 3);
+
+    return function() {
+        var args2 = args;
+        if (arguments.length > 0) {
+            args2 = args.concat(_slice.call(arguments));
+        }
+
+        setTimeout(function() {
+            fn.apply(context, args2);
+        }, ms);
     };
 }
 

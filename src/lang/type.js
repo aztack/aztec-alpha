@@ -7,6 +7,7 @@
         isUndefined,
         isNull,
         isNullOrUndefined,
+        isUndefinedOrNull,
         containsNullOrUndefined,
         isEmpty,
         isRegExp,
@@ -103,6 +104,8 @@ function isNullOrUndefined(arg) {
     return arg === null || typeof arg == 'undefined';
 }
 
+var isUndefinedOrNull = isNullOrUndefined;
+
 /**
  * containNullOrUndefined
  * return true if arguments contains null or undefined
@@ -133,7 +136,7 @@ function isEmptyObject(arg) {
 }
 
 function isElement(arg) {
-    return arg.nodeType === 1;
+    return arg && arg.nodeType === 1;
 }
 /**
  * isEmpty
