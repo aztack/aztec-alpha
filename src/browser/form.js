@@ -3,13 +3,13 @@
 	namespace: $root.browser.form,
 	imports: {
 		_type: $root.lang.type,
-		_argument: $root.lang.argument,
+		_argument: $root.lang.arguments,
 		_str: $root.lang.string,
 		_ary: $root.lang.array,
 		$: jQuery
 	},
 	exports: [
-		Validator,
+		Form,
 		toJSON
 	]
 });
@@ -21,7 +21,7 @@ var varArg = _argument.varArg;
 
 
 ///impl
-var Validator = _type.create('Validator', jQuery, {
+var Form = _type.create('Form', jQuery, {
 	init: function(form, options) {
 		this.options = options;
 	},
@@ -30,7 +30,7 @@ var Validator = _type.create('Validator', jQuery, {
 		//TODO:sort elements against data-validate-order
 		_ary.forEach(elements, function(item){
 			var control = $(item),
-				pattern = control.data(options.validate)
+				pattern = control.data(options.validate);
 		});
 	}
 }).statics({

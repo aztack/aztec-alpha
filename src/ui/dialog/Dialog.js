@@ -28,6 +28,7 @@ var varArg = _arguments.varArg,
  */
 var GenericDialog = _type.create('GenericDialog', jQuery, {
     init: function(options) {
+        //if(!options) return this;
         this.options = options || {};
         this.base(GenericDialog.DefaultTemplate);
         this.header = this.sigil('.header');
@@ -112,6 +113,7 @@ function GenericDialog_setPart(self, whichPart) {
  */
 var Alert = _type.create('Alert', GenericDialog, {
     init: function(options) {
+        //if(!options) return this;
         this.options = options || {};
         this.base.apply(this, arguments);
         this.header.text(this.options.title || '');

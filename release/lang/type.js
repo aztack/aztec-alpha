@@ -372,9 +372,9 @@
                     //if no argument provide
                     this.prototype.init = (function(method) {
                         return function() {
-                            if (arguments.length === 0) {
-                                return this;
-                            }
+                            //if (arguments.length === 0) {
+                            //    return this;
+                            //}
                             return method.apply(this, arguments);
                         };
                     })(m);

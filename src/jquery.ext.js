@@ -13,12 +13,13 @@ var selectorsCache = jQuery.__selectorsCache__ = {};
 function getSelectorInInheritanceChain(obj,clazz, sigil) {
     clazz = clazz || obj.getClass();
     var sigils = clazz.sigils,
-        selector = sigils[sigil];
+        selector;
+    if(sigils) selector = sigils[sigil];
     while (!selector && typeof clazz.parent == 'function') {
         clazz = clazz.parent();
         if (!clazz) break;
         sigils = clazz.sigils;
-        selector = sigils[sigil];
+        if(sigils) selector = sigils[sigil];
         if(selector) break;
     }
     return selector;

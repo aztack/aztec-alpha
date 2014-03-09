@@ -1,0 +1,2 @@
+- support zero parameter construction
+- inheritance without `_.prototype = new parent()`

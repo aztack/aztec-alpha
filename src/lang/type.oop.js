@@ -89,9 +89,9 @@ function clazz$methods(methods) {
                 //if no argument provide
                 this.prototype.init = (function(method) {
                     return function() {
-                        if (arguments.length === 0) {
-                            return this;
-                        }
+                        //if (arguments.length === 0) {
+                        //    return this;
+                        //}
                         return method.apply(this, arguments);
                     };
                 })(m);
@@ -130,9 +130,9 @@ function clazz$methods(methods) {
         } else {
             this.prototype.init = (function(method) {
                 return function() {
-                    if (arguments.length === 0) {
-                        return this;
-                    }
+                    //if (arguments.length === 0) {
+                    //    return this;
+                    //}
                     var t = this.base,
                         r;
                     this.base = parentProto.init;
@@ -238,8 +238,8 @@ function Class(typename, parent) {
     _.readonly = clazz$readonly;
     if (parent) {
         //create a instance of parent without invoke constructor
-        //_.prototype = object(parent.prototype, parent);
-        _.prototype = new parent();
+        _.prototype = object(parent.prototype);//, parent.prototype || parent);
+        //_.prototype = new parent();
 
         //this will make extends jQuery failed
         //cause jQuery will call constructor to create new instance
