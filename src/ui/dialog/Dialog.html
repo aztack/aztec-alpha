@@ -1,0 +1,95 @@
+<html>
+    <head>
+        <title>Dialog</title>
+        <style>
+            .ui-dialog {
+                border: 1px solid #999;
+                position: absolute;
+                font-size: .875em;
+                min-height: 80px;
+                min-width: 200px;
+                z-index: 10000;
+                background-color: white;
+                box-shadow: 2px 2px 2px #f5f5f5;
+                left: 0;
+                top: 0;
+            }
+            .ui-dialog-header {
+                background-color: #eee;
+                color: #000;
+                text-align: center;
+                vertical-align: middle;
+                cursor: move;
+                min-height:1em;
+                -webkit-user-select: none;
+                -moz-user-select:none;
+                -ms-user-select:none;
+                -o-user-select:none;
+                user-select:none;
+            }
+            .ui-dialog-body {
+                padding: 5px;
+            }
+            .ui-dialog-footer {
+                text-align: right;
+                position: absolute;
+                bottom: 0.2em;
+                right: 0.2em;
+            }
+            .ui-dialog-button {
+                background-color: white;
+                border: 1px solid #ccc;
+                cursor: pointer;
+            }
+            .ui-dialog-button:hover {
+                background-color: #eee;
+            }
+        </style>
+        <script src="/scripts/$root.ui.Dialog"></script>
+    </head>
+
+    <body>
+        <div xtemplate="$root.ui.Dialog.dialog,delete" sigil-class="GenericDialog" class="ui-dialog" style="display:none">
+            <div class="ui-dialog-header" sigil=".header"></div>
+            <div class="ui-dialog-body" sigil=".body"></div>
+            <div class="ui-dialog-footer" sigil=".footer"></div>
+        </div>
+
+        <button xtemplate="$root.ui.Dialog.alertButton,delete" class="ui-dialog-button" sigil=".button" sigil-class="Alert" style="display:none"></button>
+
+        <script>
+            define('$root.demo.ui.Dialog', function(require) {
+                var dialog = require('$root.ui.Dialog'),
+                    GenericDialog = dialog.GenericDialog,
+                    Alert = dialog.Alert;
+
+                window.d = new Alert({title:'Hello'});
+                d.on(Alert.Events.OnShowAt,function(e, x,y){
+                    console.log(x,y);
+                }).on(Alert.Events.OnClose,function(e){
+                    console.log(e);
+                });
+
+                d.setTitle('Hello World')
+                    .setContent('<p><center>你好，世界</center></p>')
+                    .showAt(100,100)
+                    .setButtons('确定','取消')
+                    .on(Alert.Events.OnButtonClick,function(e, index, text){
+                        if(index == 1) {
+                            d.setContent('Ciao, mondo')
+                                .setButtons(['Bene','Cancellare'])
+                                .showAt(100,200);
+                        } else {
+                            d.setContent('Γεια σου, κόσμε')
+                                .setButtons('εντάξει','ακύρωση')
+                                .show();
+                        }
+                    });
+
+                $('body').click(function(){
+                    d.show();
+                });
+            });
+        </script>
+    </body>
+</html>

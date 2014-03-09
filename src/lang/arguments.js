@@ -30,7 +30,8 @@ var _slice = Array.prototype.slice,
         "primitive": _type.isPrimitive,
         "regexp": _type.isRegExp,
         "emptyObject": _type.isEmptyObject,
-        "regex": _type.isRegExp
+        "regex": _type.isRegExp,
+        "*": _fn.alwaysTrue
     };
 ///exports
 
@@ -46,8 +47,8 @@ function toArray(args, n) {
 }
 
 function check(pred, arg) {
-    var t = varArgTypeMapping[pred],
-        regexMatch;
+    var t = varArgTypeMapping[pred], i,
+        regexMatch, pattern;
     if (typeof t == 'string') {
         if (typeof arg != t) {
             return false;
@@ -64,8 +65,12 @@ function check(pred, arg) {
         regexMatch = pred.match(/array<(.*?)>/);
         if (regexMatch) {
             if (arg.length > 0) {
-                if (!check(varArgTypeMapping[regexMatch[1]], arg[0])) {
-                    return false;
+                pattern = regexMatch[1];
+                if(pattern == '*') return true;
+                for(i = 0; i < arg.length; ++i){
+                    if (!check(varArgTypeMapping[pattern], arg[i])) {
+                        return false;
+                    }
                 }
             }
         } else {
@@ -104,25 +109,28 @@ function varArg(args, context) {
         var i = 0,
             j = 0,
             t,
-            len1 = signatures.length,
-            len2,
+            sigCount = signatures.length,
+            paramCount,
             sig,
             pred,
             match,
             regexMatch,
             ret;
 
-        for (; i < len1; ++i) {
+        //iterate over different signatures
+        for (; i < sigCount; ++i) {
             sig = signatures[i];
-            len2 = sig.types.length;
+            paramCount = sig.types.length;
             match = true;
-            for (; j <= len2; ++j) {
-                if (len2 !== args.length) {
+            //iterate over every type of current signature
+            for (; (j === 0 && paramCount === 0) || j < paramCount; ++j) {
+                if (paramCount !== args.length) {
                     match = false;
                     break;
                 }
                 pred = sig.types[j];
                 if (pred == '*') {
+                    //skip type checking if meet '*''
                     continue;
                 }
                 match = check(pred, args[j]);
@@ -133,6 +141,8 @@ function varArg(args, context) {
                 if(ret) {
                     if(typeof ret.length == 'undefined'){
                         return [ret];
+                    } else if(_type.isArray(ret)){
+                        return ret;
                     } else {
                         return toArray(ret);
                     }

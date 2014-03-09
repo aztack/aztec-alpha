@@ -24,14 +24,15 @@ var Menu = _menu.Menu,
 
 ///exports
 var ComboBox = _type.create('ComboBox', jQuery, {
-	init: function() {
+	init: function(opts) {
+		opts = opts || ComboBox.CreateOption();
 		this.base(boxTemplate);
 		this.textfield = new TextField();
 		this.menu = new Menu();
 		this.append(this.textfield);
 		this.menu.hide();
 		this.append(this.menu);
-		this.addClass('ui-combobox');
+		this.addClass();
 		ComboBox_initialize(this);
 	},
 	showMenu: function() {
@@ -47,7 +48,18 @@ var ComboBox = _type.create('ComboBox', jQuery, {
 	hideMenu: function() {
 		this.menu.hide();
 	}
-}).statics({});
+}).statics({
+	CreateOption: function() {
+		return {
+			css: {
+				'className': 'ui-combobox'
+			},
+			html: {
+				boxTemplate : boxTemplate
+			}
+		};
+	}
+});
 
 function ComboBox_initialize(self) {
 	var menu = self.menu,

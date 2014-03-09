@@ -163,7 +163,7 @@
         
     ///sigils
     TextField.sigils = {
-        "length": 0
+        ".tag": ".ui-textfield"
     };
 
     exports['TextField'] = TextField;

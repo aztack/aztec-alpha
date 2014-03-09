@@ -9,6 +9,10 @@
  * exports:
  * - Callbacks
  * - noop
+ * - alwaysTrue
+ * - alwaysFalse
+ * - alwaysNull
+ * - alwaysUndefined
  * - bind
  * - bindTimeout
  * - call
@@ -125,6 +129,22 @@
      * @return {Undefined}
      */
     function noop() {}
+    
+    function alwaysTrue() {
+        return true;
+    }
+    
+    function alwaysFalse() {
+        return false;
+    }
+    
+    function alwaysNull() {
+        return null;
+    }
+    
+    function alwaysUndefined() {
+        return;
+    }
     
     /**
      * bind
@@ -432,6 +452,10 @@
     
     exports['Callbacks'] = Callbacks;
     exports['noop'] = noop;
+    exports['alwaysTrue'] = alwaysTrue;
+    exports['alwaysFalse'] = alwaysFalse;
+    exports['alwaysNull'] = alwaysNull;
+    exports['alwaysUndefined'] = alwaysUndefined;
     exports['bind'] = bind;
     exports['bindTimeout'] = bindTimeout;
     exports['call'] = call;

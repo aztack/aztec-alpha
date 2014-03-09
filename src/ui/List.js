@@ -3,8 +3,6 @@
 	namespace: $root.ui.List,
 	imports: {
 		_type: $root.lang.type,
-		_str: $root.lang.string,
-		_arguments: $root.lang.arguments,
 		_fn: $root.lang.fn,
 		$: jQuery
 	},
@@ -13,7 +11,7 @@
 	]
 });
 /**
- * A Generic List, represents a <ul> elements
+ * A Generic List, represents a unordered list
  */
 var List = _type.create('List', jQuery, {
 	add: function(arg) {
@@ -64,6 +62,3 @@ var List = _type.create('List', jQuery, {
 }).statics({
 	defaultItemTag: '<li>'
 });
-
-
-///exports

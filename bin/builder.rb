@@ -102,7 +102,7 @@ module Aztec
 
         private
         def collect_styles
-            style_nodes = @doc.css('style')
+            style_nodes = @doc.css('style').reject{|n|n.attr 'ignore'}
             @styles = if style_nodes.size > 0
                 css = style_nodes.map(&:text).join('\n').strip
                 css.size == 0 ? '' : css.dedent_block.sub(/^\n*/,'').rstrip
@@ -115,6 +115,9 @@ module Aztec
             template_nodes = @doc.css(XTEMPLATE_ID_ATTR_SEL)
             @templates = if template_nodes.size > 0
                 template_nodes.inject({}) do |tpls, ele|
+                    #collect sigils before attributes were removed
+                    collect_sigils ele
+
                     id = ele.attr XTEMPLATE_ID_ATTR
                     ele.remove_attribute XTEMPLATE_ID_ATTR
                     ele.remove_attribute XTEMPLATE_SIGIL_ATTR
@@ -124,11 +127,11 @@ module Aztec
                     else
                         ele.set_attribute('style', inline_style)
                     end
-                    collect_sigils ele
                     remove_interal_attrs ele
                     html = ele.name.downcase == 'script' ? ele.inner_html : ele.to_html
                     id = id.split(',').first
                     tpls[id] = Nokogiri::XML(html,&:noblanks).to_html.inspect
+                    #$stdout.puts tpls[id]
                     tpls
                 end
             else
@@ -136,33 +139,45 @@ module Aztec
             end
         end
 
+        def get_selector_from(sigil, ele)
+            if sigil[0] == '.'
+                clazz = ele.attr('class')
+                if clazz.nil? or clazz.empty?
+                    throw "#{sigil} has no corresponding class attribute!"
+                else
+                    '.' + clazz.split(' ').first
+                end
+            elsif sigil[0] == '#'
+                id = ele.attr('id')
+                if id.nil? or id.empty?
+                    throw "#{sigil} has no corresponding id attribute"
+                else
+                    '#' + id
+                end
+            else
+                ele.name
+            end
+        end
+
         def collect_sigils(xtemplate_node)
             sigil_class = xtemplate_node.attr('sigil-class')
+            #$stdout.puts xtemplate_node.css(XTEMPLATE_SIGIL_ATTR_SEL).map{|e|e.attr(XTEMPLATE_SIGIL_ATTR)}
+            #$stdout.puts xtemplate_node.to_html
             return if sigil_class.nil? or sigil_class.empty?
+
             @sigils[sigil_class] = xtemplate_node.css(XTEMPLATE_SIGIL_ATTR_SEL).inject({}) do |sigils, ele|
                 sigil = ele.attr XTEMPLATE_SIGIL_ATTR
                 begin
-                    sigils[sigil] = if sigil[0] == '.'
-                        clazz = ele.attr('class')
-                        if clazz.nil? or clazz.empty?
-                            throw "#{sigil} has no corresponding class attribute!"
-                        else
-                            '.' + clazz.split(' ').first
-                        end
-                    elsif sigil[0] == '#'
-                        id = ele.attr('id')
-                        if id.nil? or id.empty?
-                            throw "#{sigil} has no corresponding id attribute"
-                        else
-                            '#' + id
-                        end
-                    else
-                        ele.name
-                    end
+                    sigils[sigil] = get_selector_from sigil, ele
                 rescue => e
 
                 end
+                #$stdout.puts sigils[sigil]
                 sigils
+            end
+            
+            if sigil = xtemplate_node.attr('sigil')
+               @sigils[sigil_class][sigil] = get_selector_from sigil, xtemplate_node
             end
         end
 
@@ -337,11 +352,13 @@ module Aztec
                 ctx[:sigils] = "\n///sigils\n".indent(4)
                 @xtemplate.sigils.each do |sigil_class, sigils|
                     js = ["#{sigil_class}.sigils = {"]
-                    js << sigils.inject([%Q["length": #{sigils.size}].indent(4)]) do |all, (sigil, selector)|
+                    #js << sigils.inject([%Q["length": #{sigils.size}].indent(4)]) do |all, (sigil, selector)|
+                    js << sigils.inject([]) do |all, (sigil, selector)|
                        all << %Q["#{sigil}": "#{selector}"].indent(4)
                     end.join(",\n")
                     js << '};'
-                    js = js.join("\n").indent(4);
+                    js = js.join("\n").indent(4);                    
+                    #$stdout.puts js
                     if not declared?(sigil_class)
                         js = "sigils defined in xtemplate but variable or function #{sigil_class} not found"
                         js = js.to_comment

@@ -37,47 +37,68 @@
     ///xtemplate
     require('$root.browser.template')
             .set('$root.ui.ComboBox.box',"<div>\n        \n    </div>\n");
-        ///vars
-    var Menu = _menu.Menu,
-      TextField = _textfield.TextField,
-      varArg = _arguments.varArg,
-      tpl = _tpl.id$('$root.ui.ComboBox'),
-      boxTemplate = tpl('box');
-    
-    ///exports
-    var ComboBox = _type.create('ComboBox', jQuery, {
-      init: function() {
-        this.base(boxTemplate);
-        this.textfield = new TextField();
-        this.menu = new Menu();
-        this.append(this.textfield);
-        this.menu.hide();
-        this.append(this.menu);
-        this.addClass('ui-combobox');
-        ComboBox_initialize(this);
+    ///vars
+var Menu = _menu.Menu,
+  TextField = _textfield.TextField,
+  varArg = _arguments.varArg,
+  tpl = _tpl.id$('$root.ui.ComboBox'),
+  boxTemplate = tpl('box');
+
+///exports
+var ComboBox = _type.create('ComboBox', jQuery, {
+  init: function(opts) {
+    opts = opts || ComboBox.CreateOption();
+    this.base(boxTemplate);
+    this.textfield = new TextField();
+    this.menu = new Menu();
+    this.append(this.textfield);
+    this.menu.hide();
+    this.append(this.menu);
+    this.addClass();
+    ComboBox_initialize(this);
+  },
+  showMenu: function() {
+    var tf = this.textfield,
+      w = this.textfield.width(),
+      l = tf.css('left');
+    this.menu.show().css({
+      left: l,
+      width: w
+    });
+
+  },
+  hideMenu: function() {
+    this.menu.hide();
+  }
+}).statics({
+  CreateOption: function() {
+    return {
+      css: {
+        'className': 'ui-combobox'
       },
-      showMenu: function() {
-        var w = this.textfield.width();
-        this.menu.show().width(w);
-        
-      },
-      hideMenu: function(){
-        this.menu.hide();
+      html: {
+        boxTemplate : boxTemplate
       }
-    }).statics({});
-    
-    function ComboBox_initialize(self) {
-      var menu = self.menu,
-        hideMenu = _fn.bindTimeout(self.hideMenu, self, 10),
-        showMenu = _fn.bind(self.showMenu, self);
-      self.textfield
-        .focus(showMenu)
-        .blur(hideMenu);
-    
-      menu.on(Menu.Events.OnItemSelected,function(e, item, index){
-        self.textfield.text(item.text());
-      });
-    }
+    };
+  }
+});
+
+function ComboBox_initialize(self) {
+  var menu = self.menu,
+    hideMenu = _fn.bindTimeout(self.hideMenu, self, 100),
+    showMenu = _fn.bind(self.showMenu, self);
+
+  menu.css('position', 'relative');
+
+  self.textfield
+    .focus(showMenu)
+    .blur(hideMenu);
+
+  menu.on(Menu.Events.OnItemSelected, function(e, item, index) {
+    var text = item.text();
+    self.textfield.val(text);
+  });
+}
         
     ///sigils
 

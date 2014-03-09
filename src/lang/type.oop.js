@@ -50,8 +50,8 @@ function instance$toString() {
 
 function instance$methods() {
     var ret = [];
-    for(var m in this) {
-        if(typeof this[m] == 'function' && this.hasOwnProperty(m)) {
+    for (var m in this) {
+        if (typeof this[m] == 'function' && this.hasOwnProperty(m)) {
             ret.push(m);
         }
     }
@@ -76,15 +76,30 @@ var clazz$parent = clazz$getClass;
  * inspired by http://ejohn.org/blog/simple-javascript-inheritance/
  */
 function clazz$methods(methods) {
-    var name, parentProto = this.parent().prototype;
+    var name, parentProto = this.parent().prototype,
+        m;
     this.base = instance$noop;
     for (name in methods) {
         if (!methods.hasOwnProperty(name)) continue;
 
-        //if parent class does not define method with this name
-        //just added it to prototype(instance method)
         if (!parentProto[name]) {
-            this.prototype[name] = methods[name];
+            m = methods[name];
+            if (name == 'init') {
+                //init method MUST do nothing and just return this
+                //if no argument provide
+                this.prototype.init = (function(method) {
+                    return function() {
+                        if (arguments.length === 0) {
+                            return this;
+                        }
+                        return method.apply(this, arguments);
+                    };
+                })(m);
+            } else {
+                //if parent class does not define method with this name
+                //just added it to prototype(instance method)
+                this.prototype[name] = m;
+            }
             continue;
         }
 
@@ -92,25 +107,52 @@ function clazz$methods(methods) {
         //we need to wrap provided function to make call to
         //this.base() possible by replace this.base to
         //parent method on the fly
-        this.prototype[name] = (function(name, method) {
-            return function() {
-                //bakcup existing property named base
-                var t = this.base,
-                    r;
+        if (name != 'init') {
+            this.prototype[name] = (function(name, method) {
+                return function() {
+                    //bakcup existing property named base
+                    var t = this.base,
+                        r;
 
-                //make this.base to parent's method
-                //so you can call this.base() in your method
-                this.base = parentProto[name];
+                    //make this.base to parent's method
+                    //so you can call this.base() in your method
+                    this.base = parentProto[name];
 
-                //call the method
-                /*! you probably wanto step into this method call when you debugging */
-                r = method.apply(this, arguments);
+                    //call the method
+                    /*! you probably wanto step into this method call when you debugging */
+                    r = method.apply(this, arguments);
 
-                //restore base property
-                this.base = t;
-                return r;
-            };
-        }(name, methods[name]));
+                    //restore base property
+                    this.base = t;
+                    return r;
+                };
+            }(name, methods[name]));
+        } else {
+            this.prototype.init = (function(method) {
+                return function() {
+                    if (arguments.length === 0) {
+                        return this;
+                    }
+                    var t = this.base,
+                        r;
+                    this.base = parentProto.init;
+                    r = method.apply(this, arguments);
+                    this.base = t;
+                    return r;
+                };
+            })(methods['init']);
+        }
+    }
+    return this;
+}
+
+function clazz$aliases(aliases) {
+    var from, parentProto = this.parent().prototype,
+        aliase;
+    for(from in aliases) {
+        if(!aliases.hasOwnProperty(from)) continue;
+        to = aliases[from];
+        this.prototype[from] = this.prototype[to];
     }
     return this;
 }
@@ -133,7 +175,7 @@ function clazz$statics(props) {
 function clazz$extend() {
     var len = arguments.length,
         name, methods;
-    if(len < 2) {
+    if (len < 2) {
         name = this.typename ? this.typename() + '$' : '';
     } else {
         name = arguments[0];
@@ -170,20 +212,21 @@ function Class(typename, parent) {
         this.toString = instance$toString;
         this.methods = instance$methods;
         this.is = instance$is;
-        if (isFunction(_.prototype.initialize)) {
-            init = this.initialize;
-            ret = init.apply(this, arguments);
-        } else if (isFunction(_.prototype.init)) {
+        if (isFunction(_.prototype.init)) {
             init = this.init;
-            if(!isFunction(init)) {
+            if (!isFunction(init)) {
                 init = _.prototype.init;
             }
+            ret = init.apply(this, arguments);
+        } else if (isFunction(_.prototype.initialize)) {
+            init = this.initialize;
             ret = init.apply(this, arguments);
         }
         return ret;
     };
     _.getClass = clazz$getClass;
     _.methods = clazz$methods;
+    _.aliases = clazz$aliases;
     _.statics = clazz$statics;
     _.typename = function() {
         return typename;
@@ -194,7 +237,10 @@ function Class(typename, parent) {
     _.extend = clazz$extend;
     _.readonly = clazz$readonly;
     if (parent) {
+        //create a instance of parent without invoke constructor
+        //_.prototype = object(parent.prototype, parent);
         _.prototype = new parent();
+
         //this will make extends jQuery failed
         //cause jQuery will call constructor to create new instance
         //_.prototype.constructor = Class;

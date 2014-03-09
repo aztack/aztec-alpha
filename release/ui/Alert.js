@@ -8,8 +8,8 @@
  *   _tpl: $root.browser.template
  *   _ary: $root.lang.array
  *   _fn: $root.lang.fn
- *   _arguments: $root.lang.arguments
  *   _drag: $root.ui.draggable
+ *   _arguments: $root.lang.arguments
  *   $: jQuery
  * exports:
  * - Alert
@@ -25,8 +25,8 @@
     '$root.browser.template',
     '$root.lang.array',
     '$root.lang.fn',
-    '$root.lang.arguments',
     '$root.ui.draggable',
+    '$root.lang.arguments',
     'jQuery'
 ], function (require, exports){
     //'use strict';
@@ -35,13 +35,14 @@
         _tpl = require('$root.browser.template'),
         _ary = require('$root.lang.array'),
         _fn = require('$root.lang.fn'),
-        _arguments = require('$root.lang.arguments'),
         _drag = require('$root.ui.draggable'),
+        _arguments = require('$root.lang.arguments'),
         $ = require('jQuery');
         
     ///xtemplate
     require('$root.browser.template')
-            .set('$root.ui.Alert',"<div class=\"ui-alert\">\n<div class=\"ui-alert-title\">alert dialog</div>\n<div class=\"ui-alert-body\">\n                Hello World\n            </div>\n<div class=\"ui-alert-buttons\">\n<button class=\"ui-alert-button\">&#30830;&#23450;</button><button class=\"ui-alert-button\">&#21462;&#28040;</button>\n</div>\n</div>\n");
+            .set('$root.ui.Alert',"<div class=\"ui-alert\">\n<div class=\"ui-alert-title\">alert dialog</div>\n<div class=\"ui-alert-body\">\n                Hello World\n            </div>\n<div class=\"ui-alert-buttons\">\n<button class=\"ui-alert-button\">&#30830;&#23450;</button><button class=\"ui-alert-button\">&#21462;&#28040;</button>\n</div>\n</div>\n")
+            .set('$root.ui.Alert.button',"<button class=\"ui-alert-button\"></button>\n");
         ///vars
     var tpl = _tpl.id$('$root.ui'),
         alertTemplate = tpl('Alert'),
@@ -56,13 +57,15 @@
                 $alert = this.base(alertTemplate);
             }
             return Alert_initialize($alert, message, title, buttons, callback);
+        },
+        setButtons: function(){
+    
         }
     }).statics({
-        OK: 1,
-        CANCEL: 2,
-        OKCANCEL: 3,
-        DEFAULT_OK_TEXT: 'OK',
-        DEFAULT_CANCEL_TEXT: 'Cancel'
+        DefaultButtonTemplate: tpl('Alert.button'),
+        Events: {
+            OnClose:'OnClose.Alert'
+        }
     });
     
     ///private methods
@@ -125,7 +128,12 @@
     }
         
     ///sigils
-// sigils defined in xtemplate but variable or function $root.ui.Alert not found
+    Alert.sigils = {
+        ".title": ".ui-alert-title",
+        ".body": ".ui-alert-body",
+        ".buttons": ".ui-alert-buttons",
+        ".button": ".ui-alert-button"
+    };
 
     exports['Alert'] = Alert;
     exports['alert'] = alert;

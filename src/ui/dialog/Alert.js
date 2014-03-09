@@ -7,8 +7,8 @@
         _tpl: $root.browser.template,
         _ary: $root.lang.array,
         _fn: $root.lang.fn,
-        _arguments: $root.lang.arguments,
         _drag: $root.ui.draggable,
+        _arguments: $root.lang.arguments,
         $: jQuery
     },
     exports: [
@@ -32,13 +32,15 @@ var Alert = _type.create('Alert', jQuery, {
             $alert = this.base(alertTemplate);
         }
         return Alert_initialize($alert, message, title, buttons, callback);
+    },
+    setButtons: function(){
+
     }
 }).statics({
-    OK: 1,
-    CANCEL: 2,
-    OKCANCEL: 3,
-    DEFAULT_OK_TEXT: 'OK',
-    DEFAULT_CANCEL_TEXT: 'Cancel'
+    DefaultButtonTemplate: tpl('Alert.button'),
+    Events: {
+        OnClose:'OnClose.Alert'
+    }
 });
 
 ///private methods

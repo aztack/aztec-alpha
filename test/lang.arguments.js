@@ -14,6 +14,9 @@ test("$root.lang.arguments", function(require, specs) {
         return [this.name, this.age];
     };
 
+    var intAry = [1, 2, 3],
+        mixAry = [1, 2, 'str'];
+
     specs
         .___("arguments#toArray")
         .it.should.equal([
@@ -57,6 +60,27 @@ test("$root.lang.arguments", function(require, specs) {
                 }).bindNew(Person);
 
             return jack().valueOf();
+        })
+        .___('arguments#varArg.array<?>')
+        .it.should.equal([true, false, true], function(){
+            var a = _arg.varArg([intAry])
+                .when('array<int>', function(a) {
+                    return true;
+                })
+                .args();
+
+            var b = _arg.varArg([mixAry])
+                .when('array<int>', function() {
+                    return true;
+                }).invoke(function(r) {
+                    return !!r;
+                });
+
+            var c = _arg.varArg([mixAry])
+                .when('array<*>',function(){
+                    return true;
+                }).args();
+            return [a[0], b, c[0]];
         })
         .done();
 });

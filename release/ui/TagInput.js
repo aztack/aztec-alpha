@@ -143,11 +143,10 @@
         
     ///sigils
     Tag.sigils = {
-        "length": 1,
-        ".text": ".ui-taginput-tagtext"
+        ".text": ".ui-taginput-tagtext",
+        ".tag": ".ui-taginput-tag"
     };
     TagInput.sigils = {
-        "length": 1,
         ".tags": ".ui-taginput-tags"
     };
 

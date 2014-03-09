@@ -186,9 +186,7 @@
             .when(function() {
                 throw Error('function `draggable` need at least one parameter');
             })
-            .bind(function(h, d, o) {
-                return new Draggable(h, d, o);
-            })();
+            .invokeNew(Draggable);
     }
     
     exports['draggable'] = draggable;

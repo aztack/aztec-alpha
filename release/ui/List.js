@@ -4,8 +4,6 @@
  * namespace: $root.ui.List
  * imports:
  *   _type: $root.lang.type
- *   _str: $root.lang.string
- *   _arguments: $root.lang.arguments
  *   _fn: $root.lang.fn
  *   $: jQuery
  * exports:
@@ -16,20 +14,16 @@
 
 ;define('$root.ui.List',[
     '$root.lang.type',
-    '$root.lang.string',
-    '$root.lang.arguments',
     '$root.lang.fn',
     'jQuery'
 ], function (require, exports){
     //'use strict';
     var _type = require('$root.lang.type'),
-        _str = require('$root.lang.string'),
-        _arguments = require('$root.lang.arguments'),
         _fn = require('$root.lang.fn'),
         $ = require('jQuery');
     
         /**
-     * A Generic List, represents a <ul> elements
+     * A Generic List, represents a unordered list
      */
     var List = _type.create('List', jQuery, {
       add: function(arg) {
@@ -80,9 +74,6 @@
     }).statics({
       defaultItemTag: '<li>'
     });
-    
-    
-    ///exports
     
     exports['List'] = List;
     return exports;

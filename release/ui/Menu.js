@@ -52,7 +52,7 @@
     ///impl
     var MenuItem = _type.create('MenuItem', jQuery, {
         init: function(arg) {
-            if (_str.isHtmlFragment(arg) || arg instanceof jQuery) {
+            if (_str.isHtmlFragment(arg) || arg instanceof jQuery || _type.isElement(arg)) {
                 this.base(arg);
             } else {
                 this.base(menuItemTemplate);
@@ -61,11 +61,11 @@
             this.addClass('ui-menut-item');
         },
         text: function(arg) {
-            var t = this.sigil('.text');
+            var t = this.sigil('text');
             if (_type.isNullOrUndefined(arg)) {
                 return t.text();
             } else {
-                t.text(text);
+                t.text(arg);
                 return this;
             }
         }
@@ -122,6 +122,7 @@
                 item = $(e.target).closest(self.children().get(0).tagName);
                 index = self.indexOf(item);
             }
+            if( index < 0) return;
             item = self.getItemAt(index);
             self.trigger(Menu.Events.OnItemSelected, [item, index]);
         });
@@ -132,7 +133,7 @@
     ///sigils
 // sigils defined in xtemplate but variable or function $root.ui.Menu not found
     MenuItem.sigils = {
-        "length": 0
+        "text": "a"
     };
 
     exports['Menu'] = Menu;

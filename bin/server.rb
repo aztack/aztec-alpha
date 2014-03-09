@@ -40,7 +40,7 @@ $stdout.puts "Loading JavaScript Module Manager..."
 $man = Aztec::JsModuleManager.new("#{$ROOT}/src",:exclude => ['/ui/'], :verbose => true).scan
 $stdout.puts "Releasing Code..."
 $man.release(File.absolute_path("#{$ROOT}/release"), true)
-$stdout.puts "Dependency hash:", $man.dependency_hash
+#$stdout.puts "Dependency hash:", $man.dependency_hash
 $stdout.puts "Done!"
 
 set :public_folder, $ROOT

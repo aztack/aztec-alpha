@@ -22,6 +22,7 @@
         isEmptyObject,
         isElement,
         typename,
+        object,
         hasSameTypeName,
         Boolean,
         Number,
@@ -128,7 +129,7 @@ function containsNullOrUndefined() {
  */
 function isEmptyObject(arg) {
     var i;
-    if(typeof arg != 'object') return false;
+    if (typeof arg != 'object') return false;
     for (i in arg) {
         return false;
     }
@@ -251,6 +252,20 @@ function typename(arg) {
     } else {
         return ctorName(arg);
     }
+}
+
+function object(proto, attributes) {
+    var f = function() {}, result, k;
+    f.prototype = proto;
+    result = new f();
+    if (attributes) {
+        for (k in attributes) {
+            if (attributes.hasOwnProperty(k)) {
+                result[k] = attributes[k];
+            }
+        }
+    }
+    return result;
 }
 
 /**

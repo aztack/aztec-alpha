@@ -9,6 +9,10 @@
     exports: [
         Callbacks,
         noop,
+        alwaysTrue,
+        alwaysFalse,
+        alwaysNull,
+        alwaysUndefined,
         bind,
         bindTimeout,
         call,
@@ -117,6 +121,22 @@ function Callbacks() {
  * @return {Undefined}
  */
 function noop() {}
+
+function alwaysTrue() {
+    return true;
+}
+
+function alwaysFalse() {
+    return false;
+}
+
+function alwaysNull() {
+    return null;
+}
+
+function alwaysUndefined() {
+    return;
+}
 
 /**
  * bind
