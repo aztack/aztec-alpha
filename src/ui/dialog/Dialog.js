@@ -12,7 +12,8 @@
     },
     exports: [
         GenericDialog,
-        Alert
+        Alert,
+        alert
     ]
 });
 
@@ -44,11 +45,22 @@ var GenericDialog = _type.create('GenericDialog', jQuery, {
             .when(function() {
                 return [parent, this.css('left'), this.css('top')];
             })
-            .when('int', function(x) {
-                return [parent, x, this.css('top')];
+            .when('string', function(pos) {
+                var x = 0,
+                    y = 0,
+                    dim;
+                if (pos == Alert.Position.Center) {
+                    dim = this.dimension();
+                    x = parent.width() / 2 - dim.width / 2;
+                    y = parent.height() / 2 - dim.height / 2;
+                }
+                return [parent, x, y];
             })
             .when('int', 'int', function(x, y) {
                 return [parent, x, y];
+            })
+            .when('int', function(x) {
+                return [parent, x, this.css('top')];
             })
             .when('jquery', 'int', 'int', function(parent, x, y) {
                 return [parent, x || 0, y || 0];
@@ -135,7 +147,7 @@ var Alert = _type.create('Alert', GenericDialog, {
                     button.text(cap).appendTo(footer);
                 });
             });
-        this.buttons = this.sigil('.button', true);
+        this.buttons = this.sigil('.button');
         return this;
     }
 }).aliases({
@@ -148,6 +160,9 @@ var Alert = _type.create('Alert', GenericDialog, {
     Text: {
         OK: 'OK',
         Cancel: 'Cancel'
+    },
+    Position: {
+        Center: 'Center'
     },
     Events: $.extend({
         OnButtonClick: 'OnButtonClick.Alert'
@@ -163,6 +178,10 @@ function Alert_initialize(self) {
         self.footer.append(button);
     } else {
         self.setButtons(opts.buttons);
+    }
+
+    if (opts.content) {
+        self.setContent(opts.content);
     }
 
     //register OnClose event handler if provided in create options
@@ -184,4 +203,35 @@ function Alert_initialize(self) {
     //make dialog dragged with it's title bar
     _drag.draggable(self.header, self);
     return self;
+}
+
+function alert() {
+    return varArg(arguments, this)
+        .when('*', function(content) {
+            return ['', content, null, null];
+        })
+        .when('*', 'function', function(content, fn) {
+            return ['', content, fn, null];
+        })
+        .when('*', '*', function(title, content) {
+            return [title, content, null, null];
+        })
+        .when('*', '*', 'function', function(title, content, fn) {
+            return [title, content, fn, null];
+        })
+        .when('*', 'plainObject', function(content, opts) {
+            return ['', content, null, opts];
+        })
+        .when(function() {
+            return [location.host, 'undefined', null, null];
+        })
+        .invoke(function(title, content, onClose, options) {
+            options = options || {};
+            options.title = title.toString();
+            options.content = content.toString();
+            options.onClose = onClose;
+            var d = new Alert(options);
+            d.showAt(Alert.Position.Center);
+            return d;
+        });
 }

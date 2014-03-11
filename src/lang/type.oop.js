@@ -48,12 +48,22 @@ function instance$toString() {
     return '#<' + type + s.join('') + '>';
 }
 
-function instance$methods() {
+function getMethodsOn(obj) {
     var ret = [];
-    for (var m in this) {
-        if (typeof this[m] == 'function' && this.hasOwnProperty(m)) {
+    for (var m in obj) {
+        if (typeof obj[m] == 'function' && obj.hasOwnProperty(m) && m !== 'init' && m != 'initialize') {
             ret.push(m);
         }
+    }
+    return ret;
+}
+
+function instance$methods(includeMethodOnThisObject) {
+    var ret = [],
+        proto = this.getClass().prototype;
+    ret = getMethodsOn(proto);
+    if (includeMethodOnThisObject === true) {
+        ret = getMethodsOn(this).concat(ret);
     }
     return ret;
 }
@@ -76,6 +86,9 @@ var clazz$parent = clazz$getClass;
  * inspired by http://ejohn.org/blog/simple-javascript-inheritance/
  */
 function clazz$methods(methods) {
+    if (!methods) {
+        return instance$methods.call(this);
+    }
     var name, parentProto = this.parent().prototype,
         m;
     this.base = instance$noop;
@@ -123,7 +136,11 @@ function clazz$methods(methods) {
                     r = method.apply(this, arguments);
 
                     //restore base property
-                    this.base = t;
+                    if (typeof t != 'undefined') {
+                        this.base = t;
+                    } else {
+                        delete this.base;
+                    }
                     return r;
                 };
             }(name, methods[name]));
@@ -149,8 +166,8 @@ function clazz$methods(methods) {
 function clazz$aliases(aliases) {
     var from, parentProto = this.parent().prototype,
         aliase;
-    for(from in aliases) {
-        if(!aliases.hasOwnProperty(from)) continue;
+    for (from in aliases) {
+        if (!aliases.hasOwnProperty(from)) continue;
         to = aliases[from];
         this.prototype[from] = this.prototype[to];
     }
@@ -220,6 +237,9 @@ function Class(typename, parent) {
             ret = init.apply(this, arguments);
         } else if (isFunction(_.prototype.initialize)) {
             init = this.initialize;
+            if (!isFunction(init)) {
+                init = _.prototype.initialize || _.prototype.init;
+            }
             ret = init.apply(this, arguments);
         }
         return ret;
@@ -238,7 +258,7 @@ function Class(typename, parent) {
     _.readonly = clazz$readonly;
     if (parent) {
         //create a instance of parent without invoke constructor
-        _.prototype = object(parent.prototype);//, parent.prototype || parent);
+        _.prototype = object(parent.prototype); //, parent.prototype || parent);
         //_.prototype = new parent();
 
         //this will make extends jQuery failed

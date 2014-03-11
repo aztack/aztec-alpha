@@ -25,7 +25,7 @@ var Menu = _menu.Menu,
 ///exports
 var ComboBox = _type.create('ComboBox', jQuery, {
 	init: function(opts) {
-		opts = opts || ComboBox.CreateOption();
+		opts = opts || ComboBox.CreateOptions();
 		this.base(boxTemplate);
 		this.textfield = new TextField();
 		this.menu = new Menu();
@@ -49,7 +49,7 @@ var ComboBox = _type.create('ComboBox', jQuery, {
 		this.menu.hide();
 	}
 }).statics({
-	CreateOption: function() {
+	CreateOptions: function() {
 		return {
 			css: {
 				'className': 'ui-combobox'

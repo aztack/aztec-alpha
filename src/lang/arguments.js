@@ -7,7 +7,8 @@
     },
     exports: [
         toArray,
-        varArg
+        varArg,
+        doc
     ]
 });
 
@@ -47,7 +48,8 @@ function toArray(args, n) {
 }
 
 function check(pred, arg) {
-    var t = varArgTypeMapping[pred], i,
+    var t = varArgTypeMapping[pred],
+        i,
         regexMatch, pattern;
     if (typeof t == 'string') {
         if (typeof arg != t) {
@@ -66,8 +68,8 @@ function check(pred, arg) {
         if (regexMatch) {
             if (arg.length > 0) {
                 pattern = regexMatch[1];
-                if(pattern == '*') return true;
-                for(i = 0; i < arg.length; ++i){
+                if (pattern == '*') return true;
+                for (i = 0; i < arg.length; ++i) {
                     if (!check(varArgTypeMapping[pattern], arg[i])) {
                         return false;
                     }
@@ -123,7 +125,8 @@ function varArg(args, context) {
             paramCount = sig.types.length;
             match = true;
             //iterate over every type of current signature
-            for (; (j === 0 && paramCount === 0) || j < paramCount; ++j) {
+            for (;
+                (j === 0 && paramCount === 0) || j < paramCount; ++j) {
                 if (paramCount !== args.length) {
                     match = false;
                     break;
@@ -138,10 +141,10 @@ function varArg(args, context) {
             }
             if (match) {
                 ret = sig.fn.apply(context, args);
-                if(ret) {
-                    if(typeof ret.length == 'undefined'){
+                if (ret) {
+                    if (typeof ret.length == 'undefined') {
                         return [ret];
-                    } else if(_type.isArray(ret)){
+                    } else if (_type.isArray(ret)) {
                         return ret;
                     } else {
                         return toArray(ret);
@@ -182,6 +185,41 @@ function varArg(args, context) {
         },
         resolve: function() {
             getArgs();
+        },
+        signatures: function() {
+            var ret = [],
+                i, len = signatures.length;
+            for (; i < len; ++i) {
+                ret.push(signatures.types);
+            }
+            return ret;
         }
     };
 }
+
+/**
+ * return a function with a __sig__ property that
+ * documented supported signature
+ * 
+ * @param  {Function} method
+ * @return {Function}
+ * @remark
+ * 
+    var fn = doc(function() {
+        return this.when('*', function(arg) {
+            return [arg.toString()];
+        }).when('string', function(s) {
+            return [s];
+        }).invoke(function(name) {
+            return name;
+        });
+    });
+ */
+function doc(method) {
+    return function function_dot__sig__() {
+        var va = varArg(arguments, this);
+        function_dot__sig__.__sig__ = va.signatures();
+        return method.call(va);
+    };
+}
+

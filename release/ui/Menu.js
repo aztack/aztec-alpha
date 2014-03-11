@@ -46,9 +46,6 @@
         textTemplate = tpl('text'),
         varArg = _arguments.varArg;
     
-    ///helper
-    
-    
     ///impl
     var MenuItem = _type.create('MenuItem', jQuery, {
         init: function(arg) {
@@ -133,7 +130,8 @@
     ///sigils
 // sigils defined in xtemplate but variable or function $root.ui.Menu not found
     MenuItem.sigils = {
-        "text": "a"
+        "text": "a",
+        ".item": ".ui-menu-item"
     };
 
     exports['Menu'] = Menu;

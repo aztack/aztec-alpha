@@ -8,6 +8,7 @@
  * exports:
  * - toArray
  * - varArg
+ * - doc
  * files:
  * - /lang/arguments.js
  * - /lang/arguments.ext.js
@@ -192,7 +193,39 @@
             },
             resolve: function() {
                 getArgs();
+            },
+            signatures: function(){
+                var ret = [], i, len = signatures.length;
+                for(; i < len; ++i) {
+                    ret.push(signatures.types);
+                }
+                return ret;
             }
+        };
+    }
+    
+    /**
+     * return a function with a __sig__ property that
+     * documented supported signature
+     * 
+     * @param  {Function} method
+     * @return {Function}
+     * @remark
+     * var fn = doc(function(){
+        return this.when('*',function(arg){
+            return [arg.toString()];
+        }).when('string', function(s){
+            return [s];
+        }).invoke(function(name){
+            return name;
+        });
+    });
+     */
+    function doc(method){
+        return function function_dot__sig__(){
+            var va = varArg(arguments, this);
+            function_dot__sig__.__sig__ = va.signatures();
+            return method.call(va);
         };
     }
     // /lang/arguments.ext.js
@@ -239,6 +272,7 @@
     
     exports['toArray'] = toArray;
     exports['varArg'] = varArg;
+    exports['doc'] = doc;
     return exports;
 });
 //end of $root.lang.arguments

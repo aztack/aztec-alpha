@@ -161,6 +161,13 @@ function bind(fn, context) {
     };
 }
 
+/**
+ * bindTimeout
+ * @param  {Function} fn
+ * @param  {Any}   context
+ * @param  {Integer}   ms
+ * @return {Function}
+ */
 function bindTimeout(fn, context, ms) {
     if (!isFunction(fn)) {
         throw TypeError(firstArgMustBeFn);
@@ -174,7 +181,8 @@ function bindTimeout(fn, context, ms) {
             args2 = args.concat(_slice.call(arguments));
         }
 
-        setTimeout(function() {
+        var handle = setTimeout(function() {
+            clearTimeout(handle);
             fn.apply(context, args2);
         }, ms);
     };
@@ -441,3 +449,4 @@ function debounce(fn, delay, context) {
         }, delay);
     };
 }
+

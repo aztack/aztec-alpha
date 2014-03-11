@@ -23,9 +23,6 @@ var tpl = _tpl.id$('$root.ui.Menu'),
     textTemplate = tpl('text'),
     varArg = _arguments.varArg;
 
-///helper
-
-
 ///impl
 var MenuItem = _type.create('MenuItem', jQuery, {
     init: function(arg) {

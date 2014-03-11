@@ -6,6 +6,7 @@
  * imports:
  *   _type: $root.lang.type
  *   _obj: $root.lang.object
+ *   _arguments: $root.lang.arguments
  * exports:
  * - Callbacks
  * - noop
@@ -36,11 +37,13 @@
 
 ;define('$root.lang.fn',[
     '$root.lang.type',
-    '$root.lang.object'
+    '$root.lang.object',
+    '$root.lang.arguments'
 ], function (require, exports){
     //'use strict';
     var _type = require('$root.lang.type'),
-        _obj = require('$root.lang.object');
+        _obj = require('$root.lang.object'),
+        _arguments = require('$root.lang.arguments');
     
         ///exports
     
@@ -169,6 +172,13 @@
         };
     }
     
+    /**
+     * bindTimeout
+     * @param  {Function} fn
+     * @param  {Any}   context
+     * @param  {Integer}   ms
+     * @return {Function}
+     */
     function bindTimeout(fn, context, ms) {
         if (!isFunction(fn)) {
             throw TypeError(firstArgMustBeFn);
@@ -182,7 +192,8 @@
                 args2 = args.concat(_slice.call(arguments));
             }
     
-            setTimeout(function() {
+            var handle = setTimeout(function() {
+                clearTimeout(handle);
                 fn.apply(context, args2);
             }, ms);
         };
