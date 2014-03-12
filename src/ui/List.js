@@ -56,7 +56,8 @@ var List = _type.create('List', jQuery, {
 		if (_type.isFunction(clazz)) {
 			this.itemType = clazz;
 		} else {
-			throw Error('setItemType need a function as item constructor!');
+			this.itemType = jQuery;
+			//throw Error('setItemType need a function as item constructor!');
 		}
 	}
 }).statics({

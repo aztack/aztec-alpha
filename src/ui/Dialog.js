@@ -4,7 +4,7 @@
     imports: {
         _type: $root.lang.type,
         _array: $root.lang.array,
-        _str: $root.lang.string,
+        _enum: $root.lang.enumerable,
         _tpl: $root.browser.template,
         _arguments: $root.lang.arguments,
         _drag: $root.ui.draggable,
@@ -67,6 +67,9 @@ var GenericDialog = _type.create('GenericDialog', jQuery, {
             })
             .invoke(function(parent, x, y) {
                 this.trigger(GenericDialog.Events.OnShowAt, [x, y]);
+                if (parent[0] === document.documentElement) {
+                    parent = document.body;
+                }
                 this.css({
                     left: x,
                     top: y
@@ -86,6 +89,12 @@ var GenericDialog = _type.create('GenericDialog', jQuery, {
     },
     setFooter: function(arg) {
         return GenericDialog_setPart(this, 'footer', arg);
+    },
+    bringToFront: function() {
+        return GenericDialog_setLayerPosition(this, 'front');
+    },
+    sendToBack: function() {
+        return GenericDialog_setLayerPosition(this, 'back');
     }
 }).statics({
     DefaultTemplate: tpl('dialog'),
@@ -120,13 +129,26 @@ function GenericDialog_setPart(self, whichPart) {
     return self;
 }
 
+function GenericDialog_setLayerPosition(self, frontOrBack) {
+    var sel = self.sigil('.dialog', true),
+        parent = self.parent(),
+        dialogs = parent.find(sel);
+    if (!dialogs.length) return self;
+    if(frontOrBack == 'front') {
+        self.appendTo(parent);
+    } else if(frontOrBack == 'back'){
+        self.prependTo(parent);
+    }
+    return self;
+}
+
 /**
  * Alert Dialog
  */
 var Alert = _type.create('Alert', GenericDialog, {
     init: function(options) {
         var opts = this.options = options || {};
-        this.base.apply(this, opts);
+        this.base.apply(this, arguments);
         this.header.text(opts.title || '');
         this.buttons = this.sigil('.button');
         Alert_initialize(this);
@@ -190,16 +212,25 @@ function Alert_initialize(self) {
 
     //delegate button click event
     var selector = self.sigil('.button', true);
-    self.footer.delegate(selector, 'click', function(e) {
+    self.delegate(selector, 'click', function(e) {
         var button = $(e.target),
             buttons = self.sigil('.button'),
             index = buttons.index(button[0]),
             caption = button.text();
+
         //trigger event after close so that we can re-open this dialog in event handler
         self.close().trigger(Alert.Events.OnButtonClick, [index, caption]);
     });
 
-    //make dialog dragged with it's title bar
+    //bring dialog to front when active
+    self.on('mousedown', function(e){
+        var target = e.target;
+        //ignore mousedown on footer and it's children
+        if(self.footer[0] == target || self.footer.find(e.target).length) return;
+        self.bringToFront();
+    });
+
+    //make dialog draggable with it's title bar
     _drag.draggable(self.header, self);
     return self;
 }
@@ -222,19 +253,28 @@ Alert.create = function() {
             return ['', content, null, opts];
         })
         .when(function() {
-            return [location.host, 'undefined', null, null];
+            return [location.host, undefined, null, null];
+        })
+        .otherwise(function(){
+            return [location.host, undefined, null, null];
         })
         .invoke(function(title, content, onClose, options) {
             options = options || {};
-            options.title = title.toString();
-            options.content = content.toString();
+            options.title = String(title);
+            options.content = String(content);
             options.onClose = onClose;
             return new Alert(options);
         });
 };
 
+var alertSingleton = null;
+
 function alert() {
-    var d = Alert.create.apply(null, arguments);
-    d.showAt(Alert.Position.Center);
+    if(alertSingleton) {
+        alertSingleton.close().remove();
+        alertSingleton = null;
+    }
+    alertSingleton = Alert.create.apply(null, arguments);
+    alertSingleton.showAt(Alert.Position.Center);
     return d;
 }

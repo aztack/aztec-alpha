@@ -153,7 +153,7 @@ function clazz$methods(methods) {
                     var t = this.base,
                         r;
                     this.base = parentProto.init;
-                    r = method.apply(this, arguments);
+                    r = method.apply(this, arguments);//step into...
                     this.base = t;
                     return r;
                 };

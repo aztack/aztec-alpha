@@ -46,3 +46,6 @@ Alert.create = function(){
 ```
 
 class no meet this requirement can not be auto-created.
+
+`this` value in event handler
+-----------------------------

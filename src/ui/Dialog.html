@@ -10,7 +10,7 @@
                 min-width: 200px;
                 z-index: 10000;
                 background-color: white;
-                box-shadow: 2px 2px 2px #f5f5f5;
+                box-shadow: 2px 2px 10px #bebebe;
                 max-width: 500px;
                 min-height: 150px;
                 min-width: 300px;
@@ -29,7 +29,7 @@
                 -ms-user-select:none;
                 -o-user-select:none;
                 user-select:none;
-                line-height: 24px
+                line-height: 24px;
                 min-height: 24px;
             }
             .ui-dialog-body {
@@ -56,7 +56,7 @@
     </head>
 
     <body>
-        <div xtemplate="$root.ui.Dialog.dialog,delete" sigil-class="GenericDialog" class="ui-dialog" style="display:none">
+        <div xtemplate="$root.ui.Dialog.dialog,delete" sigil-class="GenericDialog" class="ui-dialog" sigil=".dialog" style="display:none">
             <div class="ui-dialog-header" sigil=".header"></div>
             <div class="ui-dialog-body" sigil=".body"></div>
             <div class="ui-dialog-footer" sigil=".footer"></div>
