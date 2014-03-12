@@ -8,7 +8,7 @@
     exports: [
         toArray,
         varArg,
-        doc
+        registerPlugin
     ]
 });
 
@@ -25,13 +25,16 @@ var _slice = Array.prototype.slice,
         "int": _type.isInteger,
         "integer": _type.isInteger,
         "function": "function",
+        "->":"function",
         "boolean": "boolean",
+        "bool": "boolean",
         "object": "object",
         "plainObject": _type.isPlainObject,
         "primitive": _type.isPrimitive,
-        "regexp": _type.isRegExp,
         "emptyObject": _type.isEmptyObject,
+        "{}": _type.isEmptyObject,
         "regex": _type.isRegExp,
+        "regexp": _type.isRegExp,
         "*": _fn.alwaysTrue
     };
 ///exports
@@ -45,6 +48,18 @@ var _slice = Array.prototype.slice,
  */
 function toArray(args, n) {
     return _slice.call(args, n || 0);
+}
+
+function registerPlugin(name, pred) {
+    if(arguments.length < 2) {
+        throw Error('registerPlugin needs 2 parameters');
+    } else if(typeof pred != 'function') {
+        throw Error('registerPlugin needs 2nd parameter to be a function');
+    }
+    name = name.toString();
+    varArgTypeMapping[name] = function(){
+        return !!pred.apply(null, arguments);
+    };
 }
 
 function check(pred, arg) {

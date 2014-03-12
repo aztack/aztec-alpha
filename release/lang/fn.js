@@ -6,7 +6,6 @@
  * imports:
  *   _type: $root.lang.type
  *   _obj: $root.lang.object
- *   _arguments: $root.lang.arguments
  * exports:
  * - Callbacks
  * - noop
@@ -37,13 +36,11 @@
 
 ;define('$root.lang.fn',[
     '$root.lang.type',
-    '$root.lang.object',
-    '$root.lang.arguments'
+    '$root.lang.object'
 ], function (require, exports){
     //'use strict';
     var _type = require('$root.lang.type'),
-        _obj = require('$root.lang.object'),
-        _arguments = require('$root.lang.arguments');
+        _obj = require('$root.lang.object');
     
         ///exports
     

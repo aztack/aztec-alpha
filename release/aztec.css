@@ -177,6 +177,10 @@ background-color: gray; color: #fff;
 .ui-menu-item:hover a {
 color: #fff; text-decoration: none;
 }
+/* $root.ui.Overlay */
+.ui-overlay {
+position: fixed; display: block; width: 100%; height: 100%; opacity: 0.5; background-color: #000;
+}
 /* $root.ui.TagInput */
 .ui-taginput {
 border: 1px solid gray; display: inline-block;

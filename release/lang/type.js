@@ -264,6 +264,12 @@
         }
     }
     
+    /**
+     * create a object with 'proto' as it's __proto__
+     * @param  {Object} proto
+     * @param  {Object}} attributes
+     * @return {Object}
+     */
     function object(proto, attributes) {
         var f = function() {}, result, k;
         f.prototype = proto;

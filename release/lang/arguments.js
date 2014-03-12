@@ -8,7 +8,7 @@
  * exports:
  * - toArray
  * - varArg
- * - doc
+ * - registerPlugin
  * files:
  * - /lang/arguments.js
  * - /lang/arguments.ext.js
@@ -35,13 +35,16 @@
             "int": _type.isInteger,
             "integer": _type.isInteger,
             "function": "function",
+            "->":"function",
             "boolean": "boolean",
+            "bool": "boolean",
             "object": "object",
             "plainObject": _type.isPlainObject,
             "primitive": _type.isPrimitive,
-            "regexp": _type.isRegExp,
             "emptyObject": _type.isEmptyObject,
+            "{}": _type.isEmptyObject,
             "regex": _type.isRegExp,
+            "regexp": _type.isRegExp,
             "*": _fn.alwaysTrue
         };
     ///exports
@@ -57,8 +60,21 @@
         return _slice.call(args, n || 0);
     }
     
+    function registerPlugin(name, pred) {
+        if(arguments.length < 2) {
+            throw Error('registerPlugin needs 2 parameters');
+        } else if(typeof pred != 'function') {
+            throw Error('registerPlugin needs 2nd parameter to be a function');
+        }
+        name = name.toString();
+        varArgTypeMapping[name] = function(){
+            return !!pred.apply(null, arguments);
+        };
+    }
+    
     function check(pred, arg) {
-        var t = varArgTypeMapping[pred], i,
+        var t = varArgTypeMapping[pred],
+            i,
             regexMatch, pattern;
         if (typeof t == 'string') {
             if (typeof arg != t) {
@@ -77,8 +93,8 @@
             if (regexMatch) {
                 if (arg.length > 0) {
                     pattern = regexMatch[1];
-                    if(pattern == '*') return true;
-                    for(i = 0; i < arg.length; ++i){
+                    if (pattern == '*') return true;
+                    for (i = 0; i < arg.length; ++i) {
                         if (!check(varArgTypeMapping[pattern], arg[i])) {
                             return false;
                         }
@@ -134,7 +150,8 @@
                 paramCount = sig.types.length;
                 match = true;
                 //iterate over every type of current signature
-                for (; (j === 0 && paramCount === 0) || j < paramCount; ++j) {
+                for (;
+                    (j === 0 && paramCount === 0) || j < paramCount; ++j) {
                     if (paramCount !== args.length) {
                         match = false;
                         break;
@@ -149,10 +166,10 @@
                 }
                 if (match) {
                     ret = sig.fn.apply(context, args);
-                    if(ret) {
-                        if(typeof ret.length == 'undefined'){
+                    if (ret) {
+                        if (typeof ret.length == 'undefined') {
                             return [ret];
-                        } else if(_type.isArray(ret)){
+                        } else if (_type.isArray(ret)) {
                             return ret;
                         } else {
                             return toArray(ret);
@@ -194,9 +211,10 @@
             resolve: function() {
                 getArgs();
             },
-            signatures: function(){
-                var ret = [], i, len = signatures.length;
-                for(; i < len; ++i) {
+            signatures: function() {
+                var ret = [],
+                    i, len = signatures.length;
+                for (; i < len; ++i) {
                     ret.push(signatures.types);
                 }
                 return ret;
@@ -211,18 +229,19 @@
      * @param  {Function} method
      * @return {Function}
      * @remark
-     * var fn = doc(function(){
-        return this.when('*',function(arg){
-            return [arg.toString()];
-        }).when('string', function(s){
-            return [s];
-        }).invoke(function(name){
-            return name;
+     * 
+        var fn = doc(function() {
+            return this.when('*', function(arg) {
+                return [arg.toString()];
+            }).when('string', function(s) {
+                return [s];
+            }).invoke(function(name) {
+                return name;
+            });
         });
-    });
      */
-    function doc(method){
-        return function function_dot__sig__(){
+    function doc(method) {
+        return function function_dot__sig__() {
             var va = varArg(arguments, this);
             function_dot__sig__.__sig__ = va.signatures();
             return method.call(va);
@@ -272,7 +291,7 @@
     
     exports['toArray'] = toArray;
     exports['varArg'] = varArg;
-    exports['doc'] = doc;
+    exports['registerPlugin'] = registerPlugin;
     return exports;
 });
 //end of $root.lang.arguments

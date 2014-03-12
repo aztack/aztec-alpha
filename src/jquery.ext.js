@@ -1,6 +1,10 @@
 ({
     description: 'jQuery Sigil Extension',
     namespace: jQuery,
+    imports: {
+        _type: $root.lang.type,
+        _object: $root.lang.object
+    },
     notransform: true
 });
 
@@ -44,7 +48,7 @@ if (typeof jQuery !== 'undefined') {
         }
         return returnSelector ? sigil : this.find(sigil);
     };
-    
+
     /**
      * jQuery - Get Width of Element when Not Visible (Display: None)
      * http://stackoverflow.com/questions/1472303/jquery-get-width-of-element-when-not-visible-display-none
@@ -70,4 +74,46 @@ if (typeof jQuery !== 'undefined') {
         });
         return dim;
     };
-}
+
+    jQuery.fn.opts = function(path) {
+        return _object.tryget(path, this.options || {});
+    };
+
+    function extractCreateOptions(ele, prefix) {
+        var optionsFromAttributes = {},
+            attrs = ele.attributes,
+            name, path, attrNode;
+
+        //gather creat options from element's attributes
+        for (var i in attrs) {
+            attrNode = attrs[i];
+            name = attrNode.name;
+            if (name.indexOf(prefix) < 0) continue;
+            path = name.replace(prefix + '-', '').replace('-', '.');
+            _object.tryset(optionsFromAttributes, path, attrNode.value);
+        };
+    }
+
+    /**
+     * create $root.ui.* class instance from attributed dom element
+     * @param  {HTMLElement} ele
+     * @return {jQuery}
+     */
+    jQuery.fromElement = function(ele, callback, opts) {
+        var typenamePath = ele.getAttribute('az-typename');
+        if (!_type.isElement(ele)) {
+            throw Error('fromElement need first parameter to be a HTMLElement');
+        } else if (!typenamePath) {
+            return jQuery(ele);
+        }
+        if (ele.attributes.length == 0) return jQuery(ele);
+        opts = opts || {};
+
+        //TODO: aync loading
+        require('$root.' + typenamePath, function(clazz) {
+            var instance = !_type.isFunction(clazz.create) ?
+                null : clazz.create(extractCreateOptions(ele, opts.prefix || 'az'));
+            callback && callback(instance);
+        });
+    }
+} //we have jQuery

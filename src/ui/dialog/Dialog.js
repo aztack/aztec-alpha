@@ -125,10 +125,9 @@ function GenericDialog_setPart(self, whichPart) {
  */
 var Alert = _type.create('Alert', GenericDialog, {
     init: function(options) {
-        //if(!options) return this;
-        this.options = options || {};
-        this.base.apply(this, arguments);
-        this.header.text(this.options.title || '');
+        var opts = this.options = options || {};
+        this.base.apply(this, opts);
+        this.header.text(opts.title || '');
         this.buttons = this.sigil('.button');
         Alert_initialize(this);
     },
@@ -205,7 +204,7 @@ function Alert_initialize(self) {
     return self;
 }
 
-function alert() {
+Alert.create = function() {
     return varArg(arguments, this)
         .when('*', function(content) {
             return ['', content, null, null];
@@ -230,8 +229,12 @@ function alert() {
             options.title = title.toString();
             options.content = content.toString();
             options.onClose = onClose;
-            var d = new Alert(options);
-            d.showAt(Alert.Position.Center);
-            return d;
+            return new Alert(options);
         });
+};
+
+function alert() {
+    var d = Alert.create.apply(null, arguments);
+    d.showAt(Alert.Position.Center);
+    return d;
 }
