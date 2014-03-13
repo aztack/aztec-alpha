@@ -117,4 +117,15 @@
 
     //create root namespace
     createNS('aztec');
+    createNS('aztec.browser.dom');
+
+    /**
+     * domready
+     */
+    
+    var doc = document;
+
+    if(doc.readState == 'complete') {
+
+    }
 }(this));

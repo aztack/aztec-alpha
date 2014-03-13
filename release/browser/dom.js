@@ -116,16 +116,6 @@
         return ReadyToAttach(s, tag);
     }
     
-    
-    /**
-     * domReady
-     * @param  {Function} fn [description]
-     * @return {[type]}      [description]
-     */
-    function domReady(fn) {
-        //TODO
-    }
-    
     function removeWhiteTextNode(node) {
         var child, next;
         if (!node) return;

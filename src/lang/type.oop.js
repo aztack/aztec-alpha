@@ -26,6 +26,7 @@ function instance$is(t) {
     return false;
 }
 
+var objectToStringValue = '[object Object]';
 /**
  * print object in format #<typename a=1 b="s">
  */
@@ -36,12 +37,13 @@ function instance$toString() {
     for (k in this) {
         if (this.hasOwnProperty(k)) {
             v = this[k];
+
             if (isString(v)) {
-                s.push(' ' + k + '="' + v + '"');
+                s.push('\n  ' + k + '="' + v + '"');
             } else if (isFunction(v)) {
                 continue;
             } else {
-                s.push(' ' + k + '=' + v);
+                s.push('\n  ' + k + '=' + typename(v));
             }
         }
     }
@@ -153,7 +155,7 @@ function clazz$methods(methods) {
                     var t = this.base,
                         r;
                     this.base = parentProto.init;
-                    r = method.apply(this, arguments);//step into...
+                    r = method.apply(this, arguments); //step into...
                     this.base = t;
                     return r;
                 };
@@ -227,7 +229,7 @@ function Class(typename, parent) {
         var ret, init;
         this.getClass = instance$getClass;
         this.toString = instance$toString;
-        this.methods = instance$methods;
+        this.methods  = instance$methods;
         this.is = instance$is;
         if (isFunction(_.prototype.init)) {
             init = this.init;

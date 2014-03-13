@@ -35,7 +35,7 @@
             "int": _type.isInteger,
             "integer": _type.isInteger,
             "function": "function",
-            "->":"function",
+            "->": "function",
             "boolean": "boolean",
             "bool": "boolean",
             "object": "object",
@@ -61,13 +61,13 @@
     }
     
     function registerPlugin(name, pred) {
-        if(arguments.length < 2) {
+        if (arguments.length < 2) {
             throw Error('registerPlugin needs 2 parameters');
-        } else if(typeof pred != 'function') {
+        } else if (typeof pred != 'function') {
             throw Error('registerPlugin needs 2nd parameter to be a function');
         }
         name = name.toString();
-        varArgTypeMapping[name] = function(){
+        varArgTypeMapping[name] = function() {
             return !!pred.apply(null, arguments);
         };
     }
@@ -130,12 +130,25 @@
      *     }
      */
     function varArg(args, context) {
-        var signatures = [];
+        var signatures = [],
+            otherwise;
+    
+        function postprocess(ret) {
+            if (ret) {
+                if (typeof ret.length == 'undefined') {
+                    return [ret];
+                } else if (_type.isArray(ret)) {
+                    return ret;
+                } else {
+                    return toArray(ret);
+                }
+            }
+        }
     
         function getArgs() {
             var i = 0,
                 j = 0,
-                t,
+                t, f,
                 sigCount = signatures.length,
                 paramCount,
                 sig,
@@ -166,17 +179,12 @@
                 }
                 if (match) {
                     ret = sig.fn.apply(context, args);
-                    if (ret) {
-                        if (typeof ret.length == 'undefined') {
-                            return [ret];
-                        } else if (_type.isArray(ret)) {
-                            return ret;
-                        } else {
-                            return toArray(ret);
-                        }
-                    }
-                    return ret;
+                    return postprocess(ret);
                 }
+            }
+            if (typeof otherwise == 'function') {
+                ret = otherwise.apply(context, args);
+                return postprocess(ret);
             }
             return [];
         }
@@ -188,6 +196,10 @@
                     fn: fn,
                     types: types
                 });
+                return this;
+            },
+            otherwise: function(fn) {
+                otherwise = fn;
                 return this;
             },
             bind: function(func) {
