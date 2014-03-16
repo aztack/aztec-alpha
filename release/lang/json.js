@@ -335,6 +335,7 @@
     
     exports['parse'] = parse;
     exports['stringify'] = stringify;
+    exports.__doc__ = "JSON";
     return exports;
 });
 //end of $root.lang.json

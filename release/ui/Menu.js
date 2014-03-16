@@ -136,6 +136,7 @@
 
     exports['Menu'] = Menu;
     exports['MenuItem'] = MenuItem;
+    exports.__doc__ = "Menu";
     return exports;
 });
 //end of $root.ui.Menu

@@ -654,6 +654,7 @@
 //     exports['Integer'] = Integer;
     exports['Class'] = Class;
     exports['create'] = create;
+    exports.__doc__ = "JavaScript Type System Supplement";
     return exports;
 });
 //end of $root.lang.type

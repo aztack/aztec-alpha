@@ -191,6 +191,7 @@
     
     exports['draggable'] = draggable;
     exports['Draggable'] = Draggable;
+    exports.__doc__ = "Draggable";
     return exports;
 });
 //end of $root.ui.draggable

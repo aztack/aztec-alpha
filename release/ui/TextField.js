@@ -168,6 +168,7 @@
 
     exports['TextField'] = TextField;
     exports['placeholderPollyfill'] = placeholderPollyfill;
+    exports.__doc__ = "TextField";
     return exports;
 });
 //end of $root.ui.TextField

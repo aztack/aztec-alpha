@@ -216,6 +216,7 @@
     exports['toArray'] = toArray;
     exports['format'] = format;
     exports['isHtmlFragment'] = isHtmlFragment;
+    exports.__doc__ = "String Utils";
     return exports;
 });
 //end of $root.lang.string

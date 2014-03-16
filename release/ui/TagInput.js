@@ -152,6 +152,7 @@
 
     exports['Tag'] = Tag;
     exports['TagInput'] = TagInput;
+    exports.__doc__ = "TagInput";
     return exports;
 });
 //end of $root.ui.TagInput

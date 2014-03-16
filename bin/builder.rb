@@ -280,6 +280,10 @@ module Aztec
             a <=> b
         end
 
+        def release_path
+            Utils.namespace_to_file_path namespace
+        end
+
         attr_reader :config
         attr_reader :source
         
@@ -379,6 +383,7 @@ module Aztec
                     c = c.to_comment unless declared?(name)
                     c
                 end.join("\n").lstrip
+                ctx[:exports] << "\n" + ("exports.__doc__ = " + @config['description'].inspect + ";").indent(4)
             else
                 ctx[:exports] = ''
             end
@@ -488,12 +493,14 @@ module Aztec
             @exclude = opt['exclude'] || []
             @verbose = opt['verbose'] || false
             @styles = []
+            @output_dir = ''
             JsModule.src_dir = src_dir
             init
         end
 
         attr_reader :dependency
-        attr_reader :src_dirw
+        attr_reader :src_dir
+        attr_accessor :output_dir
 
         def scan
             Dir["#{@src_dir}/**/*.js"].each do |js_file|
@@ -598,6 +605,19 @@ module Aztec
 
         def dependency_hash
             @dependency.tsort
+        end
+
+        def js_dependency_module
+            map = @modules.inject({}) do |map, (ns, mod)|
+                map[ns] = "#{@output_dir}/" + mod.first.release_path+ ".js"
+                map
+            end
+            [
+                "\n;define('$root.config',function(_, exports){",
+                "    exports.moduleDependency = #{map.to_json};",
+                "    return exports;",
+                "});"
+            ].join "\n"
         end
 
         def dependency_of(mod, include_self = false)

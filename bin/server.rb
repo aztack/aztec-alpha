@@ -44,6 +44,8 @@ $man.release(File.absolute_path("#{$ROOT}/release"), true)
 $stdout.puts "Done!"
 
 set :public_folder, $ROOT
+set :bind, '192.168.56.1'
+set :port, 80
 
 get "/modules" do
     $man.dependency.to_json
@@ -96,6 +98,23 @@ get "/styles/:module" do
     m = params[:module]
     content_type = "text/css"
     $man.css_with_dependency m
+end
+
+get "/a.js" do
+    content_type "text/javascript"
+    "alert('a');"
+end
+
+get "/b.js" do
+    content_type "text/javascript"
+    "alert('b');"
+end
+
+get "/aztec.js" do
+    content_type "text/javascript";
+    code = '';
+    code << $man["$root"].to_amd
+    code << $man.js_dependency_module
 end
 
 __END__

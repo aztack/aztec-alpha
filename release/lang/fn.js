@@ -481,6 +481,7 @@
     exports['memoize'] = memoize;
     exports['wrap'] = wrap;
     exports['compose'] = compose;
+    exports.__doc__ = "Function";
     return exports;
 });
 //end of $root.lang.fn

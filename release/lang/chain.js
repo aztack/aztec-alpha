@@ -65,6 +65,7 @@ function _(objs) {
 }
     
     exports['_'] = _;
+    exports.__doc__ = "Chain";
     return exports;
 });
 //end of $root.lang.chain

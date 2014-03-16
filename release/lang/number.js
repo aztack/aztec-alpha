@@ -92,6 +92,7 @@
     exports['random'] = random;
     exports['max'] = max;
     exports['min'] = min;
+    exports.__doc__ = "Number Utils";
     return exports;
 });
 //end of $root.lang.number

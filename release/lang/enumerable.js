@@ -270,6 +270,7 @@
     exports['map'] = map;
     exports['compact'] = compact;
     exports['pluck'] = pluck;
+    exports.__doc__ = "Enumerable Interface";
     return exports;
 });
 //end of $root.lang.enumerable

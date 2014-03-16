@@ -445,6 +445,7 @@ function $(arg, parent) {
     
     exports['$'] = $;
     exports['_querySelectorAll'] = _querySelectorAll;
+    exports.__doc__ = "Query Selector";
     return exports;
 });
 //end of $root.browser.query

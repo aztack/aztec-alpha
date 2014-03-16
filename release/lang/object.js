@@ -151,6 +151,7 @@
     exports['tryset'] = tryset;
     exports['pairs'] = pairs;
     exports['fromPairs'] = fromPairs;
+    exports.__doc__ = "Object utils";
     return exports;
 });
 //end of $root.lang.object

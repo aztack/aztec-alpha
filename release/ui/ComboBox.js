@@ -103,6 +103,7 @@ function ComboBox_initialize(self) {
     ///sigils
 
     exports['ComboBox'] = ComboBox;
+    exports.__doc__ = "ComboBox";
     return exports;
 });
 //end of $root.ui.ComboBox

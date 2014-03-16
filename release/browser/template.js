@@ -125,6 +125,7 @@
     exports['set'] = set;
     exports['get'] = get;
     exports['id$'] = id$;
+    exports.__doc__ = "Templating";
     return exports;
 });
 //end of $root.browser.template

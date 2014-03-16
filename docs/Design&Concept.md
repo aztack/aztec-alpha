@@ -5,8 +5,9 @@ Module
 ======
 Define module
 --------------
-
-**Module Descriptor***
+**Module Descriptor**
+**Module Priority**
+**Module Naming**
 
 Auto-generated code
 -------------------

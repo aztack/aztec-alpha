@@ -77,6 +77,7 @@
     });
     
     exports['List'] = List;
+    exports.__doc__ = "List";
     return exports;
 });
 //end of $root.ui.List

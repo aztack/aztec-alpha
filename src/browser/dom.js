@@ -21,11 +21,11 @@ function ReadyToAttach(node, defaultParent) {
     return {
         node: node,
         append: function(target) {
-            (target || defaultParent).appendChild(s);
+            (target || defaultParent).appendChild(node);
         },
         prepend: function(target) {
             var where = target || defaultParent;
-            where.insertBefore(s, where.firstChild);
+            where.insertBefore(node, where.firstChild);
         }
     };
 }
@@ -34,10 +34,10 @@ function ReadyToAttach(node, defaultParent) {
  * create a script tag ready to attach to dom
  * @param  {String} src url of script
  * @param  {Function} cbk callback when script loaded or error occured
- * @param  {Object} opt {async,charset}
+ * @param  {Object} opt {async,charset,removeAfterLoaded}
  * @return {Object} {node,append,prepend}
  */
-function script(src, cbk, opt) {
+function script(src, cbk, opts) {
     var tag = document.getElementsByTagName('head')[0] || document.documentElement,
         s = document.createElement('script'),
         loaded = false;
@@ -46,16 +46,19 @@ function script(src, cbk, opt) {
         var state = this.readyState;
         if (!loaded && (!state || state == 'loaded' || state == 'complete')) {
             loaded = true;
-            cbk && cbk(e);
+            if (typeof cbk == 'undefined') cbk.call(this, e);
 
             s.onload = s.onreadystatechange = s.onerror = null;
             tag.removeChild(s);
         }
     }
-
+    opts = opts || {};
+    opts.removeAfterLoaded = opts.removeAfterLoaded || true;
     s.src = src;
-    s.async = opt.async || '';
-    if (opt.charset) s.charset = opt.charset;
+    if (typeof opts.async == 'boolean') {
+        s.async = opts.async;
+    }
+    if (opts.charset) s.charset = opts.charset;
     s.onreadystatechange = s.onload = s.onerror = eventHandler;
 
     return ReadyToAttach(s, tag);
@@ -129,7 +132,7 @@ function removeWhiteTextNode(node) {
 }
 
 function nodeName(node, expected) {
-    return node && node.nodeName && node.nodeName.toLowerCase() == exports.toLowerCase();
+    return node && node.nodeName && node.nodeName.toLowerCase() == expected.toLowerCase();
 }
 
 function getStyle(node, prop, pseudo) {
@@ -149,7 +152,7 @@ function getStyle(node, prop, pseudo) {
 function findOffsetParent(node) {
     var docEle = document.documentElement,
         offsetParent = node.offsetParent || docEle;
-    while (offsetParent && nodeName(offsetParent, 'html') && getStyle(offsetParent,'position') == 'static') {
+    while (offsetParent && nodeName(offsetParent, 'html') && getStyle(offsetParent, 'position') == 'static') {
         offsetParent = node.offsetParent;
     }
     return offsetParent || docEle;

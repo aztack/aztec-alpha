@@ -53,6 +53,7 @@
     
     exports['get'] = get;
     exports['set'] = set;
+    exports.__doc__ = "Location";
     return exports;
 });
 //end of $root.browser.location

@@ -278,6 +278,7 @@
     exports['toArray'] = toArray;
     exports['varArg'] = varArg;
     exports['registerPlugin'] = registerPlugin;
+    exports.__doc__ = "Arguments Utils";
     return exports;
 });
 //end of $root.lang.arguments

@@ -119,6 +119,7 @@
     }
     
     exports['create'] = create;
+    exports.__doc__ = "Range, immutable";
     return exports;
 });
 //end of $root.lang.range

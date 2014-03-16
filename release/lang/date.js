@@ -111,6 +111,7 @@
     exports['thisYear'] = thisYear;
     exports['isLeapYear'] = isLeapYear;
     exports['daysOfMonth'] = daysOfMonth;
+    exports.__doc__ = "Date Utils";
     return exports;
 });
 //end of $root.lang.date

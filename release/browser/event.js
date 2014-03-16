@@ -165,6 +165,7 @@
     
     exports['stopEvent'] = stopEvent;
     exports['EventEmitter'] = EventEmitter;
+    exports.__doc__ = "Event Utils";
     return exports;
 });
 //end of $root.browser.event

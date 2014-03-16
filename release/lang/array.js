@@ -174,6 +174,7 @@
     exports['strictEqual'] = strictEqual;
     exports['compact'] = compact;
     exports['flatten'] = flatten;
+    exports.__doc__ = "Ruby String like string module";
     return exports;
 });
 //end of $root.lang.array
