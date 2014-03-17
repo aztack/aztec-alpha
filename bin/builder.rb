@@ -246,7 +246,8 @@ module Aztec
         def merge(key, config, merege_method, default)
             a = @config[key] || default.dup
             b = config[key] || default.dup
-            @config[key] = a.send(merege_method, b)
+            c = @config[key] = a.send(merege_method, b)
+            c.uniq! if c.respond_to? :uniq!
         end
     end
 
@@ -269,9 +270,11 @@ module Aztec
             @path = path
             @source = File.read path, :encoding=>'utf-8'
             read_module_config
-            path.sub!(%r|^.*/src|,'')
-            @config['files'] = [path]
+            @config['files'] = [path.sub(%r|^.*/src|,'')]
             parse
+        end
+        def dup
+            m = JsModule.new(@path)
         end
 
         def <=>(other)
@@ -328,7 +331,7 @@ module Aztec
             tpl = is_root ?  "<%=@meta%>\n<%=@original%>\n" : Utils.load_template(:amd)
             eruby = Erubis::Eruby.new tpl
             ctx = Erubis::Context.new
-            module_name = @config.namespace.split('.').last
+            #module_name = @config.namespace.split('.').last
 
             ctx[:name] = name
             imports = @config.imports
@@ -530,7 +533,11 @@ module Aztec
             end
             cfg = m.config
             @modules[m.namespace] << m
-            @dependency[m.namespace] = cfg.imports.nil? ? [] : cfg.imports.values
+            if @dependency[m.namespace].nil?
+                @dependency[m.namespace] = cfg.imports.nil? ? [] : cfg.imports.values
+            else
+                @dependency[m.namespace].concat cfg.imports.values
+            end
             return m
         end
 
@@ -551,9 +558,15 @@ module Aztec
             if others.size.zero?
                 js.puts main.to_amd
             else
+                #tmp = Marshal.load(Marshal.dump(main))
+                #tmp.merge(others)
+                #binding.pry if namespace == '$root.lang.arguments'
                 tmp = main.dup.merge(others)
                 tmp.parse false
                 js.puts tmp.to_amd
+            end
+            if namespace == "$root"
+                js.puts js_dependency_module
             end
             js.string
         end
@@ -597,6 +610,11 @@ module Aztec
                 yield css_file_path if block_given?
                 f.puts styles.string.strip
             end
+            config_file_path = "#{output_dir}/#{Aztec.name('.config.js')}"
+            File.open(config_file_path,'w:utf-8') do |f|
+                yield config_file_path if block_given?
+                f.puts js_dependency_module
+            end
         end
 
         def [](namespace)
@@ -608,13 +626,18 @@ module Aztec
         end
 
         def js_dependency_module
-            map = @modules.inject({}) do |map, (ns, mod)|
-                map[ns] = "#{@output_dir}/" + mod.first.release_path+ ".js"
-                map
+            map = {}
+            depends = {}
+            @modules.each do |ns, mod|
+                map[ns] = "/#{@output_dir}/#{ns}"
+                next if ns == '$root'
+                depends[ns] = dependency_of ns
             end
+            #binding.pry
             [
                 "\n;define('$root.config',function(_, exports){",
-                "    exports.moduleDependency = #{map.to_json};",
+                "    exports.moduleUrls = #{map.to_json};",
+                "    exports.moduleDependency = #{depends.to_json}",
                 "    return exports;",
                 "});"
             ].join "\n"
@@ -647,7 +670,7 @@ module Aztec
 
         def css(mods)
             css = mods.inject("") do |code, mod|
-                binding.pry if code.nil?
+                #binding.pry if code.nil?
                 if self[mod].nil?
                     code
                 else

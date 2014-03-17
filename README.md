@@ -1,4 +1,3 @@
-aztec-alpha
-===========
+The Aztec JavaScript Framework
+==============================
 
-aztec-alpha

@@ -17,6 +17,7 @@
  * - isFunction
  * - isNumber
  * - isInteger
+ * - isFloat
  * - isFinitNumber
  * - isBoolean
  * - isPlainObject
@@ -209,6 +210,15 @@
     function isInteger(arg) {
         //http://stackoverflow.com/questions/3885817/how-to-check-if-a-number-is-float-or-integer
         return typeof arg == 'number' && parseFloat(arg) == parseInt(arg, 10) && !isNaN(arg);
+    }
+    
+    /**
+     * isFloat
+     * @param  {Any}  arg
+     * @return {Boolean} return true if arg is a float number
+     */
+    function isFloat(arg) {
+        return isNumber(arg) && !isInteger(arg) && !isNaN(arg) && isFinite(arg);
     }
     
     
@@ -639,6 +649,7 @@
     exports['isFunction'] = isFunction;
     exports['isNumber'] = isNumber;
     exports['isInteger'] = isInteger;
+    exports['isFloat'] = isFloat;
     exports['isFinitNumber'] = isFinitNumber;
     exports['isBoolean'] = isBoolean;
     exports['isPlainObject'] = isPlainObject;

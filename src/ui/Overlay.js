@@ -20,13 +20,28 @@ var varArg = _arguments.varArg,
 var Overlay = _type.create('Overlay', jQuery, {
 	init: function(options) {
 		varArg(arguments, this)
-			.when(function(){
+			.when(function() {
 				this.options = Overlay.CreateOptions();
 			})
 			.when('plainObject', function(opts) {
 				this.options = opts;
 			}).resolve();
 		this.base(maskTemplate);
+	},
+	setOpacity: function() {
+		return varArg(arguments, this)
+			.when('float', function(f) {
+				return [f];
+			})
+			.when('string', function(s) {
+				return [parseFloat(s)];
+			})
+			.when('*', function() {
+				return [parseFloat(String(s))];
+			})
+			.invoke(function(opacity) {
+				return this.css('opacity', opacity);
+			});
 	}
 }).statics({
 	CreateOptions: function() {
@@ -36,7 +51,7 @@ var Overlay = _type.create('Overlay', jQuery, {
 	}
 });
 
-Overlay.create = function(){
+Overlay.create = function() {
 	return new Overlay();
 };
 

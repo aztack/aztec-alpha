@@ -5,6 +5,7 @@
  * imports:
  *   _fn: $root.lang.fn
  *   _type: $root.lang.type
+ *   _color: $root.lang.color
  * exports:
  * - toArray
  * - varArg
@@ -16,11 +17,13 @@
 
 ;define('$root.lang.arguments',[
     '$root.lang.fn',
-    '$root.lang.type'
+    '$root.lang.type',
+    '$root.lang.color'
 ], function (require, exports){
     //'use strict';
     var _fn = require('$root.lang.fn'),
-        _type = require('$root.lang.type');
+        _type = require('$root.lang.type'),
+        _color = require('$root.lang.color');
     
         ///vars
     var _slice = Array.prototype.slice,
@@ -34,6 +37,7 @@
             "number": "number",
             "int": _type.isInteger,
             "integer": _type.isInteger,
+            "float": _type.isFloat,
             "function": "function",
             "->": "function",
             "boolean": "boolean",
@@ -270,8 +274,27 @@
         return ele && ele.nodeType === 1;
       };
     
-      vat.htmlFragment = function (s) {
-        return typeof s == 'string' && s.charAt(0) === '<' && s.charAt( s.length - 1 ) === '>' && s.length >= 3;
+      vat.jqueryOrElement = function(arg) {
+        return (arg && arg.nodeType === 1) || arg instanceof jQuery;
+      };
+    
+      vat.htmlFragment = function(s) {
+        return typeof s == 'string' && s.charAt(0) === '<' && s.charAt(s.length - 1) === '>' && s.length >= 3;
+      };
+    
+      var rhex1 = /^[0-9a-f]{3}$/ig,
+        rhex2 = /^[0-9a-f]{6}$/ig;
+      vat.hexString = function(s) {
+        return rhex2.text(s) || rhex1.text(s);
+      };
+    
+      vat.color = function(s) {
+        if (!s) return false;
+        if (s.charAt(0) == '#') {
+          return vat.hextString(s.substr(1));
+        } else {
+          return !!_color.hexString(s);
+        }
       };
     }
     

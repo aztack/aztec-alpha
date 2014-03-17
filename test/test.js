@@ -56,7 +56,7 @@ function test(ns, fn) {
         errorCount = 0,
         specs = {
             ___: function(d) {
-                console.log("%c%s", 'font-size:16px' ,d);
+                console.log("%c%s", 'font-size:16px', d);
                 return this;
             },
             anything: function(v, fn) {
@@ -79,10 +79,10 @@ function test(ns, fn) {
                     return check(ret === v, v, ret);
                 }
             },
-            error: function (errorType, fn) {
-                try{
+            error: function(errorType, fn) {
+                try {
                     fn();
-                }catch(e) {
+                } catch (e) {
                     return check(e instanceof errorType, true, true);
                 }
             },
@@ -114,7 +114,7 @@ function test(ns, fn) {
     specs.should = specs;
     specs.maybe = specs;
 
-    define('$root.test.' + ns, [], function(require, _) {
+    define('$root.test.' + ns, [ns], function(require, _) {
         fn(require, specs);
     });
 }

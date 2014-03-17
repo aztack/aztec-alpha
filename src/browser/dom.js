@@ -49,7 +49,9 @@ function script(src, cbk, opts) {
             if (typeof cbk == 'undefined') cbk.call(this, e);
 
             s.onload = s.onreadystatechange = s.onerror = null;
-            tag.removeChild(s);
+            if(opts.removeAfterLoaded){
+                tag.removeChild(s);
+            }
         }
     }
     opts = opts || {};

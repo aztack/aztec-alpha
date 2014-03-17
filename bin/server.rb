@@ -40,22 +40,24 @@ $stdout.puts "Loading JavaScript Module Manager..."
 $man = Aztec::JsModuleManager.new("#{$ROOT}/src",:exclude => ['/ui/'], :verbose => true).scan
 $stdout.puts "Releasing Code..."
 $man.release(File.absolute_path("#{$ROOT}/release"), true)
-#$stdout.puts "Dependency hash:", $man.dependency_hash
+$stdout.puts "Dependency hash:", $man.dependency_hash
 $stdout.puts "Done!"
 
 set :public_folder, $ROOT
-set :bind, '192.168.56.1'
+#set :bind, '192.168.56.1'
 set :port, 80
 
 get "/modules" do
     $man.dependency.to_json
 end
 
-get "/module/:module" do
+get "/release/:module" do
     m = params[:module]
     content_type "text/javascript"
+    m['.js'] = ''
     begin
-        $man[m].to_amd
+        #$man[m].to_amd
+        $man.to_ecma(m)
     rescue => e
         $stderr.puts "#{m} not found!"
         $stderr.puts e.to_s
@@ -113,15 +115,15 @@ end
 get "/aztec.js" do
     content_type "text/javascript";
     code = '';
-    code << $man["$root"].to_amd
-    code << $man.js_dependency_module
+    code << $man.to_ecma('$root')
 end
 
 __END__
 @@test
 <html>
 <body>
-<script type="text/javascript" src="/scripts/<%=@mod%>"></script>
+<script type="text/javascript" src="/aztec.js"></script>
+<script type="text/javascript" src="/release/<%=@mod%>"></script>
 <script type="text/javascript" src="/static/test/test.js"></script>
 <script type="text/javascript" src="/static/test/<%=@mod%>.js"></script>
 </body>

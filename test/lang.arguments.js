@@ -62,7 +62,7 @@ test("$root.lang.arguments", function(require, specs) {
             return jack().valueOf();
         })
         .___('arguments#varArg.array<?>')
-        .it.should.equal([true, false, true], function(){
+        .it.should.equal([true, false, true], function() {
             var a = _arg.varArg([intAry])
                 .when('array<int>', function(a) {
                     return true;
@@ -77,10 +77,19 @@ test("$root.lang.arguments", function(require, specs) {
                 });
 
             var c = _arg.varArg([mixAry])
-                .when('array<*>',function(){
+                .when('array<*>', function() {
                     return true;
                 }).args();
             return [a[0], b, c[0]];
+        })
+        .___('arguments#varArg.color')
+        .it.should.equal([true], function() {
+            var a = _arg.varArg(['red', '#ff0000', '#0ff'])
+                .when('color', 'color', 'color', function() {
+                    return true;
+                })
+                .args();
+            return [a[0]];
         })
         .done();
 });

@@ -74,7 +74,7 @@
     }
     
     function isBlank(s) {
-        return s.match(/^\s*$/);
+        return !!s.match(/^\s*$/);
     }
     
     function lstrip(s) {

@@ -5,8 +5,6 @@
  * namespace: $root
  * files:
  * - /aztec.js
- * - /aztec.ready.js
- * - /aztec.loader.js
  * - /aztec.doc.js
  * imports: {}
  * exports: []
@@ -113,7 +111,7 @@
             onLoaded();
         } else {
             args = notCached.concat(onLoaded);
-            load.call(null, args);
+            load.apply(null, args);
         }
     }
 
@@ -137,7 +135,7 @@
 
     global.define = function(namespace, dependency, factory) {
         var depends, f, len = arguments.length,
-            ns, exported;
+            ns, exported, config;
         if (len < 2 || len > 3) {
             return;
         } else if (len === 2) {
@@ -146,6 +144,11 @@
         } else if (len === 3) {
             depends = dependency;
             f = factory;
+        }
+        config = G[NAMESPAE_ROOT].config;
+        if (config && config.moduleDependency && config.moduleDependency[namespace]) {
+            depends = config.moduleDependency[namespace];
+            depends.shift();
         }
         if (depends.length === 0) {
             ns = createNS(namespace, 'in `define`');
@@ -161,14 +164,15 @@
     };
 
     global.help = function(x) {
-        var t = typeof x.__doc__,
-            d;
-        if (t == 'string') {
-            d = x.__doc__;
+        var d = x.__doc__,
+            t = typeof x.__doc__;
+        if (t == 'undefined' || d === null) {
+            console.log('%cno document found', 'color:red');
+            return;
         } else if (t == 'function') {
             d = x.__doc__();
-        } else if (x.__doc__.length && x.__doc__.join) {
-            d = x.__doc__.join('\n');
+        } else if (d && d.length && d.join) {
+            d = d.join('\n');
         }
         d = d.split('\n');
         console.log('%c%s', 'color:blue', d.shift());
@@ -176,18 +180,127 @@
     };
 
     //create root namespace
-    createNS('aztec ');
+    createNS(NAMESPAE_ROOT);
     //DEBUG
-    global.aztec = G.aztec;
+    global[NAMESPAE_ROOT] = G[NAMESPAE_ROOT];
     if (typeof console == 'undefined') {
         global.console = {
             log: function() {}
         };
     }
 }(this));
-// /aztec.ready.js
+
+define('$root.config', function(_, exports) {
+    function resolve() {
+        if (!exports || !exports.moduleDependency) {
+            return;
+        }
+    }
+    exports.resolveDependency = resolve;
+    return exports;
+});
+
 /**
- * browser.dom.ready, inspired by https://github.com/headjs/headjs
+ * $root.browser.dom.load
+ */
+define('$root.browser.dom', function(require, exports) {
+    var win = window,
+        doc = win.document,
+        dummyScript = doc.createElement('script'),
+        supportAsync = 'async' in dummyScript,
+        supportReadyState = 'readyState' in dummyScript,
+        config = require('$root').config,
+        moduleUrls = null;
+    if (config && config.moduleUrls) {
+        moduleUrls = config.moduleUrls;
+    }
+
+    function loadScript(src, opts) {
+        var node = doc.createElement('script'),
+            loaded = false,
+            head = doc.head || doc.getElementsByTagName('head')[0];
+        opts = opts || {};
+        if (moduleUrls !== null) {
+            src = moduleUrls[src] || moduleUrls[src.replace('.js', '')] || src;
+        }
+
+        node.type = 'text/' + (opts.type || 'javascript');
+        node.charset = opts.charset || 'utf-8';
+        node.onload = node.onreadystatechange = function() {
+            if (!loaded && (!this.readyState || this.readyState == 'loaded' || this.readyState == 'complete')) {
+                loaded = true;
+                node.onload = node.onreadystatechange = null;
+                console.log(src + ' loaded');
+                if (typeof opts.callback == 'function') {
+                    opts.callback.call(node);
+                }
+                if (opts.removeAfterLoaded && head && node.parentNode) {
+                    head.removeChild(node);
+                }
+            }
+        };
+
+        if (supportAsync) {
+            //async=false: parellel downloading, execute in order, non-blocking
+            node.async = false;
+            node.src = src;
+        } else if (supportReadyState) {
+            node.src = src;
+        } else {
+            //defer=true: parellel downloading, execute in order, after dom ready
+            node.defer = true;
+            node.src = src;
+        }
+        head.insertBefore(node, head.lastChild);
+    }
+
+    function load() {
+        var i = 0,
+            args = Array.prototype.slice.call(arguments),
+            len = args.length,
+            callback,
+            config,
+            src;
+
+        if (moduleUrls === null) {
+            config = require('$root').config;
+            if (config && config.moduleUrls) {
+                moduleUrls = config.moduleUrls;
+            }
+        }
+        if (typeof args[len - 1] == 'function') {
+            callback = args.pop();
+            len = args.length;
+        }
+        if (len > 1) {
+            for (; i < len; ++i) {
+                src = '' + args[i];
+                loadScript(src, {
+                    callback: i !== len - 1 ? null : callback
+                });
+            }
+        } else if (len == 1) {
+            if (args[0].splice) {
+                load.apply(exports, args[0]);
+            } else if (typeof args[0] == 'string') {
+                loadScript(args[0], {
+                    callback: callback
+                });
+            } else {
+                throw Error('the only parameter is not an Array');
+            }
+        } else {
+            throw Error('wrong argument list');
+        }
+    }
+
+    exports.load = load;
+    return exports;
+});
+
+/**
+ * $root.browser.dom.ready
+ * $root.browser.dom.isDomReady
  */
 define('$root.browser.dom', function(require, exports) {
     var win = window,
@@ -306,86 +419,6 @@ define('$root.browser.dom', function(require, exports) {
         }
     };
     return exports;
-});
-// /aztec.loader.js
-/**
- * browser.dom.load()
- */
-define('$root.browser.dom', function(require, exports) {
-  var win = window,
-    doc = win.document,
-    dummyScript = doc.createElement('script'),
-    supportAsync = 'async' in dummyScript,
-    supportReadyState = 'readyState' in dummyScript;
-
-  function loadScript(src, opts) {
-    var node = doc.createElement('script'),
-      loaded = false,
-      head = doc.head || doc.getElementsByTagName('head')[0];
-    opts = opts || {};
-
-    node.type = 'text/' + (opts.type || 'javascript');
-    node.charset = opts.charset || 'utf-8';
-    node.onload = node.onreadystatechange = function() {
-      if (!loaded && (!this.readyState || this.readyState == 'loaded' || this.readyState == 'complete')) {
-        loaded = true;
-        node.onload = node.onreadystatechange = null;
-        if (typeof opts.callback == 'function') {
-          opts.callback.call(node);
-        }
-        if (head && node.parentNode) {
-          head.removeChild(node);
-        }
-      }
-    };
-
-    if (supportAsync) {
-      //async=false: parellel downloading, execute in order, non-blocking
-      node.async = false;
-      node.src = src;
-    } else if (supportReadyState) {
-      node.src = src;
-    } else {
-      //defer=true: parellel downloading, execute in order, after dom ready
-      node.defer = true;
-      node.src = src;
-    }
-    head.insertBefore(node, head.lastChild);
-  }
-
-  function load() {
-    var i = 0,
-      args = Array.prototype.slice.call(arguments),
-      len = args.length,
-      callback,
-      src;
-    if (typeof args[len - 1] == 'function') {
-      callback = args.pop();
-    }
-    if (arguments.length > 1) {
-      for (; i < len; ++i) {
-        src = '' + arguments[i];
-        loadScript(src, {
-          callback: callback
-        });
-      }
-    } else if (len == 1) {
-      if (arguments[0].splice) {
-        load.call(exports, arguments[0]);
-      } else if (typeof arguments[0] == 'string') {
-        loadScript(arguments[0], {
-          callback: callback
-        });
-      } else {
-        throw Error('the only parameter is not an Array');
-      }
-    } else {
-      throw Error('wrong argument list');
-    }
-  }
-
-  exports.load = load;
-  return exports;
 });
 // /aztec.doc.js
 /**
