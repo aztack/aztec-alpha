@@ -54,7 +54,7 @@ end
 get "/release/:module" do
     m = params[:module]
     content_type "text/javascript"
-    m['.js'] = ''
+    m.sub!('.js','')
     begin
         #$man[m].to_amd
         $man.to_ecma(m)

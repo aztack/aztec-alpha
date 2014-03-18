@@ -36,6 +36,7 @@
     ///exports
     
     
+    exports.__doc__ = "Keyboard";
     return exports;
 });
 //end of $root.browser.keyboard

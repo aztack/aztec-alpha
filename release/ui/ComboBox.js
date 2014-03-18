@@ -33,7 +33,10 @@
         _menu = require('$root.ui.Menu'),
         _textfield = require('$root.ui.TextField'),
         $ = require('jQuery');
-    
+        
+    ///xtemplate
+    require('$root.browser.template')
+            .set('$root.ui.ComboBox.box',"<div>\n        \n    </div>\n");
     ///vars
 var Menu = _menu.Menu,
   TextField = _textfield.TextField,
@@ -96,7 +99,9 @@ function ComboBox_initialize(self) {
     self.textfield.val(text);
   });
 }
-    
+        
+    ///sigils
+
     exports['ComboBox'] = ComboBox;
     exports.__doc__ = "ComboBox";
     return exports;

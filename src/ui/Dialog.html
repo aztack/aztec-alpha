@@ -65,7 +65,7 @@
         <button xtemplate="$root.ui.Dialog.alertButton,delete" class="ui-dialog-button" sigil=".button" sigil-class="Alert" style="display:none"></button>
 
         <script>
-            define('$root.demo.ui.Dialog', function(require) {
+            define('$root.demo.ui.Dialog', ['$root.ui.Dialog'],function(require) {
                 var dialog = require('$root.ui.Dialog'),
                     doc = require('$root.lang.arguments').doc,
                     GenericDialog = dialog.GenericDialog,

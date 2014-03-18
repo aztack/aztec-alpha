@@ -34,7 +34,11 @@
         _enum = require('$root.lang.enumerable'),
         _list = require('$root.ui.List'),
         $ = require('jQuery');
-    
+        
+    ///xtemplate
+    require('$root.browser.template')
+            .set('$root.ui.Menu.menu',"<ul class=\"ui-menu\"></ul>\n")
+            .set('$root.ui.Menu.item',"<li class=\"ui-menu-item unselectable\"><span class=\"ui-menu-item-text\"><a href=\"javascript:;\"></a></span></li>\n");
         ///vars
     var tpl = _tpl.id$('$root.ui.Menu'),
         menuTemplate = tpl('menu'),
@@ -122,7 +126,14 @@
     }
     
     ///exports
-    
+        
+    ///sigils
+// sigils defined in xtemplate but variable or function $root.ui.Menu not found
+    MenuItem.sigils = {
+        "text": "a",
+        ".item": ".ui-menu-item"
+    };
+
     exports['Menu'] = Menu;
     exports['MenuItem'] = MenuItem;
     exports.__doc__ = "Menu";

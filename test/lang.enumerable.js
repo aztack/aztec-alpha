@@ -47,8 +47,9 @@ test("$root.lang.type", function(require, specs) {
         })
         .___('enum#find')
         .it.should.equal([1, 2, 4, 1], function() {
-            var a = _enum.find(obj, f).value,
-                b = _enum.findAll(obj, f);
+            var a = _enum.find(obj, f),
+                b;
+            b = _enum.findAll(obj, f, false);
             return _enum.pluck(b, 'value').concat(a);
         })
         .___('enum#compact')

@@ -379,6 +379,7 @@ module Aztec
             ctx[:original] = is_root ? @source : @source.indent(4)
             ctx[:usestrict] = "//'use strict';"
             
+            doc = "\n" + ("exports.__doc__ = " + @config['description'].inspect + ";").indent(4)
             exports = @config.exports
             if not exports.size.zero?
                 ctx[:exports] = @config.exports.map do |name|
@@ -386,9 +387,9 @@ module Aztec
                     c = c.to_comment unless declared?(name)
                     c
                 end.join("\n").lstrip
-                ctx[:exports] << "\n" + ("exports.__doc__ = " + @config['description'].inspect + ";").indent(4)
+                ctx[:exports] << doc
             else
-                ctx[:exports] = ''
+                ctx[:exports] = doc
             end
             ctx[:returnstatement] = 'return exports;'
             code = eruby.evaluate ctx
@@ -473,7 +474,8 @@ module Aztec
         end
 
         def load_xtemplate
-            xtpl_path = JsModule.src_dir + @path.sub(/\.js$/,'.html')
+            #xtpl_path = JsModule.src_dir + @path.sub(/\.js$/,'.html')
+            xtpl_path = @path.sub(/\.js$/,'.html')
             return nil unless File.exists?(xtpl_path)
             XTemplate.new xtpl_path
         end
@@ -629,7 +631,7 @@ module Aztec
             map = {}
             depends = {}
             @modules.each do |ns, mod|
-                map[ns] = "/#{@output_dir}/#{ns}"
+                map[ns] = "/release/#{ns}"
                 next if ns == '$root'
                 depends[ns] = dependency_of ns
             end
@@ -706,10 +708,13 @@ module Aztec
         end
 
         def _dependency_of(mod, include_self)
-            m = @modules[mod].sort.first
-            return include_self ? [mod] : [] if m.nil? or m.config.imports.empty?
-            cfg = m.config
-            imports = cfg.imports.values
+            m = @modules[mod].sort
+            return include_self ? [mod] : [] if m.nil? or m.size.zero?
+            imports = m.inject([]) do |all,md|
+                all.concat md.config.imports.values
+                all
+            end
+            return include_self ? [mod] : [] if imports.empty?
             ret = imports.inject([]){|s,im| s |= _dependency_of(im, include_self)}
             all = (ret + imports).uniq
             (include_self ? all << mod : all).uniq

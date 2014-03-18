@@ -32,6 +32,7 @@
  * - Undefined
  * - Integer
  * - Class
+ * - Classes
  * - create
  * files:
  * - /lang/type.js
@@ -308,6 +309,8 @@
     /**
      *  Object-Orientated Programming Support
      */
+    var Classes = {};
+    
     function instance$is(t) {
         var clazz = this.getClass();
         if (clazz === Object && t == Object) {
@@ -519,7 +522,7 @@
     /**
      * The Ultimate `Class`
      */
-    function Class(typename, parent) {
+    function Class(name, parent) {
         // use underscore as name for less debugging noise
         function instance$getClass() {
             return _;
@@ -550,7 +553,7 @@
         _.aliases = clazz$aliases;
         _.statics = clazz$statics;
         _.typename = function() {
-            return typename;
+            return name;
         };
         _.parent = function() {
             return parent || _.prototype.constructor;
@@ -565,6 +568,15 @@
             //this will make extends jQuery failed
             //cause jQuery will call constructor to create new instance
             //_.prototype.constructor = Class;
+            
+            /**
+             * maintain inheritance hierarchy
+             */
+            var parentName = (parent.typename && parent.typename()) || typename(parent);
+            if(!Classes[parentName]) {
+                Classes[parentName] = {};
+            }
+            Classes[parentName][name] = _;
         }
         return _;
     }
@@ -664,6 +676,7 @@
 //     exports['Undefined'] = Undefined;
 //     exports['Integer'] = Integer;
     exports['Class'] = Class;
+    exports['Classes'] = Classes;
     exports['create'] = create;
     exports.__doc__ = "JavaScript Type System Supplement";
     return exports;

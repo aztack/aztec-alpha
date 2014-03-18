@@ -8,7 +8,7 @@
     exports: [
         BasicColor,
         ExtendedColor,
-        hexString,
+        hexColorString,
         hexAbbr
     ]
 });
@@ -690,7 +690,7 @@ function f(keyName, valueName) {
 _enum.inject(_basicColor, BasicColor, f('name', 'value'));
 _enum.inject(_extendedColor, ExtendedColor, f('name', 'value'));
 
-function hexString(englishName) {
+function hexColorString(englishName) {
     var name = englishName.toLowerCase();
     return BasicColor[name] || ExtendedColor[name];
 }

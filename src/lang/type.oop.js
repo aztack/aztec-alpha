@@ -4,10 +4,13 @@
     namespace: $root.lang.type,
     exports: [
         Class,
+        Classes,
         create
     ],
     priority: 1
 });
+
+var Classes = {};
 
 function instance$is(t) {
     var clazz = this.getClass();
@@ -220,7 +223,7 @@ function clazz$readonly(name, initValue, force) {
 /**
  * The Ultimate `Class`
  */
-function Class(typename, parent) {
+function Class(name, parent) {
     // use underscore as name for less debugging noise
     function instance$getClass() {
         return _;
@@ -251,7 +254,7 @@ function Class(typename, parent) {
     _.aliases = clazz$aliases;
     _.statics = clazz$statics;
     _.typename = function() {
-        return typename;
+        return name;
     };
     _.parent = function() {
         return parent || _.prototype.constructor;
@@ -266,6 +269,15 @@ function Class(typename, parent) {
         //this will make extends jQuery failed
         //cause jQuery will call constructor to create new instance
         //_.prototype.constructor = Class;
+        
+        /**
+         * maintain inheritance hierarchy
+         */
+        var parentName = (parent.typename && parent.typename()) || typename(parent);
+        if(!Classes[parentName]) {
+            Classes[parentName] = {};
+        }
+        Classes[parentName][name] = _;
     }
     return _;
 }

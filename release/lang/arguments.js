@@ -284,16 +284,16 @@
     
       var rhex1 = /^[0-9a-f]{3}$/ig,
         rhex2 = /^[0-9a-f]{6}$/ig;
-      vat.hexString = function(s) {
-        return rhex2.text(s) || rhex1.text(s);
+      vat.hexColorString = function(s) {
+        return rhex2.test(s) || rhex1.test(s);
       };
     
       vat.color = function(s) {
         if (!s) return false;
         if (s.charAt(0) == '#') {
-          return vat.hextString(s.substr(1));
+          return vat.hexColorString(s.substr(1));
         } else {
-          return !!_color.hexString(s);
+          return !!_color.hexColorString(s);
         }
       };
     }
