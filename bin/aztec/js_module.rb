@@ -107,7 +107,7 @@ module Aztec
                 end
                 js.join("\n").indent(4) + ';'
                 ctx[:xtemplate_amd] = ["require('$root.browser.template')"].concat(js).join("\n").indent(4) + ';'
-                ctx[:xtemplate_amd] = ["_tpl"].concat(js).join("\n").indent(4) + ';'
+                ctx[:xtemplate_requirejs] = ["_tpl"].concat(js).join("\n").indent(4) + ';'
                 imports['_tpl'] = '$root.browser.template';
             else
                 ctx[:xtemplate_amd] = ctx[:xtemplate_requirejs]  = ''
