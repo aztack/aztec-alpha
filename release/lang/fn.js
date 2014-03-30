@@ -7,7 +7,6 @@
  *   _type: $root.lang.type
  *   _obj: $root.lang.object
  * exports:
- * - Callbacks
  * - noop
  * - alwaysTrue
  * - alwaysFalse
@@ -49,82 +48,6 @@
         firstArgMustBeFn = 'first argument must be a function';
     
     /**
-     * Callbacks
-     */
-    function Callbacks() {
-        var list = [],
-            proto = {};
-    
-        /**
-         * Callback#add
-         */
-        proto.add = function() {
-            var i = 0,
-                fn,
-                len = arguments.length;
-            for (; i < len; ++i) {
-                fn = arguments[i];
-                if (_type.isFunction(fn)) {
-                    list.push(fn);
-                }
-            }
-            return this;
-        };
-    
-        /**
-         * fireAll
-         * fire all registered functions with given args on context
-         * @param  {Any} context
-         * @param  {Array} args
-         * @return {Callbacks}
-         */
-        proto.fireAll = function(context, args) {
-            var i = 0,
-                fn,
-                len = list.length;
-            for (; i < len; ++i) {
-                fn = list[i];
-                fn.apply(context, args);
-            }
-            return this;
-        };
-    
-        proto.fire = function(context, args) {
-            var i = 0,
-                fn,
-                len = list.length;
-            for (; i < len; ++i) {
-                fn = list[i];
-                if (fn.apply(context, args) === false) {
-                    break;
-                }
-            }
-            return this;
-        };
-    
-        /**
-         * remove
-         * remove given callback from list or callback at given position
-         * @return {Callbacks}
-         */
-        proto.remove = function(callbackOrIndex) {
-            var index;
-            if (_type.isFunction(callbackOrIndex)) {
-                index = list.indexOf(callbackOrIndex);
-            } else if (_type.isInteger(callbackOrIndex)) {
-                index = callbackOrIndex;
-            }
-            list.splice(index, 1);
-            return this;
-        };
-    
-        proto.get = function(index) {
-            return list[index];
-        };
-        return proto;
-    }
-    
-    /**
      * A do-nothing-function
      * @return {Undefined}
      */
@@ -153,8 +76,8 @@
      * @param  {Any}   context this value
      * @return {Function}
      */
-    function bind(fn, context) {
-        if (!isFunction(fn)) {
+    function bind(self, context) {
+        if (!isFunction(self)) {
             throw TypeError(firstArgMustBeFn);
         }
     
@@ -165,7 +88,7 @@
             if (arguments.length > 0) {
                 args2 = args.concat(_slice.call(arguments));
             }
-            return fn.apply(context, args2);
+            return self.apply(context, args2);
         };
     }
     
@@ -176,8 +99,8 @@
      * @param  {Integer}   ms
      * @return {Function}
      */
-    function bindTimeout(fn, context, ms) {
-        if (!isFunction(fn)) {
+    function bindTimeout(self, context, ms) {
+        if (!isFunction(self)) {
             throw TypeError(firstArgMustBeFn);
         }
     
@@ -191,7 +114,7 @@
     
             var handle = setTimeout(function() {
                 clearTimeout(handle);
-                fn.apply(context, args2);
+                self.apply(context, args2);
             }, ms);
         };
     }
@@ -203,17 +126,17 @@
      * @param  {Any} context
      * @return {Any}
      */
-    function call(fn, context) {
-        if (!_type.isFunction(fn)) return;
+    function call(self, context) {
+        if (!_type.isFunction(self)) return;
         var args = _slice.call(arguments, 2);
-        return fn.apply(context, args);
+        return self.apply(context, args);
     }
     
-    function apply(fn, context, args) {
-        if (!_type.isFunction(fn)) return;
+    function apply(self, context, args) {
+        if (!_type.isFunction(self)) return;
         //ie7 and 8 require 2nd argument for Function.prototype.apply must be a array or arguments
         args = _slice.call(args);
-        return fn.apply(context, args);
+        return self.apply(context, args);
     }
     
     
@@ -358,11 +281,11 @@
      * @param  {Function} fn
      * @return {Function}
      */
-    function ntimes(fn, n) {
+    function ntimes(self, n) {
         var ret;
         return function() {
             if (n > 0) {
-                ret = fn.apply(null, arguments);
+                ret = self.apply(null, arguments);
                 n--;
                 return ret;
             } else return ret;
@@ -375,8 +298,8 @@
      * @param  {Function} fn
      * @return {Function}
      */
-    function once(fn) {
-        return ntimes(1, fn);
+    function once(self) {
+        return ntimes(1, self);
     }
     
     /**
@@ -385,24 +308,24 @@
      * @param  {Integer}   ms
      * @return {Function}
      */
-    function delay(fn, ms) {
-        if (!isFunction(fn)) {
+    function delay(self, ms) {
+        if (!isFunction(self)) {
             throw TypeError(firstArgMustBeFn);
         }
         var args = _slice.call(arguments, 2),
             h = setTimeout(function() {
                 clearTimeout(h);
-                fn.apply(null, args);
+                self.apply(null, args);
             }, ms);
     }
     
     /**
      * memoize
-     * @param  {Function} fn
+     * @param  {Function} self
      * @param  {Function} hashFn
      * @return {Function}
      */
-    function memoize(fn, hashFn) {
+    function memoize(self, hashFn) {
         var cache = {};
         return function() {
             var key = arguments[0],
@@ -414,18 +337,18 @@
                 return cache[key];
             }
     
-            ret = fn.apply(null, arguments);
+            ret = self.apply(null, arguments);
             cache[key] = ret;
             return ret;
         };
     }
     
-    function wrap(fn, wrapper) {
-        if (isFunction(fn)) {
+    function wrap(self, wrapper) {
+        if (isFunction(self)) {
             throw TypeError(firstArgMustBeFn);
         }
         return function() {
-            return wrapper(fn);
+            return wrapper(self);
         };
     }
     
@@ -445,7 +368,7 @@
         };
     }
     
-    function debounce(fn, delay, context) {
+    function debounce(self, delay, context) {
         var timer = null;
         return function() {
             var args = Array.prototype.slice.call(arguments);
@@ -453,12 +376,11 @@
             timer = setTimeout(function() {
                 clearTimeout(timer);
                 timer = null;
-                fn.apply(context, args);
+                self.apply(context, args);
             }, delay);
         };
     }
     
-    exports['Callbacks'] = Callbacks;
     exports['noop'] = noop;
     exports['alwaysTrue'] = alwaysTrue;
     exports['alwaysFalse'] = alwaysFalse;

@@ -47,7 +47,7 @@
         return ns;
     }
 
-    function require(namespace, fn) {
+    function require(namespace, fn, quiet) {
         var i = 0,
             cached,
             part,
@@ -55,7 +55,9 @@
             len,
             ex,
             ns = G;
-
+        if(namespace == '$root' || namespace == NAMESPAE_ROOT) {
+            return G.aztec;
+        }
         cached = requrieCache[namespace];
         if (cached) {
             return cached;
@@ -76,6 +78,7 @@
                 if (part == '$root') part = NAMESPAE_ROOT;
                 ns = ns[part];
                 if (typeof ns == 'undefined') {
+                    if (quiet) return false;
                     throw ex;
                 }
             }
@@ -96,7 +99,7 @@
         }
         for (; i < len; ++i) {
             ns = dependency[i];
-            if (!requrieCache[ns]) {
+            if (!requrieCache[ns] && !require(ns, null, true)) {
                 notCached.push(ns);
             }
         }
@@ -182,16 +185,6 @@
         };
     }
 }(this));
-
-define('$root.config', function(_, exports) {
-    function resolve() {
-        if (!exports || !exports.moduleDependency) {
-            return;
-        }
-    }
-    exports.resolveDependency = resolve;
-    return exports;
-});
 
 /**
  * $root.browser.dom.load

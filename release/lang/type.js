@@ -40,7 +40,7 @@
  * imports: {}
  */
 
-;define('$root.lang.type',[], function (require, exports){
+;define('$root.lang.type',[{}], function (require, exports){
     //'use strict';
     
     

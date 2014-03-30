@@ -10,7 +10,7 @@
  * - /lang/json.js
  */
 
-;define('$root.lang.json',[], function (require, exports){
+;define('$root.lang.json',[{}], function (require, exports){
     //'use strict';
     
     

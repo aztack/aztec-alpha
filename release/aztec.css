@@ -141,7 +141,7 @@ background-color: #eee;
 }
 /* $root.ui.Menu */
 .ui-menu {
-margin: 0; padding: 0; border: 1px solid gray; cursor: pointer; min-width: 100px; box-shadow: 2px 2px 2px #888; background-color: #fff; display: inline-block;
+margin: 0; padding: 0; border: 1px solid gray; cursor: pointer; min-width: 100px; box-shadow: 2px 2px 2px #888; background-color: #fff; display: inline-block; position: absolute;
 }
 .ui-menu-item {
 list-style: none; padding: 0; margin: 2px; display: block;

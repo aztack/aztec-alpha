@@ -36,9 +36,9 @@
      * @param  {Function} fn
      * @return {Array}
      */
-    var forEach = _forEach ? function(ary, fn) {
-            _forEach.call(ary, fn);
-        } : function(ary, fn) {
+    var forEach = _forEach ? function(self, fn) {
+            _forEach.call(self, fn);
+        } : function(self, fn) {
             var i = 0,
                 len = ary.len,
                 item;
@@ -55,13 +55,13 @@
      * @param  {Any} obj
      * @return {Integer}
      */
-    var indexOf = _indexOf ? function(ary, obj) {
-            return _indexOf.call(ary, obj);
-        } : function(ary, obj) {
+    var indexOf = _indexOf ? function(self, obj) {
+            return _indexOf.call(self, obj);
+        } : function(self, obj) {
             var i = 0,
-                len = ary.length;
+                len = self.length;
             for (; i < len; ++i) {
-                if (ary[i] == obj) {
+                if (self[i] == obj) {
                     return i;
                 }
             }
@@ -88,15 +88,15 @@
      * @param  {Array} b
      * @return {Boolean}
      */
-    function equal(a, b) {
+    function equal(self, b) {
         var i = 0,
-            len = a.length;
+            len = self.length;
         if (len !== b.length) return false;
         for (; i < len; ++i) {
-            if (a[i] == b[i]) {
+            if (self[i] == b[i]) {
                 continue;
-            } else if (_type.isArray(a[i], b[i])) {
-                if (!equal(a[i], b[i])) return false;
+            } else if (_type.isArray(self[i], b[i])) {
+                if (!equal(self[i], b[i])) return false;
             } else {
                 return false;
             }
@@ -110,15 +110,15 @@
      * @param  {Array} b
      * @return {Boolean}
      */
-    function strictEqual(a, b) {
+    function strictEqual(self, b) {
         var i = 0,
-            len = a.length;
+            len = self.length;
         if (len !== b.length) return false;
         for (; i < len; ++i) {
-            if (a[i] === b[i]) {
+            if (self[i] === b[i]) {
                 continue;
-            } else if (_type.isArray(a[i], b[i])) {
-                if (!strictEqual(a[i], b[i])) return false;
+            } else if (_type.isArray(self[i], b[i])) {
+                if (!strictEqual(self[i], b[i])) return false;
             } else {
                 return false;
             }
@@ -132,13 +132,13 @@
      * @param  {Array} ary
      * @return {Array}
      */
-    function compact(ary) {
+    function compact(self) {
         var ret = [];
-        if (!_type.isArrayLike(ary)) return ret;
+        if (!_type.isArrayLike(self)) return ret;
         var i = 0,
-            len = ary.length;
+            len = self.length;
         for (; i < len; ++i) {
-            if (_type.isEmpty(ary[i])) continue;
+            if (_type.isEmpty(self[i])) continue;
             ret.push(arg[i]);
         }
         return ret;
@@ -149,14 +149,14 @@
      * @param  {Array} ary
      * @return {Array}
      */
-    function flatten(ary) {
-        if (!_type.isArray(ary)) return [ary];
+    function flatten(self) {
+        if (!_type.isArray(self)) return [self];
         var i = 0,
             obj,
-            len = ary.length,
+            len = self.length,
             r, ret = [];
         for (; i < len; ++i) {
-            obj = ary[i];
+            obj = self[i];
             if (_type.isArray(obj)) {
                 r = flatten(obj);
                 ret = ret.concat(r);

@@ -1,0 +1,11 @@
+<%=@meta%>
+;define('<%=@name_requirejs%>',[<%=@imports_requirejs%>], function (<%=@imports.keys.join(',')%>){
+    <%=@usestrict%>
+    var exports = {};
+    <%=@xtemplate%>
+    <%=@original%>
+    <%=@sigils%>
+    <%=@exports%>
+    <%=@returnstatement%>
+});
+//end of <%=@name%>

@@ -39,11 +39,8 @@
  * @param {int} radix
  * @return {int}
  */
-function toInt(s, radix) {
-    if (!_type.isString(s)) {
-        s = s.toString();
-    }
-    return parseInt(s, radix || 10);
+function toInt(self, radix) {
+    return parseInt(self, radix || 10);
 }
 
 /**
@@ -54,43 +51,40 @@ function toInt(s, radix) {
  * @param {int} radix
  * @return {float}
  */
-function toFloat(s, radix) {
-    if (!_type.isString(s)) {
-        s = s.toString();
-    }
+function toFloat(self, radix) {
     return parseFloat(s, radix || 10);
 }
 
-function capitalize(s) {
-    return s.replace(/^([a-zA-Z])/, function(a, m, i) {
+function capitalize(self) {
+    return self.replace(/^([a-zA-Z])/, function(a, m, i) {
         return m.toUpperCase();
     });
 }
 
-function isBlank(s) {
-    return !!s.match(/^\s*$/);
+function isBlank(self) {
+    return !!self.match(/^\s*$/);
 }
 
-function lstrip(s) {
-    return s.replace(/^\s+/, '');
+function lstrip(self) {
+    return self.replace(/^\s+/, '');
 }
 
-function rstrip(s) {
-    return s.replace(/\s+$/, '');
+function rstrip(self) {
+    return self.replace(/\s+$/, '');
 }
 
 function strip(s) {
-    return s.replace(/^\s+|\s+$/, '');
+    return self.replace(/^\s+|\s+$/, '');
 }
 
-function chomp(s, sep) {
+function chomp(self, sep) {
     if (typeof sep !== 'undefined') {
-        return s.replace((new RegExp(sep + '$')), '');
+        return self.replace((new RegExp(sep + '$')), '');
     }
-    return s.replace(/[\r\n]$/, '');
+    return self.replace(/[\r\n]$/, '');
 }
 
-function chop(s) {
+function chop(self) {
     if (typeof s == 'undefined' || isEmpty(s)) {
         return '';
     }
@@ -102,53 +96,49 @@ function chop(s) {
     return a.substring(0, a.length - 1);
 }
 
-function reverse(s) {
-    return s.split('').reverse.join('');
+function reverse(self) {
+    return self.split('').reverse.join('');
 }
 
-function repeat(s, n) {
+function repeat(self, n) {
     if (n <= 0) return '';
-    else if (n === 1) return s;
-    else if (n === 2) return s + s;
-    else if (n > 2) return Array(n + 1).join(s);
+    else if (n === 1) return self;
+    else if (n === 2) return self + self;
+    else if (n > 2) return Array(n + 1).join(self);
 }
 
 var _trim = String.prototype.trim,
-    strip = _trim ? function(s) {
-        return _trim.call(s);
-    } : function(s) {
-        return s.replace(/^\s+|s+$/g, '');
+    strip = _trim ? function(self) {
+        return _trim.call(self);
+    } : function(self) {
+        return self.replace(/^\s+|s+$/g, '');
     };
 
-function startWith(s, prefix) {
-    return s.substr(0, prefix.length) == prefix;
+function startWith(self, prefix) {
+    return self.substr(0, prefix.length) == prefix;
 }
 
-function endWith(s, suffix) {
-    return s.substr(-suffix.length) == suffix;
+function endWith(self, suffix) {
+    return self.substr(-suffix.length) == suffix;
 }
 
-function quoted(s) {
-    if (!s) return false;
-    var head = s.substr(0, 1),
-        tail = s.substr(-1);
+function quoted(self) {
+    if (!self) return false;
+    var head = self.substr(0, 1),
+        tail = self.substr(-1);
     return (head == '"' && tail == '"') || (head == "'" && tail == "'");
 }
 
-function enclose(s, chr) {
-    var t = s;
-    if (!_type.isString(s) &&_type.isFunction(s.toString)) {
-        t = s.toString();
-    }
-    return chr + t + chr;
+function enclose(self, chr) {
+    return chr + self + chr;
 }
 
-function quote(s, doubleQuote) {
-    return enclose(s, !! doubleQuote ? '"' : "'");
+function quote(self, q) {
+    return enclose(self, !! q ? "'" : '"');
 }
 
-function toArray(s) {
-    return [s];
+function toArray(self) {
+    return [self];
 }
 
 // https://gist.github.com/aztack/9ac4033ac7ec54b6fdca
@@ -164,7 +154,7 @@ var format = (function() {
         var fn = m,
             p = [],
             x = m.split(':');
-        if (x.length == 2){
+        if (x.length == 2) {
             fn = x[0];
             p.push(x[1]);
         }
@@ -178,15 +168,14 @@ var format = (function() {
         }
     }
 
-    return function(fmt, args) {
-        var f = _type.isArray(args) ? a : o,
-            fmtstr = _type.isArray(fmt) ? fmt.join("") : fmt;
-        return fmtstr.replace(/{([a-zA-Z0-9_$:.]+)}/g, function(w, m) {
+    return function(self, args) {
+        var f = _type.isArray(args) ? a : o;
+        return self.replace(/{([a-zA-Z0-9_$:.]+)}/g, function(w, m) {
             return f(w, m, args);
         });
     };
 })();
 
-function isHtmlFragment(s) {
-    return typeof s == 'string' && s.charAt(0) === '<' && s.charAt( s.length - 1 ) === '>' && s.length >= 3;
+function isHtmlFragment(self) {
+    return typeof self == 'string' && self.charAt(0) === '<' && self.charAt(self.length - 1) === '>' && self.length >= 3;
 }

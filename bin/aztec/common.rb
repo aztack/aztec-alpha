@@ -1,5 +1,4 @@
 # encoding:utf-8
-
 class ::String
     def double_quoted?
         self.start_with? '"' and self.end_with? '"'

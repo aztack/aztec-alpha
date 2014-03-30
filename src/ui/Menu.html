@@ -11,6 +11,7 @@
                 box-shadow: 2px 2px 2px #888;
                 background-color: #fff;
                 display: inline-block;
+                position: absolute;
             }
             .ui-menu-item {
                 list-style: none;
@@ -40,22 +41,24 @@
     </head>
 
     <body>
-        <ul xtemplate="$root.ui.Menu.menu,delete" class="ui-menu" sigil=".tag" sigil-class="$root.ui.Menu" style="display:none">
-            
-        </ul>
+        <div class="add this div to prevent ie7 failed to render this page">
+            <ul xtemplate="$root.ui.Menu.menu,delete" class="ui-menu" sigil=".tag" sigil-class="$root.ui.Menu" style="display:none">
+                
+            </ul>
 
-        <li xtemplate="$root.ui.Menu.item,delete" 
-            class="ui-menu-item unselectable" 
-            sigil=".item"
-            sigil-class="MenuItem" 
-            style="display:none">
-            <span class="ui-menu-item-text">
-                <a href="javascript:;" sigil="text"></a>
-            </span>
-        </li>
+            <li xtemplate="$root.ui.Menu.item,delete" 
+                class="ui-menu-item unselectable" 
+                sigil=".item"
+                sigil-class="MenuItem" 
+                style="display:none">
+                <span class="ui-menu-item-text">
+                    <a href="javascript:;" sigil="text"></a>
+                </span>
+            </li>
+        </div>
 
         <!-- demo -->
-        <div id="parent" style="position:relative;top:200px;left:100px;background-color:#eee;width:100px;height:100px;">
+        <div id="parent" style="position:relative;top:200px;left:100px;background-color:#eee;width:500px;height:500px;">
             
         </div>
 
@@ -76,6 +79,7 @@
                 menu2 = new Menu();
                 menu2.addItems([1, 2, 3]);
                 menu2.showAt($('#parent'), 10, 10);
+                menu.asContextMenuOf('#parent');
             });
         </script>
     </body>

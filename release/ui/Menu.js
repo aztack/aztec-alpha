@@ -34,11 +34,7 @@
         _enum = require('$root.lang.enumerable'),
         _list = require('$root.ui.List'),
         $ = require('jQuery');
-        
-    ///xtemplate
-    require('$root.browser.template')
-            .set('$root.ui.Menu.menu',"<ul class=\"ui-menu\"></ul>\n")
-            .set('$root.ui.Menu.item',"<li class=\"ui-menu-item unselectable\"><span class=\"ui-menu-item-text\"><a href=\"javascript:;\"></a></span></li>\n");
+    
         ///vars
     var tpl = _tpl.id$('$root.ui.Menu'),
         menuTemplate = tpl('menu'),
@@ -85,24 +81,27 @@
             return this;
         },
         showAt: function() {
-            var body = document.body;
+            var parent = this.parent();
             varArg(arguments, this)
                 .when(function() {
-                    return [body, this.css('left'), this.css('top')];
+                    return [parent, this.css('left'), this.css('top')];
                 })
                 .when('int', 'int', function(x, y) {
-                    return [body, x, y];
+                    return [parent, x, y];
                 })
                 .when('jquery', 'int', 'int', function(parent, x, y) {
                     return [parent, x || 0, y || 0];
                 })
                 .invoke(function(parent, x, y) {
-                    this.appendTo(parent).css({
+                    this.appendTo(parent).show().css({
                         left: x,
                         top: y
                     });
                 });
             return this;
+        },
+        asContextMenuOf: function(target) {
+            return Menu_asContextMenuOf(this, target);
         }
     }).statics({
         DefaultMenuItemType: MenuItem,
@@ -112,17 +111,34 @@
     });
     
     function Menu_initialize(self) {
-        self.on('click', function(e) {
+        self.css('position','absolute').on('click', function(e) {
             var index = self.indexOf(e.target),
                 item;
             if (index < 0) {
                 item = $(e.target).closest(self.children().get(0).tagName);
                 index = self.indexOf(item);
             }
-            if( index < 0) return;
+            if (index < 0) return;
             item = self.getItemAt(index);
             self.trigger(Menu.Events.OnItemSelected, [item, index]);
         });
+    }
+    
+    function Menu_asContextMenuOf(self, target) {
+        var owner = $(target), position = owner.css('position');
+        if(position != 'relative' && position != 'absolute' && position != 'fixed') {
+            owner.css('position','relative');
+        }
+        owner.append(self).on('contextmenu', function(e) {
+            if (e.target === owner[0]) {
+                self.showAt(e.offsetX, e.offsetY);
+                e.stopImmediatePropagation();
+                return false;
+            }
+        }).on('mousedown', function() {
+            self.hide();
+        });
+        return self;
     }
     
     ///exports

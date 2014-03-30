@@ -25,10 +25,7 @@
         _tpl = require('$root.browser.template'),
         _arguments = require('$root.lang.arguments'),
         $ = require('jQuery');
-        
-    ///xtemplate
-    require('$root.browser.template')
-            .set('$root.ui.TextField.textfield',"<input type=\"text\" class=\"ui-textfield\" _placeholder=\"placeholder\">\n");
+    
         ///vars
     var tpl = _tpl.id$('$root.ui.TextField'),
       textfieldTemplate = tpl('textfield'),

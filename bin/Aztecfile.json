@@ -1,0 +1,6 @@
+{
+	"output_dir":"../release",
+	"config_path":"../release",
+	"dependency_path_format":"$namespace$"
+	//"dependency_path_format":"{stc:$namespace$}.stc"
+}

@@ -227,6 +227,8 @@ function Alert_initialize(self) {
         var target = e.target;
         //ignore mousedown on footer and it's children
         if(self.footer[0] == target || self.footer.find(e.target).length) return;
+
+        //otherwise, bringToFron will make buttons unclickable
         self.bringToFront();
     });
 

@@ -6,7 +6,6 @@ require 'rkelly'
 require 'erubis'
 require 'sinatra'
 
-require File.expand_path('common.rb',File.dirname(__FILE__))
 require File.expand_path('builder.rb',File.dirname(__FILE__))
 $ROOT = File.absolute_path(File.dirname(__FILE__) + "/../")
 $stdout.puts "$ROOT=#{$ROOT}"
