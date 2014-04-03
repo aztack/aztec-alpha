@@ -12,7 +12,7 @@
  * - get
  * - id$
  * files:
- * - /browser/template.js
+ * - src/browser/template.js
  */
 
 ;define('browser/template',[

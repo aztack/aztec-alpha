@@ -10,7 +10,7 @@
  * - $
  * - _querySelectorAll
  * files:
- * - /browser/query.js
+ * - src/browser/query.js
  */
 
 ;define('browser/query',[

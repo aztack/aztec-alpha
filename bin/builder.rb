@@ -18,7 +18,8 @@ if __FILE__ == $0
     #pp man.dependency_of("$root.ui", true)
     #puts Aztec::JsModule.new("../src/aztec.js").to_amd
     #puts man['$root.browser.console'].xtemplate_styles
-    man.release(File.absolute_path("#{$ROOT}/release/requirejs"), true, :requirejs) {|path| puts "Writting #{path}"}
+    release_dir = File.absolute_path("#{$ROOT}/release/requirejs") 
+    man.release(release_dir, true, :requirejs) {|path| puts "Writting #{path}"}
     
     #puts man.to_ecma('$root.ui.dialog')
 end

@@ -13,7 +13,7 @@
  * exports:
  * - ComboBox
  * files:
- * - /ui/ComboBox.js
+ * - src/ui/ComboBox.js
  */
 
 ;define('ui/ComboBox',[

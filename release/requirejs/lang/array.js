@@ -6,6 +6,7 @@
  * imports:
  *   _type: $root.lang.type
  * exports:
+ * - w
  * - forEach
  * - indexOf
  * - toArray
@@ -14,7 +15,7 @@
  * - compact
  * - flatten
  * files:
- * - /lang/array.js
+ * - src/lang/array.js
  */
 
 ;define('lang/array',[
@@ -29,6 +30,17 @@
         _indexOf = Array.prototype.indexOf;
     
     ///exports
+    
+    var w = function(self) {
+        if (!self || self.length === 0) {
+            return [];
+        }
+        var s = self;
+        if(typeof self !== 'string') {
+            s = '' + self;
+        }
+        return s.split(/[\s\n\t]+/);
+    };
     
     /**
      * forEach
@@ -167,6 +179,7 @@
         return ret;
     }
     
+    exports['w'] = w;
     exports['forEach'] = forEach;
     exports['indexOf'] = indexOf;
     exports['toArray'] = toArray;

@@ -7,7 +7,7 @@
  *   _str: $root.lang.string
  * exports: []
  * files:
- * - /browser/keyboard.js
+ * - src/browser/keyboard.js
  */
 
 ;define('browser/keyboard',[

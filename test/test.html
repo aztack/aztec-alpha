@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Test</title>
+		<script src="../src/require.js"></script>
+	</head>
+	<body>
+	<script>
+		require.config({
+			baseUrl: '../release/requirejs/'
+		});
+		require(['lang/type','lang/array','lang/object'],function(type,ary,object){
+			debugger;
+		});
+	</script>
+	</body>
+</html>

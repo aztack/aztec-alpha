@@ -14,7 +14,7 @@ var Classes = {};
 
 function instance$is(t) {
     var clazz = this.getClass();
-    if (clazz === Object && t == Object) {
+    if (t == Object) {
         return true;
     }
     while (clazz !== Object) {

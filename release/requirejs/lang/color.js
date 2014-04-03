@@ -11,7 +11,7 @@
  * - hexColorString
  * - hexAbbr
  * files:
- * - /lang/color.js
+ * - src/lang/color.js
  */
 
 ;define('lang/color',[

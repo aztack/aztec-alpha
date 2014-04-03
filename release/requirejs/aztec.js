@@ -4,7 +4,7 @@
  * version: 0.0.1
  * namespace: $root
  * files:
- * - /aztec.js
+ * - src/aztec.js
  */
 
 ;define('aztec',[{}], function (){

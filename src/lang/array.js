@@ -6,6 +6,7 @@
         _type: $root.lang.type
     },
     exports: [
+        w,
         forEach,
         indexOf,
         toArray,
@@ -22,6 +23,17 @@ var _forEach = Array.prototype.forEach,
     _indexOf = Array.prototype.indexOf;
 
 ///exports
+
+var w = function(self) {
+    if (!self || self.length === 0) {
+        return [];
+    }
+    var s = self;
+    if(typeof self !== 'string') {
+        s = '' + self;
+    }
+    return s.split(/[\s\n\t]+/);
+};
 
 /**
  * forEach

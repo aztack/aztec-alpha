@@ -14,7 +14,7 @@
  * - Menu
  * - MenuItem
  * files:
- * - /ui/Menu.js
+ * - src/ui/Menu.js
  */
 
 ;define('ui/Menu',[
@@ -140,7 +140,9 @@
     ///exports
         
     ///sigils
-// sigils defined in xtemplate but variable or function $root.ui.Menu not found
+    Menu.sigils = {
+        ".tag": ".ui-menu"
+    };
     MenuItem.sigils = {
         "text": "a",
         ".item": ".ui-menu-item"

@@ -119,7 +119,7 @@ module Aztec
                 
                 requires = imports.map{|k,v| "#{k} = require('#{v}')"}.join(",\n" + ' '*8)
                 ctx[:requires] = "var #{requires};"
-                ctx[:imports_requirejs] = imports.values.map{|e|"\n" + "'#{Utils.namespace_to_file_path(e)}'".indent(4)}.join(',') + "\n"
+                ctx[:imports_requirejs] = imports.size == 0 ? '' : imports.values.map{|e|"\n" + "'#{Utils.namespace_to_file_path(e)}'".indent(4)}.join(',') + "\n"
             else
                 ctx[:imports] = ctx[:imports_amd] = ctx[:imports_requirejs] = {}
                 ctx[:requires] = ''
@@ -138,7 +138,7 @@ module Aztec
                     js = js.join("\n").indent(4);                    
                     #$stdout.puts js
                     if not declared?(sigil_class)
-                        js = "sigils defined in xtemplate but variable or function #{sigil_class} not found"
+                        js = "//ERROR:sigils defined in xtemplate but variable or function #{sigil_class} not found"
                         js = js.to_comment
                     end
                     ctx[:sigils] << js.endl

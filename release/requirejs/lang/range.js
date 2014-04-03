@@ -8,7 +8,7 @@
  * exports:
  * - create
  * files:
- * - /lang/range.js
+ * - src/lang/range.js
  */
 
 ;define('lang/range',[

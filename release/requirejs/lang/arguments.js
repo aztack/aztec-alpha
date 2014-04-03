@@ -11,8 +11,8 @@
  * - varArg
  * - registerPlugin
  * files:
- * - /lang/arguments.js
- * - /lang/arguments.ext.js
+ * - src/lang/arguments.js
+ * - src/lang/arguments.ext.js
  */
 
 ;define('lang/arguments',[
@@ -235,7 +235,7 @@
             }
         };
     }
-    // /lang/arguments.ext.js
+    // src/lang/arguments.ext.js
     /**
      * Arguments Module Extension
      */

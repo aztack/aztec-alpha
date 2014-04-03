@@ -35,8 +35,8 @@
  * - Classes
  * - create
  * files:
- * - /lang/type.js
- * - /lang/type.oop.js
+ * - src/lang/type.js
+ * - src/lang/type.oop.js
  * imports: {}
  */
 
@@ -305,7 +305,7 @@
     function hasSameTypeName(a, b) {
         return typename(a) == typename(b);
     }
-    // /lang/type.oop.js
+    // src/lang/type.oop.js
     /**
      *  Object-Orientated Programming Support
      */
@@ -313,7 +313,7 @@
     
     function instance$is(t) {
         var clazz = this.getClass();
-        if (clazz === Object && t == Object) {
+        if (t == Object) {
             return true;
         }
         while (clazz !== Object) {

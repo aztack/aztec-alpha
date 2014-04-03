@@ -26,7 +26,7 @@
  * - format
  * - isHtmlFragment
  * files:
- * - /lang/string.js
+ * - src/lang/string.js
  */
 
 ;define('lang/string',[

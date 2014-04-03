@@ -8,7 +8,7 @@
  * exports:
  * - _
  * files:
- * - /lang/chain.js
+ * - src/lang/chain.js
  */
 
 ;define('lang/chain',[

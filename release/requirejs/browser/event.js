@@ -10,8 +10,8 @@
  * - stopEvent
  * - EventEmitter
  * files:
- * - /browser/event.js
- * - /browser/event.emitter.js
+ * - src/browser/event.js
+ * - src/browser/event.emitter.js
  */
 
 ;define('browser/event',[
@@ -38,7 +38,7 @@
         }
         return false;
     }
-    // /browser/event.emitter.js
+    // src/browser/event.emitter.js
     /**
      * Event Emitter
      */

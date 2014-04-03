@@ -6,8 +6,8 @@ module Aztec
     class JsModuleManager
         def initialize(src_dir, opt)
             @src_dir = src_dir
-            @exclude = opt['exclude'] || []
-            @verbose = opt['verbose'] || false
+            @exclude = opt[:exclude] || []
+            @verbose = opt[:verbose] || false
             @styles = []
             @output_dir = ''
             JsModule.src_dir = src_dir
@@ -19,27 +19,28 @@ module Aztec
         attr_accessor :output_dir
 
         def scan
-            Dir["#{@src_dir}/**/*.js"].each do |js_file|
-                for ex in @exclude
-                    next if js_file[ex]
-                end
-                begin
-                    $stdout.puts js_file
-                    add_module js_file
-                rescue =>ex
-                    $stderr.puts "Error in #{js_file}"
-                    raise ex
+            Benchmark.bm do |bm|
+                Dir["#{@src_dir}/**/*.js"].each do |js_file|
+                    for ex in @exclude
+                        next if js_file[ex]
+                    end
+                    begin
+                        add_module js_file, bm
+                    rescue =>ex
+                        $stderr.puts "Error in #{js_file}"
+                        raise ex
+                    end
                 end
             end
             self
         end
 
-        def add_module(js_file)
+        def add_module(js_file, bm = nil)
             m = nil
-            if @verbose            
-                s = Benchmark.measure {m = JsModule.new(js_file) rescue nil}
+            if @verbose
+                s = Benchmark.measure(File.basename(js_file)){m = JsModule.new(js_file) rescue nil}
+                $stdout.puts "#{s.to_s.strip} #{File.basename(js_file)}"
                 return nil if m.nil?
-                $stdout.puts "#{s.to_s.strip} #{js_file}"
             else
                 m = JsModule.new(js_file)
                 return nil if m.nil?
@@ -67,7 +68,7 @@ module Aztec
             js = StringIO.new
             main = mods[0]
             others = mods[1..-1]
-            seg = Utils.namespace_to_file_path(main.namespace)
+            #seg = Utils.namespace_to_file_path(main.namespace)
             if others.size.zero?
                 js.puts main.send(:"to_#{spec}")
             else
@@ -88,7 +89,7 @@ module Aztec
             #TODO
         end
 
-        def release(output_dir, overwrite = false, spec = :amd)
+        def release(output_dir, overwrite = false, spec = :requirejs)
             FileUtils.mkdir output_dir unless File.exists? output_dir
             styles = StringIO.new
             @modules.each do |namespace, m|
@@ -114,8 +115,8 @@ module Aztec
                 
                 #style
                 styles.write main.styles
-                mods.each do |m|
-                    styles.write m.styles
+                mods.each do |mod|
+                    styles.write mod.styles
                 end
             end
             css_file_path = "#{output_dir}/#{Aztec.name('.css')}"
@@ -128,6 +129,11 @@ module Aztec
                 yield config_file_path if block_given?
                 f.puts js_dependency_module
             end
+        end
+
+        def release_single_js(output_dir, path, overwrite = true, spec = :requirejs)
+            #TODO
+            puts path
         end
 
         def [](namespace)
@@ -182,7 +188,7 @@ module Aztec
         end
 
         def css(mods)
-            css = mods.inject("") do |code, mod|
+            mods.inject("") do |code, mod|
                 #binding.pry if code.nil?
                 if self[mod].nil?
                     code

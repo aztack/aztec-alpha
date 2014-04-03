@@ -11,7 +11,7 @@
  * - Overlay
  * - create
  * files:
- * - /ui/Overlay.js
+ * - src/ui/Overlay.js
  */
 
 ;define('ui/Overlay',[

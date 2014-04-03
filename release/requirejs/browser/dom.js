@@ -15,7 +15,7 @@
  * - removeWhiteTextNode
  * - findOffsetParent
  * files:
- * - /browser/dom.js
+ * - src/browser/dom.js
  */
 
 ;define('browser/dom',[

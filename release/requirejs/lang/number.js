@@ -9,7 +9,7 @@
  * - max
  * - min
  * files:
- * - /lang/number.js
+ * - src/lang/number.js
  */
 
 ;define('lang/number',[

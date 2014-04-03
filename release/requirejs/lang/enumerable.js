@@ -17,7 +17,7 @@
  * - compact
  * - pluck
  * files:
- * - /lang/enumerable.js
+ * - src/lang/enumerable.js
  */
 
 ;define('lang/enumerable',[

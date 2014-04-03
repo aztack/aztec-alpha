@@ -15,7 +15,7 @@
  * - Alert
  * - alert
  * files:
- * - /ui/Dialog.js
+ * - src/ui/Dialog.js
  */
 
 ;define('ui/Dialog',[

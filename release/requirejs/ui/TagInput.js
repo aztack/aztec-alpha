@@ -14,7 +14,7 @@
  * - Tag
  * - TagInput
  * files:
- * - /ui/TagInput.js
+ * - src/ui/TagInput.js
  */
 
 ;define('ui/TagInput',[

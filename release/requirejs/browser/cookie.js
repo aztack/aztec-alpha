@@ -11,7 +11,7 @@
  * - get
  * - set
  * files:
- * - /browser/cookie.js
+ * - src/browser/cookie.js
  */
 
 ;define('browser/cookie',[

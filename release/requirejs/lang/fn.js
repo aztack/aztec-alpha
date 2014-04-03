@@ -30,7 +30,7 @@
  * - wrap
  * - compose
  * files:
- * - /lang/fn.js
+ * - src/lang/fn.js
  */
 
 ;define('lang/fn',[

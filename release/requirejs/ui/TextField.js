@@ -11,7 +11,7 @@
  * - TextField
  * - placeholderPollyfill
  * files:
- * - /ui/TextField.js
+ * - src/ui/TextField.js
  */
 
 ;define('ui/TextField',[

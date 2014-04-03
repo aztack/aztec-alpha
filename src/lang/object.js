@@ -14,7 +14,8 @@
         tryget,
         tryset,
         pairs,
-        fromPairs
+        fromPairs,
+        fromKeyValuePairString1
     ]
 });
 
@@ -123,7 +124,7 @@ function pairs(obj) {
     return ret;
 }
 
-function fromPairs(paris) {
+function fromPairs(pairs) {
     var obj = {}, i = 0,
         len = pairs.length,
         o;
@@ -132,4 +133,35 @@ function fromPairs(paris) {
         obj[o[0]] = o[1];
     }
     return obj;
+}
+
+var fromKvStringScanPatternCache = {
+    '&=': /([^=&]+)=([^&]*)/gi,
+    /* name=n&age=30 */
+    ',:': /([^:,]+):([^,]*)/gi /* name:n,age:30 */
+};
+/**
+ * fromKvString
+ * @param  {string} self    string to be parsed
+ * @param  {string} pairSep separator that separate key-value pairs
+ * @param  {string} kvSep   separator that seperate key and value
+ * @return {Object} object parsed from key-value string
+ */
+function fromKeyValuePairString1(self, pairSep, kvSep) {
+    var kv = {}, re;
+    pairSep = pairSep || '&';
+    kvSep = kvSep || '=';
+    re = fromKvStringScanPatternCache[pairSep + kvSep];
+    re = re || new RegExp('[?&#]*([^' + kvSep + pairSep + ']+)' + kvSep + '([^' + pairSep + ']*)', 'gi');
+
+    self.replace(re, function(m, key, value) {
+        var lowercase = value.toLowerCase();
+        if (lowercase == 'true') {
+            value = true;
+        } else if (lowercase == 'false') {
+            value = false;
+        }
+        kv[key] = value;
+    });
+    return kv;
 }

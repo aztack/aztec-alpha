@@ -9,7 +9,7 @@
  * exports:
  * - List
  * files:
- * - /ui/List.js
+ * - src/ui/List.js
  */
 
 ;define('ui/List',[

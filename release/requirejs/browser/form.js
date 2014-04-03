@@ -12,7 +12,7 @@
  * - Form
  * - toJSON
  * files:
- * - /browser/form.js
+ * - src/browser/form.js
  */
 
 ;define('browser/form',[

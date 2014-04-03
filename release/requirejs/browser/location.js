@@ -9,7 +9,7 @@
  * - get
  * - set
  * files:
- * - /browser/location.js
+ * - src/browser/location.js
  */
 
 ;define('browser/location',[

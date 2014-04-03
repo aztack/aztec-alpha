@@ -4,8 +4,8 @@
  * namespace: jQuery
  * notransform: true
  * files:
- * - /jquery-1.10.2.js
- * - /jquery.ext.js
+ * - src/jquery-1.10.2.js
+ * - src/jquery.ext.js
  * imports:
  *   _type: $root.lang.type
  *   _object: $root.lang.object
@@ -9813,7 +9813,7 @@ if ( typeof module === "object" && module && typeof module.exports === "object" 
 define('jQuery',function(){
   return jQuery;
 });
-// /jquery.ext.js
+// src/jquery.ext.js
 /**
  * jQuery Sigil Extension
  */

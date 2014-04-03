@@ -4,8 +4,8 @@
  * namespace: Handlebars
  * notransform: true
  * files:
- * - /handlebars-v1.2.0.js
- * - /handlebars.ext.js
+ * - src/handlebars-v1.2.0.js
+ * - src/handlebars.ext.js
  * imports: {}
  * exports: []
  */
@@ -2629,7 +2629,7 @@ var __module0__ = (function(__dependency1__, __dependency2__, __dependency3__, _
 define('Handlebars',function(){
   return Handlebars;
 });
-// /handlebars.ext.js
+// src/handlebars.ext.js
 /**
  * Handlebars Extension
  */

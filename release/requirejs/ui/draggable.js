@@ -11,7 +11,7 @@
  * - draggable
  * - Draggable
  * files:
- * - /ui/draggable.js
+ * - src/ui/draggable.js
  */
 
 ;define('ui/draggable',[

@@ -7,7 +7,7 @@
  * - parse
  * - stringify
  * files:
- * - /lang/json.js
+ * - src/lang/json.js
  */
 
 ;define('lang/json',[{}], function (){

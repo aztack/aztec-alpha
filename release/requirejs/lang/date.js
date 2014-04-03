@@ -18,7 +18,7 @@
  * - isLeapYear
  * - daysOfMonth
  * files:
- * - /lang/date.js
+ * - src/lang/date.js
  */
 
 ;define('lang/date',[
