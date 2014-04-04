@@ -132,8 +132,34 @@ module Aztec
         end
 
         def release_single_js(output_dir, path, overwrite = true, spec = :requirejs)
-            #TODO
-            puts path
+            FileUtils.mkdir output_dir unless File.exists? output_dir
+            ns = Utils.file_path_to_namespace(path)
+            m = @modules[ns]
+            if m.nil?
+                $stderr.puts "Can not found #{ns}(#{path})!"
+                exit
+            end
+
+            segment = Utils.namespace_to_file_path ns
+            output_path = "#{output_dir}/#{segment}.js"
+            raise "#{path} already exists!" if !overwrite and File.exists?(path)
+            yield ns if block_given?
+
+            index = m.find_index{|a|a.name == ns}
+            m[index] = JsModule.new(path)
+
+            main = m[0]
+            mods = m[1..-1]
+            FileUtils.mkpath(File.dirname(path))
+            File.open(output_path,'w:utf-8') do |f|
+                if mods.size.zero?
+                    f.write main.send(:"to_#{spec}")
+                else
+                    tmp = main.dup.merge(mods)
+                    tmp.parse false
+                    f.write tmp.send(:"to_#{spec}")
+                end
+            end
         end
 
         def [](namespace)

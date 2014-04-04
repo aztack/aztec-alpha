@@ -8,7 +8,7 @@ release_dir = "./release/requirejs"
 man = Aztec::JsModuleManager.new('src',:verbose => true)
 
 opt_parser = OptionParser.new do |opts|
-	opts.banner = "Usage: builder.rb [options]"
+	opts.banner = "builder.rb [options] or `watchr builder.rb`"
 
 	opts.on('-g [png]','generate dependency graph') do |png|
 		man.save_dependency_graph(png || 'module_dependency.png')
@@ -64,10 +64,14 @@ end
 opt_parser.parse! ARGV
 
 if $0 =~/watchr/
+	man.scan
 	watch 'src/.*\.js' do |path|
 		$stdout.puts "#{path[0]} saved"
 		begin
-			man.release_single_js('./release/requirejs', path[0])
+			#binding.pry
+			man.release_single_js('./release/requirejs', path[0]) do |namespace|
+				$stdout.puts "Writing #{namespace}"
+			end
 			$stdout.puts "Done!"
 		rescue => e
 			$stderr.puts e

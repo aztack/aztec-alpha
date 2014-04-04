@@ -14,6 +14,10 @@ module Aztec
                 namespace == '$root' ? Aztec.name : namespace
             end
         end
+
+        def self.file_path_to_namespace(path)
+            path.sub(/.*src\//,'$root.').gsub('/','.').sub('.js','')
+        end
         #
         # Convert module config from javascript object into ruby hash
         #

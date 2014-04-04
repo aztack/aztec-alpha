@@ -5,12 +5,23 @@
     exports: [
         Class,
         Classes,
+        ObjectSpace,
         create
     ],
     priority: 1
 });
 
-var Classes = {};
+var Classes = {}, $ObjectSpace = {}, ObjectSpace = function() {};
+
+ObjectSpace.each = function(clazz, fn) {
+    var instances = $ObjectSpace[clazz],
+        i, len, obj;
+    if (!instances) return;
+    for (; i < len; ++i) {
+        obj = instances[i];
+        fn.call(obj, obj.__id__);
+    }
+};
 
 function instance$is(t) {
     var clazz = this.getClass();
@@ -30,6 +41,35 @@ function instance$is(t) {
 }
 
 var objectToStringValue = '[object Object]';
+
+/* simplified tryget/tryset */
+function tryget(o, path, v) {
+    var parts = path.split('.'),
+        part, len = parts.length;
+    for (var t = o, i = 0; i < len; ++i) {
+        part = parts[i];
+        if (part in t) {
+            t = t[parts[i]];
+        } else {
+            return v;
+        }
+    }
+    return t;
+}
+
+function tryset(obj, path, v) {
+    var parts = path.split('.'),
+        part, len = parts.length - 1;
+
+    for (var t = obj, i = 0; i < len; ++i) {
+        part = parts[i];
+        if (part in t) {
+            t = t[parts[i]];
+        } else return obj;
+    }
+    t[parts[i]] = v;
+    return obj;
+}
 /**
  * print object in format #<typename a=1 b="s">
  */
@@ -71,6 +111,82 @@ function instance$methods(includeMethodOnThisObject) {
         ret = getMethodsOn(this).concat(ret);
     }
     return ret;
+
+}
+
+var metaDataCache = {};
+
+function initMetaData(typename, cacheKey, id) {
+    var objSpace = $ObjectSpace[typename],
+        metaData = objSpace[id] = {
+            attrs: {},
+            observers: {}
+        };
+    metaDataCache[cacheKey] = metaData;
+    return metaData;
+}
+
+function instance$set(keyPath, value, notifyObservers) {
+    var typename = this.getClass().typename(),
+        objSpace, attrs, cacheKey = typename + '@' + keyPath,
+        metaData = metaDataCache[cacheKey];
+
+    if (typeof notifyObservers == 'undefined') {
+        notifyObservers = true;
+    }
+
+    if (!metaData) {
+        metaData = initMetaData(typename, cacheKey, this.__id__);
+    }
+    observers = metaData.observers;
+    attrs = metaData.attrs;
+    tryset(attrs, keyPath, value);
+    if ( !! notifyObservers && observers) {
+        for (var name in observers) {
+            observers[name].call(this, value);
+        }
+    }
+    return this;
+}
+
+function instance$get(keyPath, alternative) {
+    var typename = this.getClass().typename(),
+        objSpace, attrs, cacheKey = typename + '@' + keyPath,
+        metaData = metaDataCache[cacheKey];
+
+    if (!metaData) {
+        metaData = initMetaData(typename, cacheKey, this.__id__);
+    }
+    attrs = metaData.attrs;
+    return tryget(attrs, keyPath, alternative);
+}
+
+function instance$observe(keyPath, name, fn) {
+    var typename = this.getClass().typename(),
+        objSpace, cacheKey = typename + '@' + keyPath,
+        metaData = metaDataCache[cacheKey],
+        index;
+
+    if (!metaData) {
+        metaData = initMetaData(typename, cacheKey, this.__id__);
+    }
+
+    observers = metaData.observers;
+
+    if(arguments.length === 2 && typeof name == 'function') {
+        fn = name;
+        name = keyPath;
+    } else if(arguments.length === 1) {
+        name = keyPath;
+        fn = undefined;
+    }
+    if(typeof fn == 'function') {
+        observers[name] = fn;
+    } else {
+        observers[name] = null;
+        delete observers[name];
+    }
+    return this;
 }
 
 /**
@@ -220,20 +336,32 @@ function clazz$readonly(name, initValue, force) {
     } else throw Error('Readonly property `' + name + '` already defined!');
 }
 
+
 /**
  * The Ultimate `Class`
  */
 function Class(name, parent) {
+    var objSpace;
+    if (!$ObjectSpace[name]) {
+        objSpace = $ObjectSpace[name] = {
+            length: 0
+        };
+    } else {
+        throw new Error(name + ' already defined!');
+    }
     // use underscore as name for less debugging noise
     function instance$getClass() {
         return _;
     }
     var _ = function() {
-        var ret, init;
+        var ret, init, id;
         this.getClass = instance$getClass;
         this.toString = instance$toString;
-        this.methods  = instance$methods;
+        this.methods = instance$methods;
         this.is = instance$is;
+        this.set = instance$set;
+        this.get = instance$get;
+        this.observe = instance$observe;
         if (isFunction(_.prototype.init)) {
             init = this.init;
             if (!isFunction(init)) {
@@ -247,6 +375,9 @@ function Class(name, parent) {
             }
             ret = init.apply(this, arguments);
         }
+        id = this.__id__ = objSpace.length;
+        objSpace[id] = {};
+        objSpace.length += 1;
         return ret;
     };
     _.getClass = clazz$getClass;
@@ -269,12 +400,12 @@ function Class(name, parent) {
         //this will make extends jQuery failed
         //cause jQuery will call constructor to create new instance
         //_.prototype.constructor = Class;
-        
+
         /**
          * maintain inheritance hierarchy
          */
         var parentName = (parent.typename && parent.typename()) || typename(parent);
-        if(!Classes[parentName]) {
+        if (!Classes[parentName]) {
             Classes[parentName] = {};
         }
         Classes[parentName][name] = _;
