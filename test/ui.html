@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Test</title>
+		<script src="../src/require.js"></script>
+		<link rel="stylesheet" href="../release/requirejs/aztec.css" />
+	</head>
+	<body>
+	<script>
+		require.config({
+			baseUrl: '../release/requirejs/'
+		});
+		require(['jQuery','lang/type','lang/array','lang/object','ui/dialog','ui/draggable'],function($, type,ary,object,dialog,draggable){
+			window.type = type;
+			window.ary = ary;
+			window.object = object;
+			window.dialog = dialog;
+			window.d = dialog.alert('Information','Hello World');
+			window.a = new dialog.GenericDialog();
+			window.draggable = draggable;
+			a.showAt();
+		});
+	</script>
+	</body>
+</html>

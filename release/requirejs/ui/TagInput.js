@@ -1,7 +1,7 @@
 /**
  * ---
  * description: TagInput
- * namespace: $root.ui.TagInput
+ * namespace: $root.ui.tagInput
  * imports:
  *   _type: $root.lang.type
  *   _str: $root.lang.string
@@ -14,10 +14,10 @@
  * - Tag
  * - TagInput
  * files:
- * - src/ui/TagInput.js
+ * - src/ui/tagInput.js
  */
 
-;define('ui/TagInput',[
+;define('ui/tagInput',[
     'lang/type',
     'lang/string',
     'browser/template',
@@ -41,7 +41,7 @@
     
     
     ///impl
-    var Tag = _type.create('Tag', jQuery, {
+    var Tag = _type.create('$root.ui.Tag', jQuery, {
         init: function() {
             var va;
             if (this instanceof Tag) {
@@ -77,7 +77,7 @@
         }
     });
     
-    var TagInput = _type.create('TagInput', jQuery, {
+    var TagInput = _type.create('$root.ui.TagInput', jQuery, {
         init: function(container, options) {
             this.base(container || tagInputTemplate);
             this.options = options;
@@ -134,17 +134,15 @@
     }
         
     ///sigils
-    Tag.sigils = {
-        ".text": ".ui-taginput-tagtext",
-        ".tag": ".ui-taginput-tag"
-    };
-    TagInput.sigils = {
-        ".tags": ".ui-taginput-tags"
-    };
+    if (!Tag.sigils) Tag.sigils = {};
+    Tag.sigils[".text"] = ".ui-taginput-tagtext";
+    Tag.sigils[".tag"] = ".ui-taginput-tag";
+    if (!TagInput.sigils) TagInput.sigils = {};
+    TagInput.sigils[".tags"] = ".ui-taginput-tags";
 
     exports['Tag'] = Tag;
     exports['TagInput'] = TagInput;
     exports.__doc__ = "TagInput";
     return exports;
 });
-//end of $root.ui.TagInput
+//end of $root.ui.tagInput

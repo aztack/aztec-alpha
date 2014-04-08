@@ -9,6 +9,8 @@
     },
     exports: [
         draggable,
+        undraggable,
+        isDraggable,
         Draggable
     ]
 });
@@ -17,7 +19,8 @@ var mouseMoveEvent = 'mousemove.draggable',
     mouseDownEvent = 'mousedown.draggable',
     mouseUpEvent = 'mouseup.draggable',
     keyupEvent = 'keyup.draggable',
-    scrollEvent = 'scroll.draggable';
+    scrollEvent = 'scroll.draggable',
+    draggableDataKey = '$root.ui.draggable';
 
 var varArg = _arguments.varArg;
 
@@ -42,8 +45,24 @@ var Draggable = _type.create('Draggable', {
         this.$.on(mouseDownEvent, function(e) {
             Draggable_onMouseDown(self, e);
         });
+        if (this.$.data(draggableDataKey)) {
+            Draggable_finalize(this.$);
+        }
+        this.$.data(draggableDataKey, this);
     },
-    dispose: function() {
+    disable: function() {
+        this.$.off(mouseDownEvent);
+        //this.finalize();
+        return this;
+    },
+    enable: function() {
+        var self = this;
+        this.$.on(mouseDownEvent, function(e) {
+            Draggable_onMouseDown(self, e);
+        });
+        return this;
+    },
+    finalize: function() {
         Draggable_finalize(this);
     }
 }).statics({
@@ -58,10 +77,12 @@ var Draggable = _type.create('Draggable', {
     DefaultDraggingRestriction: function(offset) {
         var $parent = this.$offsetParent,
             w = $parent.width(),
-            rightBound = w - this.$.width();
+            borderRightWidth = parseInt(this.$dragged.css('border-right-width')),
+            borderLeftWidth = parseInt(this.$dragged.css('border-left-width')),
+            rightBound = w - this.$.width() - borderRightWidth - borderLeftWidth;
         if (offset.top < 0) offset.top = 0;
         if (offset.left < 0) offset.left = 0;
-        if (offset.left > rightBound) offset.left = rightBound;
+        if (offset.left >= rightBound) offset.left = rightBound;
     }
 });
 
@@ -174,4 +195,18 @@ function draggable(handle, dragged, opts) {
             throw Error('function `draggable` need at least one parameter');
         })
         .invokeNew(Draggable);
+}
+
+function undraggable(handle) {
+    var h = $(handle),
+        draggable = h.data(draggableDataKey);
+    h.off(mouseDownEvent);
+    Draggable_finalize(draggable);
+    h.data(draggableDataKey, null);
+}
+
+function isDraggable(handle) {
+    var h = $(handle),
+        draggable = h.data(draggableDataKey);
+    return draggable;
 }

@@ -26,6 +26,10 @@ module Aztec
         def exports
             @config['exports'] || {}
         end
+
+        def returns
+            @config['returns']
+        end
         
         def notransform
             @config['notransform'] == true

@@ -101,7 +101,7 @@ display: block; background: #FFFBE1; text-align: center; clear: both; line-heigh
 .noselectable {
 -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; -o-user-select: none; user-select: none;
 }
-/* $root.ui.ComboBox */
+/* $root.ui.comboBox */
 .ui-menu {
 position: absolute; margin: 0; padding: 0; border: 1px solid gray; cursor: pointer; min-width: 100px; box-shadow: 2px 2px 2px #888; background-color: #fff;
 }
@@ -120,12 +120,24 @@ background-color: gray; color: #fff;
 .ui-menu-item:hover a {
 color: #fff; text-decoration: none;
 }
-/* $root.ui.Dialog */
+/* $root.ui.dialog */
+.ui-generic-dialog {
+position: absolute; left: 0; top: 0;
+}
 .ui-dialog {
-border: 1px solid #999; position: absolute; font-size: .875em; z-index: 10000; background-color: white; box-shadow: 2px 2px 10px #bebebe; max-width: 500px; min-height: 150px; min-width: 300px; left: 0; top: 0;
+position: absolute; left: 0; top: 0;
+}
+.ui-dialog {
+border: 1px solid #999; font-size: .875em; z-index: 10000; background-color: white; box-shadow: 2px 2px 10px #bebebe; max-width: 500px; min-height: 150px; min-width: 300px;
+}
+.ui-generic-dialog {
+-webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; -o-user-select: none; user-select: none;
 }
 .ui-dialog-header {
-background-color: #eee; color: #000; text-align: center; vertical-align: middle; cursor: move; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; -o-user-select: none; user-select: none; line-height: 24px; min-height: 24px;
+-webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; -o-user-select: none; user-select: none;
+}
+.ui-dialog-header {
+background-color: #eee; color: #000; text-align: center; vertical-align: middle; cursor: move; line-height: 24px; min-height: 24px;
 }
 .ui-dialog-body {
 padding: 5px;
@@ -139,7 +151,7 @@ background-color: white; border: 1px solid #ccc; cursor: pointer; min-width: 70p
 .ui-dialog-button:hover {
 background-color: #eee;
 }
-/* $root.ui.Menu */
+/* $root.ui.menu */
 .ui-menu {
 margin: 0; padding: 0; border: 1px solid gray; cursor: pointer; min-width: 100px; box-shadow: 2px 2px 2px #888; background-color: #fff; display: inline-block; position: absolute;
 }
@@ -158,11 +170,11 @@ background-color: gray; color: #fff;
 .ui-menu-item:hover a {
 color: #fff; text-decoration: none;
 }
-/* $root.ui.Overlay */
+/* $root.ui.overlay */
 .ui-overlay {
 position: fixed; display: block; width: 100%; height: 100%; opacity: 0.5; background-color: #000;
 }
-/* $root.ui.TagInput */
+/* $root.ui.tagInput */
 .ui-taginput {
 border: 1px solid gray; display: inline-block;
 }
@@ -178,7 +190,7 @@ margin: 2px 0; display: inline;
 .ui-taginput input {
 width: 120px; border: 1px solid #eee; margin: 1px;
 }
-/* $root.ui.TextField */
+/* $root.ui.textField */
 .ui-textfield {
 border: 1px solid gray; padding: 0; margin: 0; outline: none;
 }

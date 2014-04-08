@@ -1,13 +1,13 @@
 ({
 	description: 'ComboBox',
-	namespace: $root.ui.ComboBox,
+	namespace: $root.ui.comboBox,
 	imports: {
 		_type: $root.lang.type,
 		_fn: $root.lang.fn,
 		_tpl: $root.browser.template,
 		_arguments: $root.lang.arguments,
-		_menu: $root.ui.Menu,
-		_textfield: $root.ui.TextField,
+		_menu: $root.ui.menu,
+		_textfield: $root.ui.textField,
 		$: jQuery
 	},
 	exports: [
@@ -23,7 +23,7 @@ var Menu = _menu.Menu,
 	boxTemplate = tpl('box');
 
 ///exports
-var ComboBox = _type.create('ComboBox', jQuery, {
+var ComboBox = _type.create('$root.ui.ComboBox', jQuery, {
 	init: function(opts) {
 		opts = opts || ComboBox.CreateOptions();
 		this.base(boxTemplate);

@@ -322,6 +322,8 @@
         }
     };
     
+    ObjectSpace.__objectSpace__ = $ObjectSpace;
+    
     function instance$is(t) {
         var clazz = this.getClass();
         if (t == Object) {
@@ -427,7 +429,7 @@
     
     function instance$set(keyPath, value, notifyObservers) {
         var typename = this.getClass().typename(),
-            objSpace, attrs, cacheKey = typename + '@' + keyPath,
+            objSpace, attrs, cacheKey = typename + '@' + this.__id__,
             metaData = metaDataCache[cacheKey];
     
         if (typeof notifyObservers == 'undefined') {
@@ -450,19 +452,19 @@
     
     function instance$get(keyPath, alternative) {
         var typename = this.getClass().typename(),
-            objSpace, attrs, cacheKey = typename + '@' + keyPath,
+            objSpace, attrs, cacheKey = typename + '@' + this.__id__,
             metaData = metaDataCache[cacheKey];
     
         if (!metaData) {
             metaData = initMetaData(typename, cacheKey, this.__id__);
         }
         attrs = metaData.attrs;
-        return tryget(attrs, keyPath, alternative);
+        return keyPath ? tryget(attrs, keyPath, alternative) : attrs;
     }
     
-    function instance$observe(keyPath, name, fn) {
+    function instance$observe_internal(keyPath, name, fn) {
         var typename = this.getClass().typename(),
-            objSpace, cacheKey = typename + '@' + keyPath,
+            objSpace, cacheKey = typename + '@' + this.__id__,
             metaData = metaDataCache[cacheKey],
             index;
     
@@ -471,20 +473,43 @@
         }
     
         observers = metaData.observers;
+        if(arguments.length === 0) return observers;
     
-        if(arguments.length === 2 && typeof name == 'function') {
-            fn = name;
-            name = keyPath;
-        } else if(arguments.length === 1) {
-            name = keyPath;
-            fn = undefined;
-        }
-        if(typeof fn == 'function') {
+        if (typeof fn == 'function') {
             observers[name] = fn;
-        } else {
+        } else if (fn === null) {
             observers[name] = null;
             delete observers[name];
         }
+        return this;
+    }
+    
+    function instance$observe(keyPath, name, fn) {
+        if(typeof fn == 'undefined' && typeof name == 'function') {
+            fn = name;
+            name = keyPath;
+        }
+        if(arguments.length === 0) {
+            return instance$observe_internal.call(this);
+        } else {
+            return instance$observe_internal.call(this, keyPath, name, fn);
+        }
+    }
+    
+    function instance$unobserve(keyPath, name) {
+        return instance$observe_internal.call(this, keyPath, name, null);
+    }
+    
+    function instance$dispose() {
+        var typename = this.getClass().typename(),
+            objSpace, id;
+    
+        //delete meta data
+        id = this.__id__;
+        objSpace = $ObjectSpace[typename];
+        objSpace[id] = null;
+        delete objSpace[id];
+    
         return this;
     }
     
@@ -643,7 +668,7 @@
         var objSpace;
         if (!$ObjectSpace[name]) {
             objSpace = $ObjectSpace[name] = {
-                length: 0
+                count: 0
             };
         } else {
             throw new Error(name + ' already defined!');
@@ -658,9 +683,18 @@
             this.toString = instance$toString;
             this.methods = instance$methods;
             this.is = instance$is;
-            this.set = instance$set;
-            this.get = instance$get;
-            this.observe = instance$observe;
+            this.$class = _;
+    
+            /**
+             * key-value observing support
+             * method name starts with $ to avoid conflicts
+             */
+            this.$set = instance$set;
+            this.$get = instance$get;
+            this.$observe = instance$observe;
+            this.$unobserve = instance$unobserve;
+            this.$dispose = instance$dispose;
+    
             if (isFunction(_.prototype.init)) {
                 init = this.init;
                 if (!isFunction(init)) {
@@ -674,9 +708,9 @@
                 }
                 ret = init.apply(this, arguments);
             }
-            id = this.__id__ = objSpace.length;
+            id = this.__id__ = objSpace.count;
             objSpace[id] = {};
-            objSpace.length += 1;
+            objSpace.count += 1;
             return ret;
         };
         _.getClass = clazz$getClass;

@@ -1,6 +1,6 @@
 ({
 	description: 'List',
-	namespace: $root.ui.List,
+	namespace: $root.ui.list,
 	imports: {
 		_type: $root.lang.type,
 		_fn: $root.lang.fn,
@@ -13,7 +13,7 @@
 /**
  * A Generic List, represents a unordered list
  */
-var List = _type.create('List', jQuery, {
+var List = _type.create('$root.ui.List', jQuery, {
 	add: function(arg) {
 		var Item = this.itemType,
 			item;

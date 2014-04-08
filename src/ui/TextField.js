@@ -1,6 +1,6 @@
 ({
 	description: 'TextField',
-	namespace: $root.ui.TextField,
+	namespace: $root.ui.textField,
 	imports: {
 		_type: $root.lang.type,
 		_tpl: $root.browser.template,
@@ -19,7 +19,7 @@ var tpl = _tpl.id$('$root.ui.TextField'),
 	varArg = _arguments.varArg;
 
 ///impl
-var TextField = _type.create('TextField', jQuery, {
+var TextField = _type.create('$root.ui.TextField', jQuery, {
 	init: function() {
 		var va = varArg(arguments, this)
 			.when(function() {

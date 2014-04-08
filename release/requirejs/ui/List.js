@@ -1,7 +1,7 @@
 /**
  * ---
  * description: List
- * namespace: $root.ui.List
+ * namespace: $root.ui.list
  * imports:
  *   _type: $root.lang.type
  *   _fn: $root.lang.fn
@@ -9,10 +9,10 @@
  * exports:
  * - List
  * files:
- * - src/ui/List.js
+ * - src/ui/list.js
  */
 
-;define('ui/List',[
+;define('ui/list',[
     'lang/type',
     'lang/fn',
     'jQuery'
@@ -23,7 +23,7 @@
         /**
      * A Generic List, represents a unordered list
      */
-    var List = _type.create('List', jQuery, {
+    var List = _type.create('$root.ui.List', jQuery, {
       add: function(arg) {
         var Item = this.itemType,
           item;
@@ -78,4 +78,4 @@
     exports.__doc__ = "List";
     return exports;
 });
-//end of $root.ui.List
+//end of $root.ui.list

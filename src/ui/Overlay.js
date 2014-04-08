@@ -1,6 +1,6 @@
 ({
 	description: 'Overlay',
-	namespace: $root.ui.Overlay,
+	namespace: $root.ui.overlay,
 	imports: {
 		_type: $root.lang.type,
 		_tpl: $root.browser.template,
@@ -17,7 +17,7 @@ var varArg = _arguments.varArg,
 	tpl = _tpl.id$('$root.ui.Overlay'),
 	maskTemplate = tpl('mask');
 
-var Overlay = _type.create('Overlay', jQuery, {
+var Overlay = _type.create('$root.ui.Overlay', jQuery, {
 	init: function(options) {
 		varArg(arguments, this)
 			.when(function() {
@@ -36,7 +36,7 @@ var Overlay = _type.create('Overlay', jQuery, {
 			.when('string', function(s) {
 				return [parseFloat(s)];
 			})
-			.when('*', function() {
+			.when('*', function(s) {
 				return [parseFloat(String(s))];
 			})
 			.invoke(function(opacity) {

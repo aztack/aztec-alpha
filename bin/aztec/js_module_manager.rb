@@ -93,7 +93,8 @@ module Aztec
             FileUtils.mkdir output_dir unless File.exists? output_dir
             styles = StringIO.new
             @modules.each do |namespace, m|
-                m = m.sort
+                #sort by priority
+                m.sort!
                 main = m[0]
                 mods = m[1..-1]
                 segment = Utils.namespace_to_file_path(main.namespace)
@@ -131,25 +132,26 @@ module Aztec
             end
         end
 
-        def release_single_js(output_dir, path, overwrite = true, spec = :requirejs)
+        def release_single_js(output_dir, path, overwrite = true, spec = :requirejs) 
             FileUtils.mkdir output_dir unless File.exists? output_dir
             ns = Utils.file_path_to_namespace(path)
-            m = @modules[ns]
-            if m.nil?
-                $stderr.puts "Can not found #{ns}(#{path})!"
-                exit
-            end
 
-            segment = Utils.namespace_to_file_path ns
+            index = nil
+            ns_changed, mod_changed = @modules.find do |n, parts|
+                index = parts.index{|part|part.config['files'].index(path)}
+                n.downcase == ns || (not index.nil?)
+            end
+            mod_changed[index] = JsModule.new(path)
+            mod_changed.sort!
+
+            main = mod_changed[0]
+            mods = mod_changed[1..-1]
+
+            segment = Utils.namespace_to_file_path(main.namespace)
             output_path = "#{output_dir}/#{segment}.js"
             raise "#{path} already exists!" if !overwrite and File.exists?(path)
-            yield ns if block_given?
-
-            index = m.find_index{|a|a.name == ns}
-            m[index] = JsModule.new(path)
-
-            main = m[0]
-            mods = m[1..-1]
+            yield path if block_given?
+            
             FileUtils.mkpath(File.dirname(path))
             File.open(output_path,'w:utf-8') do |f|
                 if mods.size.zero?
@@ -243,7 +245,7 @@ module Aztec
 
         private
         def init
-            @modules = Hash.new{|h,k| h[k] = []}
+            @modules = Hash.new {|h,k|h[k] = []}
             @dependency = TsortableHash.new
             @dependency['$root'] = []
             @dependency['jQuery'] = []
@@ -251,7 +253,9 @@ module Aztec
         end
 
         def _dependency_of(mod, include_self)
+            raise "Can not found #{mod}!Check your spelling." if @modules[mod].nil?;
             m = @modules[mod].sort
+
             return include_self ? [mod] : [] if m.nil? or m.size.zero?
             imports = m.inject([]) do |all,md|
                 all.concat md.config.imports.values

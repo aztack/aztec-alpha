@@ -200,6 +200,19 @@
                 });
                 return this;
             },
+            same: function() {
+                var types = toArray(arguments),
+                    fn = types.pop(),
+                    i = 0,
+                    len = types.length;
+                for (; i < len; ++i) {
+                    signatures.push({
+                        fn: fn,
+                        types: types[i]
+                    });
+                }
+                return this;
+            },
             otherwise: function(fn) {
                 otherwise = fn;
                 return this;

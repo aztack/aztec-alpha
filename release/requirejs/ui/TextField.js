@@ -1,7 +1,7 @@
 /**
  * ---
  * description: TextField
- * namespace: $root.ui.TextField
+ * namespace: $root.ui.textField
  * imports:
  *   _type: $root.lang.type
  *   _tpl: $root.browser.template
@@ -11,10 +11,10 @@
  * - TextField
  * - placeholderPollyfill
  * files:
- * - src/ui/TextField.js
+ * - src/ui/textField.js
  */
 
-;define('ui/TextField',[
+;define('ui/textField',[
     'lang/type',
     'browser/template',
     'lang/arguments',
@@ -30,7 +30,7 @@
       varArg = _arguments.varArg;
     
     ///impl
-    var TextField = _type.create('TextField', jQuery, {
+    var TextField = _type.create('$root.ui.TextField', jQuery, {
       init: function() {
         var va = varArg(arguments, this)
           .when(function() {
@@ -157,13 +157,12 @@
     ///exports
         
     ///sigils
-    TextField.sigils = {
-        ".tag": ".ui-textfield"
-    };
+    if (!TextField.sigils) TextField.sigils = {};
+    TextField.sigils[".tag"] = ".ui-textfield";
 
     exports['TextField'] = TextField;
     exports['placeholderPollyfill'] = placeholderPollyfill;
     exports.__doc__ = "TextField";
     return exports;
 });
-//end of $root.ui.TextField
+//end of $root.ui.textField

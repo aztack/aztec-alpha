@@ -65,11 +65,13 @@ opt_parser.parse! ARGV
 
 if $0 =~/watchr/
 	man.scan
-	watch 'src/.*\.js' do |path|
-		$stdout.puts "#{path[0]} saved"
+	$stdout.puts "Start watching..."
+	watch 'src/.*\.(js|html)' do |path|
+		path = path[0]
+		path.sub!('.html','.js')
+		$stdout.puts "#{path} saved"
 		begin
-			#binding.pry
-			man.release_single_js('./release/requirejs', path[0]) do |namespace|
+			man.release_single_js('./release/requirejs', path) do |namespace|
 				$stdout.puts "Writing #{namespace}"
 			end
 			$stdout.puts "Done!"

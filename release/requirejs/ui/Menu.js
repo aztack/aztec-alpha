@@ -1,29 +1,29 @@
 /**
  * ---
  * description: Menu
- * namespace: $root.ui.Menu
+ * namespace: $root.ui.menu
  * imports:
  *   _type: $root.lang.type
  *   _str: $root.lang.string
  *   _arguments: $root.lang.arguments
  *   _tpl: $root.browser.template
  *   _enum: $root.lang.enumerable
- *   _list: $root.ui.List
+ *   _list: $root.ui.list
  *   $: jQuery
  * exports:
  * - Menu
  * - MenuItem
  * files:
- * - src/ui/Menu.js
+ * - src/ui/menu.js
  */
 
-;define('ui/Menu',[
+;define('ui/menu',[
     'lang/type',
     'lang/string',
     'lang/arguments',
     'browser/template',
     'lang/enumerable',
-    'ui/List',
+    'ui/list',
     'jQuery'
 ], function (_type,_str,_arguments,_tpl,_enum,_list,$){
     //'use strict';
@@ -39,7 +39,7 @@
         varArg = _arguments.varArg;
     
     ///impl
-    var MenuItem = _type.create('MenuItem', jQuery, {
+    var MenuItem = _type.create('$root.ui.MenuItem', jQuery, {
         init: function(arg) {
             if (_str.isHtmlFragment(arg) || arg instanceof jQuery || _type.isElement(arg)) {
                 this.base(arg);
@@ -60,7 +60,7 @@
         }
     });
     
-    var Menu = _type.create('Menu', _list.List, {
+    var Menu = _type.create('$root.ui.Menu', _list.List, {
         init: function(options) {
             options = options || {};
             this.base(menuTemplate);
@@ -140,17 +140,15 @@
     ///exports
         
     ///sigils
-    Menu.sigils = {
-        ".tag": ".ui-menu"
-    };
-    MenuItem.sigils = {
-        "text": "a",
-        ".item": ".ui-menu-item"
-    };
+    if (!Menu.sigils) Menu.sigils = {};
+    Menu.sigils[".tag"] = ".ui-menu";
+    if (!MenuItem.sigils) MenuItem.sigils = {};
+    MenuItem.sigils["text"] = "a";
+    MenuItem.sigils[".item"] = ".ui-menu-item";
 
     exports['Menu'] = Menu;
     exports['MenuItem'] = MenuItem;
     exports.__doc__ = "Menu";
     return exports;
 });
-//end of $root.ui.Menu
+//end of $root.ui.menu

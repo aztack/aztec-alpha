@@ -1,6 +1,6 @@
 ({
     description: 'TagInput',
-    namespace: $root.ui.TagInput,
+    namespace: $root.ui.tagInput,
     imports: {
         _type: $root.lang.type,
         _str: $root.lang.string,
@@ -26,7 +26,7 @@ var tpl = _tpl.id$('$root.ui.TagInput'),
 
 
 ///impl
-var Tag = _type.create('Tag', jQuery, {
+var Tag = _type.create('$root.ui.Tag', jQuery, {
     init: function() {
         var va;
         if (this instanceof Tag) {
@@ -62,7 +62,7 @@ var Tag = _type.create('Tag', jQuery, {
     }
 });
 
-var TagInput = _type.create('TagInput', jQuery, {
+var TagInput = _type.create('$root.ui.TagInput', jQuery, {
     init: function(container, options) {
         this.base(container || tagInputTemplate);
         this.options = options;

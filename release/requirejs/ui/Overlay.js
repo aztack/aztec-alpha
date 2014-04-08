@@ -1,7 +1,7 @@
 /**
  * ---
  * description: Overlay
- * namespace: $root.ui.Overlay
+ * namespace: $root.ui.overlay
  * imports:
  *   _type: $root.lang.type
  *   _tpl: $root.browser.template
@@ -11,10 +11,10 @@
  * - Overlay
  * - create
  * files:
- * - src/ui/Overlay.js
+ * - src/ui/overlay.js
  */
 
-;define('ui/Overlay',[
+;define('ui/overlay',[
     'lang/type',
     'browser/template',
     'lang/arguments',
@@ -28,7 +28,7 @@
       tpl = _tpl.id$('$root.ui.Overlay'),
       maskTemplate = tpl('mask');
     
-    var Overlay = _type.create('Overlay', jQuery, {
+    var Overlay = _type.create('$root.ui.Overlay', jQuery, {
       init: function(options) {
         varArg(arguments, this)
           .when(function() {
@@ -47,7 +47,7 @@
           .when('string', function(s) {
             return [parseFloat(s)];
           })
-          .when('*', function() {
+          .when('*', function(s) {
             return [parseFloat(String(s))];
           })
           .invoke(function(opacity) {
@@ -80,4 +80,4 @@
     exports.__doc__ = "Overlay";
     return exports;
 });
-//end of $root.ui.Overlay
+//end of $root.ui.overlay

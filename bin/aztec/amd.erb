@@ -5,7 +5,9 @@
     <%=@xtemplate_amd%>
     <%=@original%>
     <%=@sigils%>
+    <% if not @custom_return -%>
     <%=@exports%>
+    <% end -%>
     <%=@returnstatement%>
 });
 //end of <%=@name%>

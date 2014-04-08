@@ -129,12 +129,12 @@ module Aztec
             if not @xtemplate.nil?
                 ctx[:sigils] = "\n///sigils\n".indent(4)
                 @xtemplate.sigils.each do |sigil_class, sigils|
-                    js = ["#{sigil_class}.sigils = {"]
+                    js = ["if (!#{sigil_class}.sigils) #{sigil_class}.sigils = {};"]
                     #js << sigils.inject([%Q["length": #{sigils.size}].indent(4)]) do |all, (sigil, selector)|
                     js << sigils.inject([]) do |all, (sigil, selector)|
-                       all << %Q["#{sigil}": "#{selector}"].indent(4)
-                    end.join(",\n")
-                    js << '};'
+                       all << %Q[#{sigil_class}.sigils["#{sigil}"] = "#{selector}";]
+                    end.join("\n")
+
                     js = js.join("\n").indent(4);                    
                     #$stdout.puts js
                     if not declared?(sigil_class)
@@ -162,7 +162,14 @@ module Aztec
             else
                 ctx[:exports] = doc
             end
-            ctx[:returnstatement] = 'return exports;'
+
+            ctx[:returnstatement] = if @config.returns.nil?
+                ctx['custom_return'] = false;
+                'return exports;'
+            else
+                ctx['custom_return'] = true;
+                "return #{@config.returns};"
+            end
             ctx
         end
 

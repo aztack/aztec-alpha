@@ -1,28 +1,28 @@
 /**
  * ---
  * description: ComboBox
- * namespace: $root.ui.ComboBox
+ * namespace: $root.ui.comboBox
  * imports:
  *   _type: $root.lang.type
  *   _fn: $root.lang.fn
  *   _tpl: $root.browser.template
  *   _arguments: $root.lang.arguments
- *   _menu: $root.ui.Menu
- *   _textfield: $root.ui.TextField
+ *   _menu: $root.ui.menu
+ *   _textfield: $root.ui.textField
  *   $: jQuery
  * exports:
  * - ComboBox
  * files:
- * - src/ui/ComboBox.js
+ * - src/ui/comboBox.js
  */
 
-;define('ui/ComboBox',[
+;define('ui/comboBox',[
     'lang/type',
     'lang/fn',
     'browser/template',
     'lang/arguments',
-    'ui/Menu',
-    'ui/TextField',
+    'ui/menu',
+    'ui/textField',
     'jQuery'
 ], function (_type,_fn,_tpl,_arguments,_menu,_textfield,$){
     //'use strict';
@@ -37,7 +37,7 @@ var Menu = _menu.Menu,
   boxTemplate = tpl('box');
 
 ///exports
-var ComboBox = _type.create('ComboBox', jQuery, {
+var ComboBox = _type.create('$root.ui.ComboBox', jQuery, {
   init: function(opts) {
     opts = opts || ComboBox.CreateOptions();
     this.base(boxTemplate);
@@ -98,4 +98,4 @@ function ComboBox_initialize(self) {
     exports.__doc__ = "ComboBox";
     return exports;
 });
-//end of $root.ui.ComboBox
+//end of $root.ui.comboBox

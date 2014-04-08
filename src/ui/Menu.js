@@ -1,13 +1,13 @@
 ({
     description: 'Menu',
-    namespace: $root.ui.Menu,
+    namespace: $root.ui.menu,
     imports: {
         _type: $root.lang.type,
         _str: $root.lang.string,
         _arguments: $root.lang.arguments,
         _tpl: $root.browser.template,
         _enum: $root.lang.enumerable,
-        _list: $root.ui.List,
+        _list: $root.ui.list,
         $: jQuery
     },
     exports: [
@@ -24,7 +24,7 @@ var tpl = _tpl.id$('$root.ui.Menu'),
     varArg = _arguments.varArg;
 
 ///impl
-var MenuItem = _type.create('MenuItem', jQuery, {
+var MenuItem = _type.create('$root.ui.MenuItem', jQuery, {
     init: function(arg) {
         if (_str.isHtmlFragment(arg) || arg instanceof jQuery || _type.isElement(arg)) {
             this.base(arg);
@@ -45,7 +45,7 @@ var MenuItem = _type.create('MenuItem', jQuery, {
     }
 });
 
-var Menu = _type.create('Menu', _list.List, {
+var Menu = _type.create('$root.ui.Menu', _list.List, {
     init: function(options) {
         options = options || {};
         this.base(menuTemplate);

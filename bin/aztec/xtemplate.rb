@@ -81,8 +81,10 @@ module Aztec
             #$stdout.puts xtemplate_node.css(XTEMPLATE_SIGIL_ATTR_SEL).map{|e|e.attr(XTEMPLATE_SIGIL_ATTR)}
             #$stdout.puts xtemplate_node.to_html
             return if sigil_class.nil? or sigil_class.empty?
+            #binding.pry if @path['dialog']
+            @sigils[sigil_class] = {} if not @sigils.has_key?(sigil_class)
 
-            @sigils[sigil_class] = xtemplate_node.css(XTEMPLATE_SIGIL_ATTR_SEL).inject({}) do |sigils, ele|
+            tmp = xtemplate_node.css(XTEMPLATE_SIGIL_ATTR_SEL).inject({}) do |sigils, ele|
                 sigil = ele.attr XTEMPLATE_SIGIL_ATTR
                 begin
                     sigils[sigil] = get_selector_from sigil, ele
@@ -92,6 +94,7 @@ module Aztec
                 #$stdout.puts sigils[sigil]
                 sigils
             end
+            @sigils[sigil_class].merge! tmp
             
             if sigil = xtemplate_node.attr('sigil')
                @sigils[sigil_class][sigil] = get_selector_from sigil, xtemplate_node
