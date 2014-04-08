@@ -66,7 +66,7 @@
             <div class="ui-dialog-footer" sigil=".footer"></div>
         </div>
 
-        <button xtemplate="$root.ui.Dialog.alertButton,delete" class="ui-dialog-button" sigil=".button" sigil-class="GenericDialog" style="display:none"></button>
+        <button xtemplate="$root.ui.Dialog.alertButton,delete" data-action="ok" class="ui-dialog-button" sigil=".button" sigil-class="GenericDialog" style="display:none"></button>
 
         <script>
             define('$root.demo.ui.Dialog', ['$root.ui.Dialog'],function(require) {

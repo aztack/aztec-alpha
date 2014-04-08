@@ -55,7 +55,7 @@
         }
     
         for (key in obj) {
-            ret = fn.call(thisValue, obj[key], key, i++, obj);
+            ret = fn.call(thisValue, key, obj[key], i++, obj);
             if (ret === false && stopWhenFnReturnFalse) break;
         }
         return obj;

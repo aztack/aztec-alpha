@@ -7,7 +7,7 @@ require 'thor'
 require 'erubis'
 require 'pp'
 
-require File.expand_path("bin/common.rb",File.dirname(__FILE__))
+require File.expand_path("bin/aztec/common.rb",File.dirname(__FILE__))
 
 # windows console GBK patch
 $OS = :unix

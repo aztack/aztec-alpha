@@ -7,9 +7,7 @@
  *   _tpl: $root.browser.template
  *   _arguments: $root.lang.arguments
  *   $: jQuery
- * exports:
- * - Overlay
- * - create
+ * returns: Overlay
  * files:
  * - src/ui/overlay.js
  */
@@ -21,7 +19,6 @@
     'jQuery'
 ], function (_type,_tpl,_arguments,$){
     //'use strict';
-    var exports = {};
         _tpl
             .set('$root.ui.Overlay.mask',"<div class=\"ui-overlay\"></div>\n");
         var varArg = _arguments.varArg,
@@ -75,9 +72,6 @@
         
     ///sigils
 
-    exports['Overlay'] = Overlay;
-    exports['create'] = create;
-    exports.__doc__ = "Overlay";
-    return exports;
+    return Overlay;
 });
 //end of $root.ui.overlay

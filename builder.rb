@@ -69,12 +69,12 @@ if $0 =~/watchr/
 	watch 'src/.*\.(js|html)' do |path|
 		path = path[0]
 		path.sub!('.html','.js')
-		$stdout.puts "#{path} saved"
+		$stdout.write "#{path} saved."
 		begin
 			man.release_single_js('./release/requirejs', path) do |namespace|
-				$stdout.puts "Writing #{namespace}"
+				$stdout.write "re-generate..."
 			end
-			$stdout.puts "Done!"
+			$stdout.puts " Done!"
 		rescue => e
 			$stderr.puts e
 		end

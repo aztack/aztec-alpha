@@ -8,6 +8,7 @@
         _tpl: $root.browser.template,
         _arguments: $root.lang.arguments,
         _drag: $root.ui.draggable,
+        Overlay: $root.ui.overlay,
         $: jQuery
     },
     exports: [
@@ -31,11 +32,12 @@ var GenericDialog = _type.create('$root.ui.GenericDialog', jQuery, {
     init: function(options) {
         //if(!options) return this;
         this.options = options || {};
-        this.base(GenericDialog.DefaultTemplate);
+        this.base(GenericDialog.Template.DefaultTemplate);
         this.header = this.sigil('.header');
         this.body = this.sigil('.body');
         this.footer = this.sigil('.footer');
         this.buttons = this.sigil('.button');
+        this.mask = null;
         GenericDialog_initialize(this, this.options);
     },
     showAt: function() {
@@ -53,17 +55,21 @@ var GenericDialog = _type.create('$root.ui.GenericDialog', jQuery, {
                     y = ypos,
                     h,
                     dim = this.dimension(),
-                    CENTER = 'center';
+                    Center = GenericDialog.Position.Center,
+                    GoldenRation = GenericDialog.Position.GoldenRation;
                 if (typeof ypos == 'undefined') {
-                    ypos = CENTER;
+                    ypos = Center;
                 }
-                if (xpos == CENTER) {
+                if (xpos == Center || xpos == GoldenRation) {
                     w = parent.width();
                     x = w / 2 - dim.width / 2;
                 }
-                if (ypos == CENTER) {
+                if (ypos == Center || ypos == GoldenRation) {
                     h = parent.height();
                     y = h / 2 - dim.height / 2;
+                }
+                if(xpos == GoldenRation || ypos == GoldenRation) {
+                    y = y * 0.618;
                 }
                 return [parent, x, y];
             })
@@ -91,6 +97,9 @@ var GenericDialog = _type.create('$root.ui.GenericDialog', jQuery, {
     },
     close: function() {
         this.trigger(GenericDialog.Events.OnClose, [this]);
+        if(this.mask) {
+            this.mask.hide();
+        }
         return this.hide();
     },
     setHeader: function(arg) {
@@ -130,27 +139,55 @@ var GenericDialog = _type.create('$root.ui.GenericDialog', jQuery, {
             .invoke(function(captions) {
                 captions = captions || args;
                 footer.empty();
-                _array.forEach(captions, function(cap) {
-                    var button = $(Alert.Template.DefaultButton);
-                    button.text(cap).appendTo(footer);
+                _array.forEach(captions, function(arg) {
+                    var btn = GenericDialog_createButton(arg);
+                    btn.appendTo(footer);
                 });
             });
         this.buttons = this.sigil('.button');
         return this;
     }
+}).aliases({
+    setTitle: 'setHeader',
+    setContent: 'setBody'
 }).statics({
-    DefaultTemplate: tpl('dialog'),
+    Template: {
+        DefaultTemplate: tpl('dialog'),
+        DefaultButton: tpl('alertButton')
+    },
+    Text: {
+        OK: 'OK',
+        Cancel: 'Cancel'
+    },
+    Position: {
+        Center: 'center',
+        GoldenRation: 'golden'
+    },
     Events: {
         OnShowAt: 'OnShowAt(x,y)',
         OnClose: 'OnClose',
         OnButtonClick: 'OnButtonClick(buttonIndex,buttonCaption)'
-    },
-    CreateOptions: function() {
-        return {
-            title: 'untitled'
-        };
     }
 });
+
+function GenericDialog_createButton() {
+    var button;
+    varArg(arguments)
+        .when('plainObject', function(config) {
+            button = $(config.template || GenericDialog.Template.DefaultButton);
+            button.text(config.caption);
+            if (config.css) button.css(config.css);
+            _enum.each(config.data, function(k, v) {
+                button.data(k, v);
+            });
+        })
+        .when('*', function(cap) {
+            button = $(GenericDialog.Template.DefaultButton);
+            button.text(String(cap));
+        })
+        .resolve();
+    return button;
+}
 
 function GenericDialog_initialize(self, opts) {
     self.addClass('ui-generic-dialog');
@@ -162,7 +199,7 @@ function GenericDialog_initialize(self, opts) {
 
     //register OnClose event handler if provided in create options
     if (_type.isFunction(self.options.onClose)) {
-        self.on(Alert.Events.OnClose, self.options.onClose);
+        self.on(GenericDialog.Events.OnClose, self.options.onClose);
     }
 
     //bring dialog to front when active
@@ -181,11 +218,22 @@ function GenericDialog_initialize(self, opts) {
         var button = $(e.target),
             buttons = self.sigil('.button'),
             index = buttons.index(button[0]),
-            caption = button.text();
+            caption = button.text(),
+            action = button.data('action');
 
-        //trigger event after close so that we can re-open this dialog in event handler
         self.trigger(GenericDialog.Events.OnButtonClick, [index, caption]);
+        if (action == 'ok' || action == 'cancel') {
+            self.close();
+        }
     });
+
+    if(!!opts.mask) {
+        var mask = self.mask = new Overlay();
+        mask.appendTo('body');
+        mask.click(function(){
+            self.close();
+        });
+    }
 }
 
 function GenericDialog_setPart(self, whichPart) {
@@ -236,25 +284,13 @@ var Alert = _type.create('$root.ui.Alert', GenericDialog, {
 }).aliases({
     setTitle: 'setHeader',
     setContent: 'setBody'
-}).statics({
-    Template: {
-        DefaultButton: tpl('alertButton')
-    },
-    Text: {
-        OK: 'OK',
-        Cancel: 'Cancel'
-    },
-    Position: {
-        Center: 'center'
-    }
 });
 
 function Alert_initialize(self, opts) {
     //if no buttons specified, create a default 'OK' button
     var button;
     if (!opts.buttons && self.buttons.length === 0) {
-        button = $(Alert.Template.DefaultButton);
-        button.text(Alert.Text.OK);
+        button = GenericDialog_createButton(GenericDialog.Text.OK);
         self.footer.append(button);
     } else {
         self.setButtons(opts.buttons);
@@ -302,8 +338,8 @@ function alert() {
         alertSingleton = null;
     }
     alertSingleton = Alert.create.apply(null, arguments);
-    alertSingleton.showAt(Alert.Position.Center).on(GenericDialog.Events.OnButtonClick,function(){
+    alertSingleton.showAt(GenericDialog.Position.GoldenRation).on(GenericDialog.Events.OnButtonClick, function() {
         alertSingleton.close();
-    });
+    }).setDraggable(false);
     return alertSingleton;
 }

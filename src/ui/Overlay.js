@@ -7,10 +7,7 @@
 		_arguments: $root.lang.arguments,
 		$: jQuery
 	},
-	exports: [
-		Overlay,
-		create
-	]
+	returns: Overlay
 });
 
 var varArg = _arguments.varArg,

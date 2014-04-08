@@ -38,7 +38,7 @@ module Aztec
         def add_module(js_file, bm = nil)
             m = nil
             if @verbose
-                s = Benchmark.measure(File.basename(js_file)){m = JsModule.new(js_file) rescue nil}
+                s = Benchmark.measure(File.basename(js_file)){m = JsModule.new(js_file)}
                 $stdout.puts "#{s.to_s.strip} #{File.basename(js_file)}"
                 return nil if m.nil?
             else

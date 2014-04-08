@@ -47,7 +47,7 @@ function _object_each(obj, fn, thisValue, stopWhenFnReturnFalse) {
     }
 
     for (key in obj) {
-        ret = fn.call(thisValue, obj[key], key, i++, obj);
+        ret = fn.call(thisValue, key, obj[key], i++, obj);
         if (ret === false && stopWhenFnReturnFalse) break;
     }
     return obj;
