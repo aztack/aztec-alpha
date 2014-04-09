@@ -10,10 +10,11 @@
 		require.config({
 			baseUrl: '../release/requirejs/'
 		});
-		require(['jQuery','lang/type','lang/array','lang/object','ui/dialog','ui/draggable','ui/overlay'],function($, type,ary,object,dialog,draggable, Overlay){
+		require(['jQuery','lang/type','lang/array','lang/object','lang/arguments','ui/dialog','ui/draggable','ui/overlay'],function($, type,ary,object, args,dialog,draggable, Overlay){
 			window.type = type;
 			window.ary = ary;
 			window.object = object;
+			window.args = args;
 			window.dialog = dialog;
 			window.Overlay = Overlay;
 			window.d = dialog.alert('Information','Hello World');

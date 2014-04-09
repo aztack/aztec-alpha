@@ -5,6 +5,7 @@
  * namespace: $root.lang.date
  * imports:
  *   _type: $root.lang.type
+ *   _arguments: $root.lang.arguments
  *   _str: $root.lang.string
  * exports:
  * - secondsOfMinute
@@ -23,15 +24,18 @@
 
 ;define('lang/date',[
     'lang/type',
+    'lang/arguments',
     'lang/string'
-], function (_type,_str){
+], function (_type,_arguments,_str){
     //'use strict';
     var exports = {};
     
-        //vars
-    var secondsOfMinute  = 60,
-        secondsOfHour    = 3600,
-        secondsOfDay     = 86400,
+        var varArg = _arguments.varArg;
+    
+    //vars
+    var secondsOfMinute = 60,
+        secondsOfHour = 3600,
+        secondsOfDay = 86400,
         namesOfMonths = [
             null,
             'January',
@@ -47,21 +51,36 @@
             'November',
             'December'
         ],
-        _daysOfMonth = [
-            -1,
-            31, // Jan
-            28, // Feb
-            31, // Mar
-            30, // Apr
-            31, // May
-            30, // Jun
-            31, // Jul
-            31, // Aug
-            30, // Sep
-            31, // Oct
-            30, // Nov
-            31 // Dec
-        ];
+        _daysOfMonth = {
+            'false': [-1,
+                31, // Jan
+                28, // Feb
+                31, // Mar
+                30, // Apr
+                31, // May
+                30, // Jun
+                31, // Jul
+                31, // Aug
+                30, // Sep
+                31, // Oct
+                30, // Nov
+                31 // Dec
+            ],
+            'true': [-1,
+                31, // Jan
+                20, // Feb
+                31, // Mar
+                30, // Apr
+                31, // May
+                30, // Jun
+                31, // Jul
+                31, // Aug
+                30, // Sep
+                31, // Oct
+                30, // Nov
+                31 // Dec
+            ]
+        };
     
     
     //helper
@@ -89,15 +108,12 @@
         return new Date(y, 1, 29).getMonth() == 1;
     }
     
-    function daysOfMonth(m) {
-        if (m < 1 || m > 12) {
-            throw "Month must between 1 and 12";
-        }
-        var days = _daysOfMonth[m];
-        if (m == 2 && isLeapYear(thisYear())) {
-            return days + 1;
-        }
-        return days;
+    function daysOfMonth(y, m) {
+        return _daysOfMonth[isLeapYear(y)][m];
+    }
+    
+    function calendar() {
+    
     }
     
     exports['secondsOfMinute'] = secondsOfMinute;

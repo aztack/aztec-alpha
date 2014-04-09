@@ -16,7 +16,6 @@ module Aztec
         end
         
         def initialize(path)
-            binding.pry if path['table']
             @path = path
             @source = File.read path, :encoding=>'utf-8'
             read_module_config
