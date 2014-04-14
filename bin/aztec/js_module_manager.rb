@@ -91,7 +91,7 @@ module Aztec
 
         def release(output_dir, overwrite = false, spec = :requirejs)
             FileUtils.mkdir output_dir unless File.exists? output_dir
-            styles = StringIO.new
+            #styles = StringIO.new
             @modules.each do |namespace, m|
                 #sort by priority
                 m.sort!
@@ -115,21 +115,26 @@ module Aztec
                 end
                 
                 #style
-                styles.write main.styles
-                mods.each do |mod|
-                    styles.write mod.styles
+                #styles.write main.styles
+                #mods.each {|mod|styles.write mod.styles}
+                css_text = main.styles
+                if css_text and css_text.size > 0
+                    path = "#{output_dir}/#{segment}.css"
+                    File.open(path,"w:utf-8") do |f|
+                        f.write main.styles
+                    end
                 end
             end
-            css_file_path = "#{output_dir}/#{Aztec.name('.css')}"
-            File.open(css_file_path, 'w') do |f|
-                yield css_file_path if block_given?
-                f.puts styles.string.strip
-            end
-            config_file_path = "#{output_dir}/config.js"
-            File.open(config_file_path,'w:utf-8') do |f|
-                yield config_file_path if block_given?
-                f.puts js_dependency_module
-            end
+            #css_file_path = "#{output_dir}/#{Aztec.name('.css')}"
+            #File.open(css_file_path, 'w') do |f|
+            #    yield css_file_path if block_given?
+            #    f.puts styles.string.strip
+            #end
+            #config_file_path = "#{output_dir}/config.js"
+            #File.open(config_file_path,'w:utf-8') do |f|
+            #    yield config_file_path if block_given?
+            #    f.puts js_dependency_module
+            #end
         end
 
         def release_single_js(output_dir, path, overwrite = true, spec = :requirejs) 

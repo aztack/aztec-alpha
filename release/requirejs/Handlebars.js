@@ -10,11 +10,7 @@
  * exports: []
  */
 
-;define('Handlebars',[{}], function (){
-    //'use strict';
-    var exports = {};
-    
-    
+
 /*!
 
  handlebars v1.2.0
@@ -2633,10 +2629,3 @@ define('Handlebars',function(){
 /**
  * Handlebars Extension
  */
-
-    
-    
-    exports.__doc__ = "Handlebars";
-    return exports;
-});
-//end of Handlebars

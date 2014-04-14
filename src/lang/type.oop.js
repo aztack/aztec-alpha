@@ -151,9 +151,26 @@ function instance$set(keyPath, value, notifyObservers) {
     return this;
 }
 
+function instance$attr(name, value, rw) {
+    var vtype = typeof value;
+    if(vtype == 'string' || vtype == 'number' || vtype == 'boolean' || value == null) {
+        throw new Error('$attr only support reference type value!');
+    }
+    this[name] = value;
+    if(rw == 'r') {
+        value.__readonly__ = true;
+    } else if(rw == 'rw' || rw == 'wr') {
+        value.__readwrite__ = true;
+    } else if(rw == 'w') {
+        value.__writeonly__ = true;
+    }
+    this.$set(name, value, false);
+    return this;
+}
+
 function instance$get(keyPath, alternative) {
     var typename = this.getClass().typename(),
-        objSpace, attrs, cacheKey = typename + '@' + this.__id__,
+        attrs, cacheKey = typename + '@' + this.__id__,
         metaData = metaDataCache[cacheKey];
 
     if (!metaData) {
@@ -163,9 +180,27 @@ function instance$get(keyPath, alternative) {
     return keyPath ? tryget(attrs, keyPath, alternative) : attrs;
 }
 
+function instance$ivars() {
+    var typename = this.getClass().typename(),
+        attrs, cacheKey = typename + '@' + this.__id__,
+        metaData = metaDataCache[cacheKey];
+
+    if (!metaData) {
+        metaData = initMetaData(typename, cacheKey, this.__id__);
+    }
+
+    attrs = metaData.attrs;
+    ivars = [];
+    for(var name in this) {
+        if(!this.hasOwnProperty(name)) break;
+        if(attrs.hasOwnProperty(name)) ivars.push(name);
+    }
+    return ivars;
+}
+
 function instance$observe_internal(keyPath, name, fn) {
     var typename = this.getClass().typename(),
-        objSpace, cacheKey = typename + '@' + this.__id__,
+        cacheKey = typename + '@' + this.__id__,
         metaData = metaDataCache[cacheKey],
         index;
 
@@ -392,9 +427,15 @@ function Class(name, parent) {
          */
         this.$set = instance$set;
         this.$get = instance$get;
+        this.$attr = instance$attr;
+        this.$ivars = instance$ivars;
         this.$observe = instance$observe;
         this.$unobserve = instance$unobserve;
         this.$dispose = instance$dispose;
+
+        id = this.__id__ = objSpace.count;
+        objSpace[id] = {};
+        objSpace.count += 1;
 
         if (isFunction(_.prototype.init)) {
             init = this.init;
@@ -409,9 +450,6 @@ function Class(name, parent) {
             }
             ret = init.apply(this, arguments);
         }
-        id = this.__id__ = objSpace.count;
-        objSpace[id] = {};
-        objSpace.count += 1;
         return ret;
     };
     _.getClass = clazz$getClass;

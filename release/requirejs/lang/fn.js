@@ -12,6 +12,10 @@
  * - alwaysFalse
  * - alwaysNull
  * - alwaysUndefined
+ * - return1st
+ * - return2nd
+ * - return3rd
+ * - return4th
  * - bind
  * - bindTimeout
  * - call
@@ -68,6 +72,22 @@
         return;
     }
     
+    function return1st(a) {
+        return a;
+    }
+    
+    function return2nd(a, b) {
+        return b;
+    }
+    
+    function return3rd(a, b, c) {
+        return c;
+    }
+    
+    function return4th(a, b, c, d) {
+        return d;
+    }
+    
     /**
      * bind
      * bind fn to context just like calling this fn on context
@@ -114,7 +134,7 @@
             var handle = setTimeout(function() {
                 clearTimeout(handle);
                 self.apply(context, args2);
-            }, ms);
+            }, ms || 0);
         };
     }
     
@@ -385,6 +405,10 @@
     exports['alwaysFalse'] = alwaysFalse;
     exports['alwaysNull'] = alwaysNull;
     exports['alwaysUndefined'] = alwaysUndefined;
+    exports['return1st'] = return1st;
+    exports['return2nd'] = return2nd;
+    exports['return3rd'] = return3rd;
+    exports['return4th'] = return4th;
     exports['bind'] = bind;
     exports['bindTimeout'] = bindTimeout;
     exports['call'] = call;

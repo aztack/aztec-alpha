@@ -103,6 +103,16 @@ function daysOfMonth(y, m) {
     return _daysOfMonth[isLeapYear(y)][m];
 }
 
+function format(self, sep) {
+    sep = sep || '-';
+    return _str.format("{year}{sep}{month}{sep}{day}", {
+        sep: sep,
+        year: self.getYear() + 1900,
+        month: self.getMonth() + 1,
+        day: self.getDate()
+    });
+}
+
 function calendar() {
 
 }

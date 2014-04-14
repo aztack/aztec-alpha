@@ -19,6 +19,7 @@ var _slice = Array.prototype.slice,
         "undefined": "undefined",
         "null": _type.isNull,
         "array": _type.isArray,
+        "arrayLike": _type.isArrayLike,
         "nullOrUndefined": _type.isNullOrUndefined,
         "empty": _type.isEmpty,
         "number": "number",
@@ -174,7 +175,7 @@ function varArg(args, context) {
             }
         }
         if (typeof otherwise == 'function') {
-            ret = otherwise.apply(context, args);
+            ret = otherwise.call(context, args);
             return postprocess(ret);
         }
         return [];

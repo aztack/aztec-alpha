@@ -36,6 +36,9 @@
           .when(function() {
             this.base(textfieldTemplate);
           })
+          .when('jquery',function(ele){
+            this.base(ele);
+          })
           .when('*', function(arg) {
             this.base(textfieldTemplate);
             this.val(String(arg));
@@ -157,8 +160,8 @@
     ///exports
         
     ///sigils
-    if (!TextField.sigils) TextField.sigils = {};
-    TextField.sigils[".tag"] = ".ui-textfield";
+    if (!TextField.Sigils) TextField.Sigils = {};
+    TextField.Sigils[".tag"] = ".ui-textfield";
 
     exports['TextField'] = TextField;
     exports['placeholderPollyfill'] = placeholderPollyfill;

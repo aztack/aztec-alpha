@@ -1,6 +1,7 @@
 <html>
     <head>
         <title>ComboBox</title>
+        <base href="../../release/requirejs/" />
         <style>
             .ui-menu {
                 position: absolute;
@@ -34,8 +35,8 @@
                 text-decoration: none;
             }
         </style>
-        <script src="/scripts/$root.ui.ComboBox"></script>
-        <link rel="stylesheet" type="text/css" href="/styles/$root.ui.Menu">
+        <script src="requirejs.js"></script>
+        <link rel="stylesheet" type="text/css" href="ui/menu.css">
     </head>
 
     <body>
@@ -43,8 +44,8 @@
         
     </div>
         <script>
-            define('$root.demo.ui.ComboBox', function(require) {
-                ComboBox = require('$root.ui.ComboBox').ComboBox;
+            require(['ui/comboBox'], function(comboBox) {
+                ComboBox = comboBox.ComboBox;
                 a = new ComboBox();
                 a.menu.add(123)
                 a.menu.add(456)

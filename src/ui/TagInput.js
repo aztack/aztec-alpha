@@ -22,93 +22,75 @@ var tpl = _tpl.id$('$root.ui.TagInput'),
     tagTemplate = tpl('tag'),
     varArg = _arguments.varArg;
 
-///helper
-
-
-///impl
-var Tag = _type.create('$root.ui.Tag', jQuery, {
-    init: function() {
-        var va;
-        if (this instanceof Tag) {
-            va = varArg(arguments, this)
-                .when(function() {
-                    this.base(tagTemplate);
-                })
-                .when('array<element>', function(ary) {
-                    this.base(ary[0]);
-                })
-                .when('element', function(ele) {
-                    this.base(ele);
-                })
-                .when('string', function(text) {
-                    this.base(tagTemplate);
-                    this.text(String(text));
-                });
-            va.resolve();
-            return this;
-        } else {
-            return _fn.applyNew(Tag, arguments);
-        }
-    },
-    text: function(val) {
-        var t = this.sigil('.text'),
-            ret;
-        if (typeof val === 'undefined') {
-            return t.text();
-        } else {
-            t.text(val);
-            return this;
-        }
-    }
-});
-
 var TagInput = _type.create('$root.ui.TagInput', jQuery, {
     init: function(container, options) {
         this.base(container || tagInputTemplate);
         this.options = options;
+        this.$attr('input', this.find('input'));
         return TagInput_initialize(this);
     },
-    appendTag: function(tag) {
-        varArg(arguments, this)
-            .when('element', function(ele) {
-                return ele;
-            })
-            .when('jquery', function(ele) {
-                return ele;
-            })
-            .when('*', function(text) {
-                return new Tag().text(String(text));
-            })
-            .invoke(function(tag) {
-                this.sigil('.tags').append(tag);
-            });
+    appendTags: function(tag) {
+        var self = this,
+            tags = self.sigil('.tags');
+        _enum.each(arguments, function(tag) {
+            tags.append($(tagTemplate).text(tag));
+        });
         return this;
     },
     removeTags: function() {
         var tags = this.tags.apply(this, arguments);
+        this.trigger(TagInput.Events.OnItemRemove, [tags]);
         _enum.pluck(tags, "&remove", true);
         return this;
     },
     tags: function() {
-        var all = this.sigil('.tags').children(),
-            va = varArg(arguments, this)
-                .when(function() {
-                    return all;
-                })
-                .when('string|regexp', function(pattern) {
-                    return _enum.findAll(all, function(tag) {
-                        return !!$(tag).text().match(pattern);
-                    });
-                })
-                .when('int', function(i) {
-                    return all.splice(i, 1);
+        var all = this.sigil('.tags').children();
+        return varArg(arguments, this)
+            .when(function() {
+                return all;
+            })
+            .when('function', function(fn) {
+                return _enum.findAll(all, fn);
+            })
+            .when('string|regexp', function(pattern) {
+                return _enum.findAll(all, function(tag) {
+                    return !!$(tag).text().match(pattern);
                 });
-        return va.args();
+            })
+            .when('int', function(i) {
+                return all.splice(i, 1);
+            }).args();
+    },
+    indexOf: function() {
+        var all = this.tags(),
+            sel = this.sigil('.tag', true);
+        var result = varArg(arguments, this)
+            .when('element', function(ele) {
+                return [ele];
+            })
+            .when('jquery', function(jq) {
+                return [jq[0]];
+            }).invoke(function(ele) {
+                var jq = $(ele),
+                    e = jq.hasClass(sel) ? [ele] : jq.closest(sel)[0];
+                return e ? all.indexOf(e) : -1;
+            });
+        return result;
     }
-}).statics({});
+}).statics({
+    Events: {
+        OnInputChange: 'InputChange(event,text)',
+        OnItemAdd: 'ItemAdded(event,item)',
+        OnItemRemove: 'ItemRemoved(event,item)'
+    },
+    Values: {
+        InputChangeDelay: 400
+    }
+});
 
 function TagInput_initialize(self) {
-    var prevNode = self.find('input')[0].previousSibling;
+    var input = self.input,
+        prevNode = input[0].previousSibling;
     if (prevNode.nodeType === 3) {
         if (prevNode.remove) {
             prevNode.remove();
@@ -116,4 +98,13 @@ function TagInput_initialize(self) {
             prevNode.removeNode();
         }
     }
+    var h;
+    input.keyup(function(e) {
+        var input = $(e.target),
+            text = input.val();
+        clearTimeout(h);
+        h = setTimeout(function() {
+            self.trigger(TagInput.Events.OnInputChange, [text]);
+        }, TagInput.Values.InputChangeDelay);
+    });
 }

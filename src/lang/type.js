@@ -13,6 +13,7 @@
         isRegExp,
         isString,
         isArray,
+        isArrayLike,
         isFunction,
         isNumber,
         isInteger,

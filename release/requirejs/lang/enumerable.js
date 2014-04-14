@@ -69,7 +69,7 @@
      * @return {object} return array or object being iterated
      */
     function each(obj) {
-        return _type.isArray(obj) ? _array_each.apply(null, arguments) : _object_each.apply(null, arguments);
+        return _type.isArrayLike(obj) ? _array_each.apply(null, arguments) : _object_each.apply(null, arguments);
     }
     
     /**
@@ -185,7 +185,7 @@
      */
     function map(objs, fn, context) {
         var ret;
-        if (_type.isArray(objs)) {
+        if (_type.isArrayLike(objs)) {
             ret = [];
             _array_each(objs, function(v, k, i) {
                 ret.push(fn.call(context, v, k, i));
@@ -221,7 +221,7 @@
             };
         }
         if (doNotReturn) {
-            if (_type.isArray(objs)) {
+            if (_type.isArrayLike(objs)) {
                 _array_each(objs, function(v, k, i) {
                     f.call(null, v, k, i);
                 });
@@ -244,7 +244,7 @@
      */
     function compact(objs) {
         var ret;
-        if (_type.isArray(objs)) {
+        if (_type.isArrayLike(objs)) {
             ret = [];
             _array_each(objs, function(v, k, i) {
                 if (v === null || typeof v == 'undefined') return;

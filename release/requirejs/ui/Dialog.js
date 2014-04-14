@@ -48,11 +48,11 @@
         init: function(options) {
             //if(!options) return this;
             this.options = options || {};
-            this.base(GenericDialog.Template.DefaultTemplate);
-            this.header = this.sigil('.header');
-            this.body = this.sigil('.body');
-            this.footer = this.sigil('.footer');
-            this.buttons = this.sigil('.button');
+            this.base(GenericDialog.Template.DefaultTemplate || options.template);
+            this.$attr('header', this.sigil('.header'));
+            this.$attr('body', this.sigil('.body'));
+            this.$attr('footer', this.sigil('.footer'));
+            this.$attr('buttons', this.sigil('.button'));
             this.mask = null;
             GenericDialog_initialize(this, this.options);
         },
@@ -84,7 +84,7 @@
                         h = parent.height();
                         y = h / 2 - dim.height / 2;
                     }
-                    if(xpos == GoldenRation || ypos == GoldenRation) {
+                    if (xpos == GoldenRation || ypos == GoldenRation) {
                         y = y * 0.618;
                     }
                     return [parent, x, y];
@@ -113,7 +113,7 @@
         },
         close: function() {
             this.trigger(GenericDialog.Events.OnClose, [this]);
-            if(this.mask) {
+            if (this.mask) {
                 this.mask.hide();
             }
             return this.hide();
@@ -160,8 +160,7 @@
                         btn.appendTo(footer);
                     });
                 });
-            this.buttons = this.sigil('.button');
-            return this;
+            return this.$attr('buttons', this.sigil('.button'));
         }
     }).aliases({
         setTitle: 'setHeader',
@@ -180,9 +179,9 @@
             GoldenRation: 'golden'
         },
         Events: {
-            OnShowAt: 'OnShowAt(x,y)',
-            OnClose: 'OnClose',
-            OnButtonClick: 'OnButtonClick(buttonIndex,buttonCaption)'
+            OnShowAt: 'ShowAt(event,x,y)',
+            OnClose: 'Close(event)',
+            OnButtonClick: 'ButtonClick(event,buttonIndex,buttonCaption)'
         }
     });
     
@@ -243,10 +242,11 @@
             }
         });
     
-        if(!!opts.mask) {
-            var mask = self.mask = new Overlay();
+        if ( !! opts.mask) {
+            self.$attr('mask', new Overlay());
+            var mask = self.mask;
             mask.appendTo('body');
-            mask.click(function(){
+            mask.click(function() {
                 self.close();
             });
         }
@@ -293,7 +293,6 @@
             var opts = this.options = options || {};
             this.base.apply(this, arguments);
             this.header.text(opts.title || '');
-            this.buttons = this.sigil('.button');
             this.addClass('ui-alert');
             Alert_initialize(this, opts);
         }
@@ -306,8 +305,7 @@
         //if no buttons specified, create a default 'OK' button
         var button;
         if (!opts.buttons && self.buttons.length === 0) {
-            button = GenericDialog_createButton(GenericDialog.Text.OK);
-            self.footer.append(button);
+            self.setButtons(GenericDialog.Text.OK);
         } else {
             self.setButtons(opts.buttons);
         }
@@ -361,12 +359,12 @@
     }
         
     ///sigils
-    if (!GenericDialog.sigils) GenericDialog.sigils = {};
-    GenericDialog.sigils[".header"] = ".ui-dialog-header";
-    GenericDialog.sigils[".body"] = ".ui-dialog-body";
-    GenericDialog.sigils[".footer"] = ".ui-dialog-footer";
-    GenericDialog.sigils[".dialog"] = ".ui-dialog";
-    GenericDialog.sigils[".button"] = ".ui-dialog-button";
+    if (!GenericDialog.Sigils) GenericDialog.Sigils = {};
+    GenericDialog.Sigils[".header"] = ".ui-dialog-header";
+    GenericDialog.Sigils[".body"] = ".ui-dialog-body";
+    GenericDialog.Sigils[".footer"] = ".ui-dialog-footer";
+    GenericDialog.Sigils[".dialog"] = ".ui-dialog";
+    GenericDialog.Sigils[".button"] = ".ui-dialog-button";
 
     exports['GenericDialog'] = GenericDialog;
     exports['Alert'] = Alert;

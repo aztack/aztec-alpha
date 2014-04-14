@@ -1,5 +1,8 @@
 <%=@meta%>
-;define('<%=@name_requirejs%>',[<%=@imports_requirejs%>], function (<%=@imports.keys.join(',')%>){
+<% if @notransform -%>
+<%=@original -%>
+<% else %>
+;define('<%=@name_requirejs%>',[<% unless @imports_requirejs.empty?%><%=@imports_requirejs%><% end %>], function (<%=@imports.keys.join(',')%>){
     <%=@usestrict%>
     <% if not @custom_return -%>
     var exports = {};
@@ -13,3 +16,4 @@
     <%=@returnstatement%>
 });
 //end of <%=@name%>
+<% end %>

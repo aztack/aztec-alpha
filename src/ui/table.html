@@ -1,16 +1,38 @@
-<doctype html>
 <html>
     <head>
         <title>Table</title>
+        <base href="../../release/requirejs/" />
         <style>
+            .ui-table {
+                border: 1px solid #ccc;
+                border-collapse: collapse;;
+            }
+            .ui-table .ui-tbody-loading td, .ui-table .ui-tbody-nodata td {
+                text-align: center;
+            }
         </style>
-        <script src="/scripts/$root.ui.table"></script>
+        <script src="requirejs.js"></script>
     </head>
     <body>
-        <table data-xtemplate="$root.ui.table,delete" sigil-class="Table" style="display:none;">
+        <table xtemplate="$root.ui.Table.table,delete" class="ui-table" sigil-class="Table">
+            <thead class="ui-thead"></thead>
+            <tbody class="ui-tbody-loading" sigil=".loading">
+                <tr><td>Loading</td></tr>
+            </tbody>
+            <tbody class="ui-tbody-nodata" sigil=".nodata">
+                <tr><td>No Data</td></tr>
+            </tbody>
+            <tbody class="ui-tbody-data" sigil=".data"></tbody>
+            <tfoot class="ui-tfoot"></tfoot>
         </table>
     </body>
     <script>
+        require(['ui/table'], function(table) {
+            var Table = table.Table;
+            t = new Table();
+            t.setColumns(1,2,3);
+            t.appendTo('body');
+        });
 
     </script>
 </html>

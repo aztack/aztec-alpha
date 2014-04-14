@@ -12,6 +12,10 @@
         alwaysFalse,
         alwaysNull,
         alwaysUndefined,
+        return1st,
+        return2nd,
+        return3rd,
+        return4th,
         bind,
         bindTimeout,
         call,
@@ -61,6 +65,22 @@ function alwaysUndefined() {
     return;
 }
 
+function return1st(a) {
+    return a;
+}
+
+function return2nd(a, b) {
+    return b;
+}
+
+function return3rd(a, b, c) {
+    return c;
+}
+
+function return4th(a, b, c, d) {
+    return d;
+}
+
 /**
  * bind
  * bind fn to context just like calling this fn on context
@@ -107,7 +127,7 @@ function bindTimeout(self, context, ms) {
         var handle = setTimeout(function() {
             clearTimeout(handle);
             self.apply(context, args2);
-        }, ms);
+        }, ms || 0);
     };
 }
 
@@ -372,4 +392,3 @@ function debounce(self, delay, context) {
         }, delay);
     };
 }
-

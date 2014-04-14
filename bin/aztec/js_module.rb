@@ -68,6 +68,9 @@ module Aztec
                 p = CssParser::Parser.new
                 p.add_block! css.strip
                 "/* #{namespace} */".endl + p.to_s
+
+                #TODO
+                #sass
             end
         end
 
@@ -94,7 +97,7 @@ module Aztec
 
         def prepare_context
             ctx = Erubis::Context.new
-
+            ctx[:notransform] = @config.notransform
             ctx[:name] = name
             ctx[:name_requirejs] = Utils.namespace_to_file_path(name)
             imports = @config.imports
@@ -129,10 +132,10 @@ module Aztec
             if not @xtemplate.nil?
                 ctx[:sigils] = "\n///sigils\n".indent(4)
                 @xtemplate.sigils.each do |sigil_class, sigils|
-                    js = ["if (!#{sigil_class}.sigils) #{sigil_class}.sigils = {};"]
+                    js = ["if (!#{sigil_class}.Sigils) #{sigil_class}.Sigils = {};"]
                     #js << sigils.inject([%Q["length": #{sigils.size}].indent(4)]) do |all, (sigil, selector)|
                     js << sigils.inject([]) do |all, (sigil, selector)|
-                       all << %Q[#{sigil_class}.sigils["#{sigil}"] = "#{selector}";]
+                       all << %Q[#{sigil_class}.Sigils["#{sigil}"] = "#{selector}";]
                     end.join("\n")
 
                     js = js.join("\n").indent(4);                    

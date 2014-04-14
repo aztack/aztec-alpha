@@ -7,11 +7,7 @@
  * - src/require.js
  */
 
-;define('requirejs',[{}], function (){
-    //'use strict';
-    var exports = {};
-    
-    
+
 /** vim: et:ts=4:sw=4:sts=4
  * @license RequireJS 2.1.11 Copyright (c) 2010-2014, The Dojo Foundation All Rights Reserved.
  * Available via the MIT or new BSD license.
@@ -2080,10 +2076,3 @@ var requirejs, require, define;
     //Set up with config info.
     req(cfg);
 }(this));
-
-    
-    
-    exports.__doc__ = "RequireJS";
-    return exports;
-});
-//end of requirejs

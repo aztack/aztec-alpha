@@ -25,6 +25,9 @@ var TextField = _type.create('$root.ui.TextField', jQuery, {
 			.when(function() {
 				this.base(textfieldTemplate);
 			})
+			.when('jquery',function(ele){
+				this.base(ele);
+			})
 			.when('*', function(arg) {
 				this.base(textfieldTemplate);
 				this.val(String(arg));

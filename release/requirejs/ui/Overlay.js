@@ -27,13 +27,6 @@
     
     var Overlay = _type.create('$root.ui.Overlay', jQuery, {
       init: function(options) {
-        varArg(arguments, this)
-          .when(function() {
-            this.options = Overlay.CreateOptions();
-          })
-          .when('plainObject', function(opts) {
-            this.options = opts;
-          }).resolve();
         this.base(maskTemplate);
       },
       setOpacity: function() {
@@ -52,11 +45,7 @@
           });
       }
     }).statics({
-      CreateOptions: function() {
-        return {
-    
-        };
-      }
+      Events:{}
     });
     
     Overlay.create = function() {

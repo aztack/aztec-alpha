@@ -1,6 +1,7 @@
 <html>
     <head>
         <title>TagInput</title>
+        <base href="../../release/requirejs/" />
         <style>
             .ui-taginput {
                 border: 1px solid gray;
@@ -26,12 +27,13 @@
                 margin: 1px;
             }
         </style>
-        <script src="/scripts/$root.ui.TagInput"></script>
-        <link rel="stylesheet" type="text/css" href="/styles/$root.ui.TagInput">
+        <script src="requirejs.js"></script>
+        <link rel="stylesheet" type="text/css" href="ui/common.css">
+        <link rel="stylesheet" type="text/css" href="ui/tagInput.css">
     </head>
 
     <body>
-        <div xtemplate="$root.ui.TagInput.tag,delete" class="ui-taginput-tag" sigil=".tag" sigil-class="Tag" style="display:none">
+        <div xtemplate="$root.ui.TagInput.tag,delete" class="ui-taginput-tag" sigil=".tag" sigil-class="TagInput" style="display:none">
             <span class="ui-taginput-tagtext" sigil=".text"></span>
             <a class= "ui-taginput-button" href="javascript:;"></a>
         </div>
@@ -41,19 +43,23 @@
         </div>
 
         <script>
-            define('$root.demo.ui.TagInput', function(require) {
-                TagInput = require('$root.ui.TagInput').TagInput;
-                Tag = require('$root.ui.TagInput').Tag;
+            require(['ui/tagInput'], function(tagInput) {
+                TagInput = tagInput.TagInput;
                 a = new TagInput();
-                a.appendTag('html5').appendTag('css3')
-                tag = Tag('javascript');
-                a.appendTag(tag);
-                tag = new Tag('!');
-                a.appendTag(tag);
+                a.appendTags('html5').appendTags('css3','javascript','!')
                 a.appendTo('body');
+
+                a.on(a.$class.Events.OnItemAdd,function(e,tag){
+                    console.log(tag.text());
+                }).on(a.$class.Events.OnItemRemove,function(e,tags){
+                    console.log($(tags).text());
+                });
                 setTimeout(function(){
                     a.removeTags(0);
                 },2000);
+                a.on(a.$class.Events.OnInputChange,function(e, text){
+                    a.appendTags(text);
+                });
             });
         </script>
     </body>

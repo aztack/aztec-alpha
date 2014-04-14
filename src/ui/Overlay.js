@@ -34,11 +34,7 @@ var Overlay = _type.create('$root.ui.Overlay', jQuery, {
 			});
 	}
 }).statics({
-	CreateOptions: function() {
-		return {
-
-		};
-	}
+	Events:{}
 });
 
 Overlay.create = function() {

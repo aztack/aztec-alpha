@@ -7,7 +7,7 @@
  * - src/aztec.js
  */
 
-;define('aztec',[{}], function (){
+;define('aztec',[], function (){
     //'use strict';
     var exports = {};
     

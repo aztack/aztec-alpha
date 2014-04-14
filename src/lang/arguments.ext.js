@@ -42,7 +42,7 @@ if (varArgTypeMapping) {
 	};
 
 	vat.jqueryOrElement = function(arg) {
-		return (arg && arg.nodeType === 1) || arg instanceof jQuery;
+		return (arg && arg.nodeType === 1) || arg.jquery;
 	};
 
 	vat.htmlFragment = function(s) {

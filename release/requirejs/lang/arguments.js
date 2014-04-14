@@ -30,6 +30,7 @@
             "undefined": "undefined",
             "null": _type.isNull,
             "array": _type.isArray,
+            "arrayLike": _type.isArrayLike,
             "nullOrUndefined": _type.isNullOrUndefined,
             "empty": _type.isEmpty,
             "number": "number",
@@ -185,7 +186,7 @@
                 }
             }
             if (typeof otherwise == 'function') {
-                ret = otherwise.apply(context, args);
+                ret = otherwise.call(context, args);
                 return postprocess(ret);
             }
             return [];
@@ -286,7 +287,7 @@
       };
     
       vat.jqueryOrElement = function(arg) {
-        return (arg && arg.nodeType === 1) || arg instanceof jQuery;
+        return (arg && arg.nodeType === 1) || arg.jquery;
       };
     
       vat.htmlFragment = function(s) {

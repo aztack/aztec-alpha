@@ -25,14 +25,9 @@ var Menu = _menu.Menu,
 ///exports
 var ComboBox = _type.create('$root.ui.ComboBox', jQuery, {
 	init: function(opts) {
-		opts = opts || ComboBox.CreateOptions();
-		this.base(boxTemplate);
-		this.textfield = new TextField();
-		this.menu = new Menu();
-		this.append(this.textfield);
-		this.menu.hide();
-		this.append(this.menu);
-		this.addClass();
+		this.base(ComboBox.Template.BoxTemplate);
+		this.$attr('textfield', new TextField());
+		this.$attr('menu', new Menu());
 		ComboBox_initialize(this);
 	},
 	showMenu: function() {
@@ -49,24 +44,16 @@ var ComboBox = _type.create('$root.ui.ComboBox', jQuery, {
 		this.menu.hide();
 	}
 }).statics({
-	CreateOptions: function() {
-		return {
-			css: {
-				'className': 'ui-combobox'
-			},
-			html: {
-				boxTemplate : boxTemplate
-			}
-		};
-	}
+	Template: {
+		BoxTemplate: boxTemplate
+	},
+	Events: {}
 });
 
 function ComboBox_initialize(self) {
 	var menu = self.menu,
 		hideMenu = _fn.bindTimeout(self.hideMenu, self, 100),
 		showMenu = _fn.bind(self.showMenu, self);
-
-	menu.css('position', 'relative');
 
 	self.textfield
 		.focus(showMenu)
@@ -76,4 +63,8 @@ function ComboBox_initialize(self) {
 		var text = item.text();
 		self.textfield.val(text);
 	});
+
+	self.append(self.textfield);
+	self.menu.hide();
+	self.append(self.menu);
 }

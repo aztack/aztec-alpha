@@ -1,6 +1,7 @@
 <html>
     <head>
         <title>Dialog</title>
+        <base href="../../release/requirejs/" />
         <style>
             .ui-generic-dialog, .ui-dialog {
                 position: absolute;
@@ -56,7 +57,7 @@
                 background-color: #eee;
             }
         </style>
-        <script src="/scripts/$root.ui.Dialog"></script>
+        <script src="requirejs.js"></script>
     </head>
 
     <body>
@@ -69,19 +70,18 @@
         <button xtemplate="$root.ui.Dialog.alertButton,delete" data-action="ok" class="ui-dialog-button" sigil=".button" sigil-class="GenericDialog" style="display:none"></button>
 
         <script>
-            define('$root.demo.ui.Dialog', ['$root.ui.Dialog'],function(require) {
-                var dialog = require('$root.ui.Dialog'),
-                    doc = require('$root.lang.arguments').doc,
+            require(['ui/dialog'],function(dialog) {
+                var Dialog = dialog.Dialog,
                     GenericDialog = dialog.GenericDialog,
                     Alert = dialog.Alert;
-                window.doc = doc;
+
                 window.Alert = Alert;
                 window.GenericDialog = GenericDialog;
                 window.$alert = dialog.alert;
                 window.d = new Alert({title:'Hello'});
-                d.on(Alert.Events.OnShowAt,function(e, x,y){
+                d.on(GenericDialog.Events.OnShowAt,function(e, x,y){
                     console.log(x,y);
-                }).on(Alert.Events.OnClose,function(e){
+                }).on(GenericDialog.Events.OnClose,function(e){
                     console.log(e);
                 });
 
@@ -89,7 +89,7 @@
                     .setContent('<p><center>你好，世界</center></p>')
                     .showAt(100,100)
                     .setButtons('确定','取消')
-                    .on(Alert.Events.OnButtonClick,function(e, index, text){
+                    .on(GenericDialog.Events.OnButtonClick,function(e, index, text){
                         if(index == 1) {
                             d.setContent('Ciao, mondo')
                                 .setButtons(['Bene','Cancellare'])

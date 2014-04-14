@@ -18,13 +18,13 @@
 
     function getSelectorInInheritanceChain(obj, clazz, sigil) {
         clazz = clazz || obj.getClass();
-        var sigils = clazz.sigils,
+        var sigils = clazz.Sigils,
             selector;
         if (sigils) selector = sigils[sigil];
         while (!selector && typeof clazz.parent == 'function') {
             clazz = clazz.parent();
             if (!clazz) break;
-            sigils = clazz.sigils;
+            sigils = clazz.Sigils;
             if (sigils) selector = sigils[sigil];
             if (selector) break;
         }

@@ -1,6 +1,7 @@
 <html>
     <head>
         <title>Menu</title>
+        <base href="../../release/requirejs/" />
         <style>
             .ui-menu {
                 margin: 0;
@@ -35,9 +36,7 @@
                 text-decoration: none;
             }
         </style>
-        <script src="/scripts/$root.ui.Menu"></script>
-        <link rel="stylesheet" type="text/css" href="/styles/$root.ui.Menu">
-        <link rel="stylesheet" type="text/css" href="/styles/$root.ui.Alert">
+        <script src="requirejs.js"></script>
     </head>
 
     <body>
@@ -63,8 +62,8 @@
         </div>
 
         <script>
-            define('$root.demo.ui.Menu', function(require) {
-                Menu = require('$root.ui.Menu').Menu;
+            require(['ui/menu'], function(menu) {
+                Menu = menu.Menu;
                 menu = new Menu();
                 menu.addItems([
                     "New File",

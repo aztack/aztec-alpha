@@ -9,6 +9,7 @@
  *   _tpl: $root.browser.template
  *   _enum: $root.lang.enumerable
  *   _list: $root.ui.list
+ *   _fn: $root.lang.fn
  *   $: jQuery
  * exports:
  * - Menu
@@ -24,8 +25,9 @@
     'browser/template',
     'lang/enumerable',
     'ui/list',
+    'lang/fn',
     'jQuery'
-], function (_type,_str,_arguments,_tpl,_enum,_list,$){
+], function (_type,_str,_arguments,_tpl,_enum,_list,_fn,$){
     //'use strict';
     var exports = {};
         _tpl
@@ -107,7 +109,7 @@
     });
     
     function Menu_initialize(self) {
-        self.css('position','absolute').on('click', function(e) {
+        self.css('position','absolute').on('mouseup', function(e) {
             var index = self.indexOf(e.target),
                 item;
             if (index < 0) {
@@ -131,8 +133,8 @@
                 e.stopImmediatePropagation();
                 return false;
             }
-        }).on('mousedown', function() {
-            self.hide();
+        }).on('click', function() {
+            _fn.bindTimeout(self.hide, self)();
         });
         return self;
     }
@@ -140,11 +142,11 @@
     ///exports
         
     ///sigils
-    if (!Menu.sigils) Menu.sigils = {};
-    Menu.sigils[".tag"] = ".ui-menu";
-    if (!MenuItem.sigils) MenuItem.sigils = {};
-    MenuItem.sigils["text"] = "a";
-    MenuItem.sigils[".item"] = ".ui-menu-item";
+    if (!Menu.Sigils) Menu.Sigils = {};
+    Menu.Sigils[".tag"] = ".ui-menu";
+    if (!MenuItem.Sigils) MenuItem.Sigils = {};
+    MenuItem.Sigils["text"] = "a";
+    MenuItem.Sigils[".item"] = ".ui-menu-item";
 
     exports['Menu'] = Menu;
     exports['MenuItem'] = MenuItem;

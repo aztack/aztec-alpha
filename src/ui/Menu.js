@@ -8,6 +8,7 @@
         _tpl: $root.browser.template,
         _enum: $root.lang.enumerable,
         _list: $root.ui.list,
+        _fn: $root.lang.fn,
         $: jQuery
     },
     exports: [
@@ -92,7 +93,7 @@ var Menu = _type.create('$root.ui.Menu', _list.List, {
 });
 
 function Menu_initialize(self) {
-    self.css('position','absolute').on('click', function(e) {
+    self.css('position','absolute').on('mouseup', function(e) {
         var index = self.indexOf(e.target),
             item;
         if (index < 0) {
@@ -116,8 +117,8 @@ function Menu_asContextMenuOf(self, target) {
             e.stopImmediatePropagation();
             return false;
         }
-    }).on('mousedown', function() {
-        self.hide();
+    }).on('click', function() {
+        _fn.bindTimeout(self.hide, self)();
     });
     return self;
 }
