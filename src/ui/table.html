@@ -4,11 +4,24 @@
         <base href="../../release/requirejs/" />
         <style>
             .ui-table {
-                border: 1px solid #ccc;
+                border: 1px solid #aaa;
                 border-collapse: collapse;;
             }
             .ui-table .ui-tbody-loading td, .ui-table .ui-tbody-nodata td {
                 text-align: center;
+            }
+            .ui-table thead {
+                text-align: left;
+            }
+            .ui-table thead th {
+                min-width: 3em;
+                white-space: nowrap;
+            }
+            .ui-table thead {
+                background-image:-webkit-linear-gradient(90deg, #fff, #ccc);
+            }
+            .ui-table tbody tr td {
+                border: 1px solid #ccc;
             }
         </style>
         <script src="requirejs.js"></script>
@@ -16,22 +29,23 @@
     <body>
         <table xtemplate="$root.ui.Table.table,delete" class="ui-table" sigil-class="Table">
             <thead class="ui-thead"></thead>
-            <tbody class="ui-tbody-loading" sigil=".loading">
-                <tr><td>Loading</td></tr>
-            </tbody>
-            <tbody class="ui-tbody-nodata" sigil=".nodata">
-                <tr><td>No Data</td></tr>
-            </tbody>
             <tbody class="ui-tbody-data" sigil=".data"></tbody>
+            <tbody class="ui-tbody-loading" sigil=".loading"><tr><td>Loading</td></tr></tbody>
+            <tbody class="ui-tbody-nodata" sigil=".nodata"><tr><td>No Data</td></tr></tbody>
             <tfoot class="ui-tfoot"></tfoot>
         </table>
     </body>
     <script>
-        require(['ui/table'], function(table) {
-            var Table = table.Table;
+        require(['ui/table','lang/arguments'], function(table, args) {
+            var Table = table.Table,
+            DataSource = table.DataSource;
             t = new Table();
-            t.setColumns(1,2,3);
-            t.appendTo('body');
+            ds = new DataSource({url:'http://localhost/table',process:function(resp){
+                return resp.list;
+            }});
+            t.setHeader(1,2,3)
+                .setData(ds)
+                .appendTo('body');
         });
 
     </script>

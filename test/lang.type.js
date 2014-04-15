@@ -82,17 +82,17 @@ test("$root.lang.type", function(require, specs) {
             true, 'Person',
             'adam', 'jack', 'yumi', 5, 1
         ], function() {
-            var pclass = p.getClass(),
-                sclass = s.getClass();
+            var pclass = p.$getClass(),
+                sclass = s.$getClass();
             return [
                 p instanceof Person,
                 s instanceof Person,
                 s instanceof Student,
                 p instanceof Student,
-                p.is(Person),
-                s.is(Person),
-                s.is(Student),
-                p.is(Student),
+                p.$is(Person),
+                s.$is(Person),
+                s.$is(Student),
+                p.$is(Student),
                 pclass === Person,
                 sclass === Student,
                 pclass.typename(),

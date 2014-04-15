@@ -5,7 +5,9 @@
  * imports:
  *   _type: $root.lang.type
  *   _str: $root.lang.string
+ *   _object: $root.lang.object
  *   _enum: $root.lang.enumerable
+ *   _fn: $root.lang.fn
  *   _arguments: $root.lang.arguments
  *   _template: $root.browser.template
  *   $: jQuery
@@ -20,16 +22,18 @@
 ;define('ui/table',[
     'lang/type',
     'lang/string',
+    'lang/object',
     'lang/enumerable',
+    'lang/fn',
     'lang/arguments',
     'browser/template',
     'jQuery',
     'browser/template'
-], function (_type,_str,_enum,_arguments,_template,$,_tpl){
+], function (_type,_str,_object,_enum,_fn,_arguments,_template,$,_tpl){
     //'use strict';
     var exports = {};
         _tpl
-            .set('$root.ui.Table.table',"<table class=\"ui-table\">\n<thead class=\"ui-thead\"></thead>\n<tbody class=\"ui-tbody-loading\"><tr><td>Loading</td></tr></tbody>\n<tbody class=\"ui-tbody-nodata\"><tr><td>No Data</td></tr></tbody>\n<tbody class=\"ui-tbody-data\"></tbody>\n<tfoot class=\"ui-tfoot\"></tfoot>\n</table>\n");
+            .set('$root.ui.Table.table',"<table class=\"ui-table\">\n<thead class=\"ui-thead\"></thead>\n<tbody class=\"ui-tbody-data\"></tbody>\n<tbody class=\"ui-tbody-loading\"><tr><td>Loading</td></tr></tbody>\n<tbody class=\"ui-tbody-nodata\"><tr><td>No Data</td></tr></tbody>\n<tfoot class=\"ui-tfoot\"></tfoot>\n</table>\n");
         var varArg = _arguments.varArg,
       tpl = _template.id$('$root.ui.Table');
     
@@ -51,20 +55,20 @@
         if (!url && !this.data) {
           throw new Error('Both data and url are empty!Forgot set url of data source?');
         }
-        this.$attr('onSuccess', (success = success || _fn.noop), 'rw');
-        this.$attr('onProcess', (process = process || _fn.return1st), 'rw');
-        this.$attr('onFailed', (failed = failed || _fn.noop), 'rw');
+        this.$attr('onSuccess', (success = success || opts.success || _fn.noop));
+        this.$attr('onProcess', (process = process || opts.process || _fn.return1st));
+        this.$attr('onFailed', (failed = failed || opts.failed || _fn.noop));
         if (this.data) {
           success.call(this, this.data);
         } else {
-          $.ajax(url, opts.ajaxData, function(resp) {
+          $.ajax(url, opts.ajaxData).done(function(resp) {
             var result = resp;
             if (process) {
               result = process.call(this, resp);
             }
             self.$attr('data', result);
             success.call(this, result);
-          }, failed);
+          }).fail(failed);
         }
         return this;
       },
@@ -91,48 +95,81 @@
     
         return va.invoke(function(self, opts) {
           this.$attr('options', opts);
-          if (opts.columns) {
-            this.setColumns(opts.columns);
-          }
-          if (opts.data) {
-            this.setData(opts.data);
-          }
-          if (opts.url) {
-            this.data = new DataSource(opts);
-          }
-          this.$attr('header', this.find('thead'), 'r');
-          this.$attr('footer', this.find('tfoot'), 'r');
-          this.$attr('body', this.sigil('data'), 'r');
-          this.setStatus(Table.Status.Loading);
+          this.$attr('header', this.find('thead'));
+          this.$attr('footer', this.find('tfoot'));
+          this.$attr('body', this.sigil('.data'));
+          Table_initialize(this, opts);
         });
       },
-      setColumns: function() {
+      setHeader: function() {
         var self = this;
         varArg(arguments, this)
-          .when('arrayLike', function(columns) {
-            var ths = _enum.map(columns, function(col) {
+          .when('arrayLike', function(headers) {
+            var ths = _enum.map(headers, function(col) {
               return _str.format('<th>{0}</th>', [col]);
             }).join('');
             this.header.empty().append('<tr>' + ths + '</tr>');
-            this.sigil('.loading').find('td:first').attr('colspan', columns.length);
-            this.sigil('.nodata').find('td:first').attr('colspan', columns.length);
+            this.sigil('.loading').find('td:first').attr('colspan', headers.length);
+            this.sigil('.nodata').find('td:first').attr('colspan', headers.length);
           })
           .otherwise(function(args) {
-            this.setColumns.call(this, args);
+            this.setHeader.call(this, args);
           }).resolve();
         return this;
       },
-      setData: function(data, notTriggerEvent) {
-        this.$attr('data', data);
-        if (!notTriggerEvent) {
-          this.trigger(Table.Events.OnSetData, [data]);
-        }
-        Table_setData(self, data);
+      setData: function() {
+        varArg(arguments, this)
+          .when('*', function(data) {
+            return [data, true, 'text'];
+          })
+          .when('*', 'string', function(data, type) {
+            return [data, true, type];
+          })
+          .when('boolean', '*', function(isTriggerEvent, data) {
+            return [data, isTriggerEvent, 'text'];
+          })
+          .when('boolean', '*', 'string', function(data, isTriggerEvent, type) {
+            return [data, isTriggerEvent, type];
+          })
+          .invoke(function(data, isTriggerEvent, type) {
+            if (isTriggerEvent) {
+              this.trigger(Table.Events.OnSetData, [data]);
+            }
+            this.$attr('data', data);
+            Table_setData(this, type, data);
+          });
+        return this;
       },
-      addRow: function() {},
-      addColumn: function() {},
+      addRow: function() {
+        varArg(arguments, this)
+          .when('arrayLike', function(row) {
+            var data = this.$get('data');
+            data.push(row);
+            this.refresh();
+          })
+          .otherwise(function(args) {
+            this.addRow.call(this, args);
+          }).resolve();
+        return this;
+      },
+      addColumn: function() {
+        varArg(arguments, this)
+          .when('arrayLike', function(col) {
+            var data = this.$get('data'),
+              len = data.length,
+              i = 0;
+            for (; i < len; ++i) {
+              data[i].push(col[i] || '');
+            }
+            this.refresh();
+          })
+          .otherwise(function(args) {
+            this.addColumn.call(this, args);
+          }).resolve();
+        return this;
+      },
       clearAll: function() {
-    
+        this.$set('data', this.data);
       },
       setStatus: function(status) {
         if (status == Table.Status.Loading) {
@@ -141,10 +178,24 @@
         } else if (status == Table.Status.NoData) {
           this.find('tbody').hide();
           this.sigil('.nodata').show();
+        } else if (status == Table.Status.Data) {
+          this.find('tbody').hide();
+          this.sigil('.data').show();
         } else {
           throw new Error("Don't know status:" + status + ', see Table.Status');
         }
         return this;
+      },
+      refresh: function() {
+        var data = this.$get('data');
+        if (data instanceof DataSource) {
+          data.getData(function(data) {
+            Table_setData(this, 'text', data);
+          });
+        } else {
+          Table_setData(this, 'text', data);
+        }
+    
       }
     }).statics({
       Template: {
@@ -155,20 +206,73 @@
       },
       Status: {
         Loading: 'loading',
-        NoData: 'nodata'
+        NoData: 'nodata',
+        Data: 'data'
       }
     });
     
-    function Table_setData(self, data) {
-      var va,
-        ds = new DataSource(data);
+    function Table_initialize(self, opts) {
+      self.setStatus(Table.Status.Loading);
+      if (opts.columns) {
+        self.setColumns(opts.columns);
+      }
+      if (opts.data) {
+        self.setData(opts.data);
+      }
+      if (opts.url) {
+        self.data = new DataSource(opts);
+      }
+    }
+    
+    var fmt_td = '<td>{0}</td>',
+      fmt_tr = '<tr>{0}</tr>';
+    
+    function td(x) {
+      return _str.format(fmt_td, [x]);
+    }
+    
+    function tr(x) {
+      return _str.format(fmt_tr, [x]);
+    }
+    
+    function array_to_table(data) {
+      return _enum.map(data, function(row) {
+        var a = tr(_enum.map(row, td).join(''));
+        return a;
+      }).join('');
+    }
+    
+    function Table_setData(self, type) {
+      var args = _arguments.toArray(arguments, 2),
+        html;
+    
+      function doSetData(html) {
+        self.body.html(html);
+        self.setStatus(Table.Status.Data);
+      }
+      html = varArg(args, self)
+        .when('array<array>', function(data) {
+          return [array_to_table(data)];
+        })
+        .when('array<object>', function(data) {
+          var headers = _object.keys(data[0]);
+          this.setHeader(headers);
+          return [array_to_table(data)];
+        })
+        .when(DataSource.constructorOf, function(dataSrc) {
+          dataSrc.getData(function(data) {
+            Table_setData.call(self, data);
+          });
+        })
+        .invoke(doSetData);
+      return self;
     }
         
     ///sigils
     if (!Table.Sigils) Table.Sigils = {};
+    Table.Sigils[".data"] = ".ui-tbody-data";
     Table.Sigils[".loading"] = ".ui-tbody-loading";
     Table.Sigils[".nodata"] = ".ui-tbody-nodata";
-    Table.Sigils[".data"] = ".ui-tbody-data";
 
     exports['Table'] = Table;
     exports['DataSource'] = DataSource;

@@ -9923,7 +9923,7 @@ define('jQuery', function() {
     var selectorsCache = jQuery.__selectorsCache__ = {};
 
     function getSelectorInInheritanceChain(obj, clazz, sigil) {
-        clazz = clazz || obj.getClass();
+        clazz = clazz || obj.$getClass();
         var sigils = clazz.Sigils,
             selector;
         if (sigils) selector = sigils[sigil];
@@ -9940,8 +9940,8 @@ define('jQuery', function() {
     if (typeof jQuery !== 'undefined') {
         jQuery.fn.sigil = function(sigil, returnSelector) {
             var clazz, selector, typename, hashkey;
-            if (typeof this.getClass == 'function') {
-                clazz = this.getClass();
+            if (typeof this.$getClass == 'function') {
+                clazz = this.$getClass();
                 typename = clazz.typename();
                 hashkey = typename + ':' + sigil;
                 selector = selectorsCache[hashkey];

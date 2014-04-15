@@ -91,7 +91,7 @@ function check(pred, arg) {
                         return false;
                     }
                 }
-            }
+            } else return false;
         } else {
             throw Error('unsupported type:' + pred + ' in function varArg');
         }

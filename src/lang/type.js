@@ -259,7 +259,7 @@ function typename(arg) {
     } else if (t in _primitives) {
         return _primitives[t];
     } else if (isFunction(arg.getClass)) {
-        return arg.getClass().typename();
+        return arg.$getClass().typename();
     } else {
         return ctorName(arg);
     }

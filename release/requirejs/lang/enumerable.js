@@ -55,7 +55,7 @@
         }
     
         for (key in obj) {
-            ret = fn.call(thisValue, key, obj[key], i++, obj);
+            ret = fn.call(thisValue, obj[key], key, i++, obj);
             if (ret === false && stopWhenFnReturnFalse) break;
         }
         return obj;
@@ -191,9 +191,9 @@
                 ret.push(fn.call(context, v, k, i));
             });
         } else {
-            ret = {};
+            ret = [];
             _object_each(objs, function(v, k, i) {
-                ret[k] = fn.call(context, v, k, i);
+                ret[i] = fn.call(context, v, k, i);
             });
         }
         return ret;

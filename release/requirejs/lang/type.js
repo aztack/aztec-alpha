@@ -271,7 +271,7 @@
         } else if (t in _primitives) {
             return _primitives[t];
         } else if (isFunction(arg.getClass)) {
-            return arg.getClass().typename();
+            return arg.$getClass().typename();
         } else {
             return ctorName(arg);
         }
@@ -326,7 +326,7 @@
     ObjectSpace.__objectSpace__ = $ObjectSpace;
     
     function instance$is(t) {
-        var clazz = this.getClass();
+        var clazz = this.$getClass();
         if (t == Object) {
             return true;
         }
@@ -376,7 +376,7 @@
      * print object in format #<typename a=1 b="s">
      */
     function instance$toString() {
-        var type = this.getClass().typename(),
+        var type = this.$getClass().typename(),
             s = [],
             k, v;
         for (k in this) {
@@ -407,7 +407,7 @@
     
     function instance$methods(includeMethodOnThisObject) {
         var ret = [],
-            proto = this.getClass().prototype;
+            proto = this.$getClass().prototype;
         ret = getMethodsOn(proto);
         if (includeMethodOnThisObject === true) {
             ret = getMethodsOn(this).concat(ret);
@@ -429,7 +429,7 @@
     }
     
     function instance$set(keyPath, value, notifyObservers) {
-        var typename = this.getClass().typename(),
+        var typename = this.$getClass().typename(),
             objSpace, attrs, cacheKey = typename + '@' + this.__id__,
             metaData = metaDataCache[cacheKey];
     
@@ -453,15 +453,15 @@
     
     function instance$attr(name, value, rw) {
         var vtype = typeof value;
-        if(vtype == 'string' || vtype == 'number' || vtype == 'boolean' || value == null) {
+        if (vtype == 'string' || vtype == 'number' || vtype == 'boolean' || value == null) {
             throw new Error('$attr only support reference type value!');
         }
         this[name] = value;
-        if(rw == 'r') {
+        if (rw == 'r') {
             value.__readonly__ = true;
-        } else if(rw == 'rw' || rw == 'wr') {
+        } else if (rw == 'rw' || rw == 'wr') {
             value.__readwrite__ = true;
-        } else if(rw == 'w') {
+        } else if (rw == 'w') {
             value.__writeonly__ = true;
         }
         this.$set(name, value, false);
@@ -469,7 +469,7 @@
     }
     
     function instance$get(keyPath, alternative) {
-        var typename = this.getClass().typename(),
+        var typename = this.$getClass().typename(),
             attrs, cacheKey = typename + '@' + this.__id__,
             metaData = metaDataCache[cacheKey];
     
@@ -481,7 +481,7 @@
     }
     
     function instance$ivars() {
-        var typename = this.getClass().typename(),
+        var typename = this.$getClass().typename(),
             attrs, cacheKey = typename + '@' + this.__id__,
             metaData = metaDataCache[cacheKey];
     
@@ -491,15 +491,15 @@
     
         attrs = metaData.attrs;
         ivars = [];
-        for(var name in this) {
-            if(!this.hasOwnProperty(name)) break;
-            if(attrs.hasOwnProperty(name)) ivars.push(name);
+        for (var name in this) {
+            if (!this.hasOwnProperty(name)) break;
+            if (attrs.hasOwnProperty(name)) ivars.push(name);
         }
         return ivars;
     }
     
     function instance$observe_internal(keyPath, name, fn) {
-        var typename = this.getClass().typename(),
+        var typename = this.$getClass().typename(),
             cacheKey = typename + '@' + this.__id__,
             metaData = metaDataCache[cacheKey],
             index;
@@ -509,7 +509,7 @@
         }
     
         observers = metaData.observers;
-        if(arguments.length === 0) return observers;
+        if (arguments.length === 0) return observers;
     
         if (typeof fn == 'function') {
             observers[name] = fn;
@@ -521,11 +521,11 @@
     }
     
     function instance$observe(keyPath, name, fn) {
-        if(typeof fn == 'undefined' && typeof name == 'function') {
+        if (typeof fn == 'undefined' && typeof name == 'function') {
             fn = name;
             name = keyPath;
         }
-        if(arguments.length === 0) {
+        if (arguments.length === 0) {
             return instance$observe_internal.call(this);
         } else {
             return instance$observe_internal.call(this, keyPath, name, fn);
@@ -537,7 +537,7 @@
     }
     
     function instance$dispose() {
-        var typename = this.getClass().typename(),
+        var typename = this.$getClass().typename(),
             objSpace, id;
     
         //delete meta data
@@ -620,6 +620,7 @@
                         if (typeof t != 'undefined') {
                             this.base = t;
                         } else {
+                            this.base = null;
                             delete this.base;
                         }
                         return r;
@@ -683,9 +684,9 @@
             return new Class(name, this);
         } else if (len === 1) {
             name = this.typename ? this.typename() + '$' : '';
-            return new Class('', this).methods(arguments[1]);
+            return new Class('', this).$methods(arguments[1]);
         }
-        return new Class(name, this).methods(methods);
+        return new Class(name, this).$methods(methods);
     }
     
     function clazz$readonly(name, initValue, force) {
@@ -715,10 +716,10 @@
         }
         var _ = function() {
             var ret, init, id;
-            this.getClass = instance$getClass;
-            this.toString = instance$toString;
-            this.methods = instance$methods;
-            this.is = instance$is;
+            this.$getClass = instance$getClass;
+            this.$toString = instance$toString;
+            this.$methods = instance$methods;
+            this.$is = instance$is;
             this.$class = _;
     
             /**
@@ -764,6 +765,9 @@
         };
         _.extend = clazz$extend;
         _.readonly = clazz$readonly;
+        _.constructorOf = function(obj) {
+            return obj instanceof _;
+        };
         if (parent) {
             //create a instance of parent without invoke constructor
             _.prototype = object(parent.prototype); //, parent.prototype || parent);

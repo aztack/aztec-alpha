@@ -72,7 +72,7 @@
                 ]);
                 menu.showAt(100, 100);
                 menu.on(Menu.Events.OnItemSelected, function(e, item, index) {
-                    console.log(item.getClass().typename(),item.text(), index);
+                    console.log(item.$getClass().typename(),item.text(), index);
                 })
 
                 menu2 = new Menu();
