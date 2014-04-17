@@ -36,15 +36,18 @@
         </table>
     </body>
     <script>
-        require(['ui/table','lang/arguments'], function(table, args) {
+        require(['ui/table', 'lang/arguments'], function(table, args) {
             var Table = table.Table,
-            DataSource = table.DataSource;
+                DataSource = table.DataSource;
+
             t = new Table();
-            ds = new DataSource({url:'http://localhost/table',process:function(resp){
-                return resp.list;
-            }});
-            t.setHeader(1,2,3)
-                .setData(ds)
+            t.setHeader('index', 'First Name', 'Last Name', 'e-mail', 'city', 'ip')
+                .setData(new DataSource({
+                    url: 'http://localhost/table',
+                    process: function(resp) {
+                        return resp.list;
+                    }
+                }))
                 .appendTo('body');
         });
 

@@ -228,11 +228,6 @@ function array_to_table(data) {
 function Table_setData(self, type) {
 	var args = _arguments.toArray(arguments, 2),
 		html;
-
-	function doSetData(html) {
-		self.body.html(html);
-		self.setStatus(Table.Status.Data);
-	}
 	html = varArg(args, self)
 		.when('array<array>', function(data) {
 			return [array_to_table(data)];
@@ -244,9 +239,12 @@ function Table_setData(self, type) {
 		})
 		.when(DataSource.constructorOf, function(dataSrc) {
 			dataSrc.getData(function(data) {
-				Table_setData.call(self, data);
+				Table_setData.call(null, self, type, data);
 			});
 		})
-		.invoke(doSetData);
+		.invoke(function(html) {
+			self.body.html(html);
+			self.setStatus(Table.Status.Data);
+		});
 	return self;
 }
