@@ -1,7 +1,8 @@
+require.config({
+    baseUrl: '../release/requirejs/'
+});
+
 function test(ns, fn) {
-
-    console.log("Unit Test of: " + ns);
-
     function ok() {
         console.log("%cOK!", 'color:green;font-size:15px;');
     }
@@ -114,7 +115,39 @@ function test(ns, fn) {
     specs.should = specs;
     specs.maybe = specs;
 
-    define('$root.test.' + ns, [ns], function(require, _) {
-        fn(require, specs);
+    require([ns.replace('$root.', '').replace('.', '/')], function(mod) {
+
     });
+    require([
+        'lang/string',
+        'lang/array',
+        'lang/object',
+        'lang/fn',
+        'lang/type',
+        'lang/enumerable',
+        'lang/arguments',
+        'lang/number',
+        'lang/date',
+        'lang/range'
+    ], function(string, array, object, f, type, enu, args, num, date,range) {
+        var oldeRequrie = require,
+            map = {
+                '$root.lang.string': string,
+                '$root.lang.array': array,
+                '$root.lang.object': object,
+                '$root.lang.fn': f,
+                '$root.lang.type': type,
+                '$root.lang.enumerable': enu,
+                '$root.lang.arguments': args,
+                '$root.lang.number': num,
+                '$root.lang.date': date,
+                '$root.lang.range':range
+            };
+        require = function(ns) {
+            return map[ns];
+        }
+        console.log("%cUnit Test of: " + ns, 'color:white;font-size:16px;background-color:black;');
+        fn(require, specs);
+        require = oldeRequrie;
+    })
 }

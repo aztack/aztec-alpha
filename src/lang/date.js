@@ -99,7 +99,7 @@ function isLeapYear(y) {
     return new Date(y, 1, 29).getMonth() == 1;
 }
 
-function daysOfMonth(y, m) {
+function daysOfMonth() {
     return _daysOfMonth[isLeapYear(y)][m];
 }
 

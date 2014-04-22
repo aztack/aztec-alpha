@@ -19,7 +19,7 @@
  * - isNumber
  * - isInteger
  * - isFloat
- * - isFinitNumber
+ * - isFiniteNumber
  * - isBoolean
  * - isPlainObject
  * - isEmptyObject
@@ -27,6 +27,7 @@
  * - typename
  * - object
  * - hasSameTypeName
+ * - isWindow
  * - Boolean
  * - Number
  * - String
@@ -190,7 +191,13 @@
      * @return {Boolean}
      */
     function isArrayLike(arg) {
-        return isInteger(arg.length);
+        var len = arg.length;
+    
+        if (isArray(arg)) return true;
+    
+        //any object which has a length property and do has 0->length-1 items
+        //we consider it is a array-like object
+        return typeof len == 'number' && len >= 0 && arg[0] && (len - 1) in arg;
     }
     
     function isFunction(arg) {
@@ -201,9 +208,9 @@
         return _toString.call(arg) == '[object Number]';
     }
     
-    function isFinitNumber(arg) {
+    function isFiniteNumber(arg) {
         if (arg === null) return false;
-        return isFinit(arg);
+        return isFinite(arg);
     }
     /**
      * isInteger
@@ -270,7 +277,7 @@
             return 'Null';
         } else if (t in _primitives) {
             return _primitives[t];
-        } else if (isFunction(arg.getClass)) {
+        } else if (isFunction(arg.$getClass)) {
             return arg.$getClass().typename();
         } else {
             return ctorName(arg);
@@ -306,6 +313,10 @@
      */
     function hasSameTypeName(a, b) {
         return typename(a) == typename(b);
+    }
+    
+    function isWindow(w) {
+        return w != null && w.window == w;
     }
     // src/lang/type.oop.js
     /**
@@ -753,7 +764,7 @@
             }
             return ret;
         };
-        _.getClass = clazz$getClass;
+        _.$getClass = clazz$getClass;
         _.methods = clazz$methods;
         _.aliases = clazz$aliases;
         _.statics = clazz$statics;
@@ -789,7 +800,7 @@
         return _;
     }
     
-    Class.getClass = clazz$getClass;
+    Class.$getClass = clazz$getClass;
     Class.methods = clazz$methods;
     Class.extend = clazz$extend;
     Class.readonly = clazz$readonly;
@@ -871,7 +882,7 @@
     exports['isNumber'] = isNumber;
     exports['isInteger'] = isInteger;
     exports['isFloat'] = isFloat;
-    exports['isFinitNumber'] = isFinitNumber;
+    exports['isFiniteNumber'] = isFiniteNumber;
     exports['isBoolean'] = isBoolean;
     exports['isPlainObject'] = isPlainObject;
     exports['isEmptyObject'] = isEmptyObject;
@@ -879,6 +890,7 @@
     exports['typename'] = typename;
     exports['object'] = object;
     exports['hasSameTypeName'] = hasSameTypeName;
+    exports['isWindow'] = isWindow;
 //     exports['Boolean'] = Boolean;
 //     exports['Number'] = Number;
 //     exports['String'] = String;

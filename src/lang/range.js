@@ -10,12 +10,7 @@
     ]
 });
 
-//TODO:rewrite range class with type.create and varArg
-
-//vars
 var rangeCache = {};
-
-//helper
 
 function checkRangeBounds(from, to) {
     if (!_type.isFiniteNumber(from, to)) {
@@ -23,10 +18,9 @@ function checkRangeBounds(from, to) {
     }
 }
 
-//impl
 /**
  * Range
- * represents a integer range, immutable
+ * represents a range, immutable
  * @param {[type]} from [description]
  * @param {[type]} to   [description]
  */
@@ -79,7 +73,7 @@ function Range(from, to) {
             return [from, to];
         },
         toString: function(left, right) {
-            return [left || '[', from, ',', to, right || ']'];
+            return [left || '[', from, ',', to, right || ']'].join('');
         },
         indexOf: function(i) {
             return this.convers(i) ? i - from : -1;
@@ -101,10 +95,11 @@ function create(from, to) {
     if (from > to) {
         from = [to, to = from][0];
     }
-    var key = String(from) + '~' + String(to),
-        r = rangeCache[key];
-    if (r == 'undefined') {
+    var cacheKey = String(from) + '~' + String(to),
+        r = rangeCache[cacheKey];
+    if (typeof r == 'undefined') {
         r = new Range(from, to);
+        rangeCache[cacheKey] = r;
     }
     return r;
 }

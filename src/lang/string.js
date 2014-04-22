@@ -24,7 +24,8 @@
         quote,
         toArray,
         format,
-        isHtmlFragment
+        isHtmlFragment,
+        toHash
     ]
 });
 
@@ -52,7 +53,7 @@ function toInt(self, radix) {
  * @return {float}
  */
 function toFloat(self, radix) {
-    return parseFloat(s, radix || 10);
+    return parseFloat(self, radix || 10);
 }
 
 function capitalize(self) {
@@ -178,4 +179,31 @@ var format = (function() {
 
 function isHtmlFragment(self) {
     return typeof self == 'string' && self.charAt(0) === '<' && self.charAt(self.length - 1) === '>' && self.length >= 3;
+}
+
+var toHashRegexpCache = {
+    '&=': /([^=&]+?)=([^&]*)/g,
+    ',:': /([^:,]+?):([^,]*)/g
+};
+
+function toHash(self, pairSeparator, keyValueSeparator) {
+    var result = {};
+    if (!self) return result;
+
+    pairSeparator = pairSeparator || '&';
+    keyValueSeparator = keyValueSeparator || '=';
+
+    var cacheKey = pairSeparator + keyValueSeparator,
+        re = toHashRegexpCache[cacheKey],
+        rId;
+    if (!re) {
+        rId = '[^' + cacheKey + ']';
+        re = new RegExp('(' + rId + '+?)' + keyValueSeparator + '(' + rId + '*)', 'g');
+        toHashRegexpCache[cacheKey] = re;
+    }
+
+    self.replace(re, function(_, key, value) {
+        result[key] = value;
+    });
+    return result;
 }

@@ -24,7 +24,6 @@
  * - bindApplyNew
  * - callNew
  * - applyNew
- * - breakpoint
  * - log
  * - stop
  * - ntimes
@@ -248,11 +247,6 @@
         }
     }
     
-    function breakpoint(fn) {
-        debugger;
-        return fn.apply(this, arguments);
-    }
-    
     function log(fn) {
         if (typeof console !== 'undefined' && typeof console.log == 'function') {
             console.log(arguments);
@@ -417,7 +411,6 @@
     exports['bindApplyNew'] = bindApplyNew;
     exports['callNew'] = callNew;
     exports['applyNew'] = applyNew;
-    exports['breakpoint'] = breakpoint;
     exports['log'] = log;
     exports['stop'] = stop;
     exports['ntimes'] = ntimes;

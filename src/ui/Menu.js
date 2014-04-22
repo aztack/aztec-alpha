@@ -122,5 +122,3 @@ function Menu_asContextMenuOf(self, target) {
     });
     return self;
 }
-
-///exports

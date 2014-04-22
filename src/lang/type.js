@@ -18,7 +18,7 @@
         isNumber,
         isInteger,
         isFloat,
-        isFinitNumber,
+        isFiniteNumber,
         isBoolean,
         isPlainObject,
         isEmptyObject,
@@ -26,6 +26,7 @@
         typename,
         object,
         hasSameTypeName,
+        isWindow,
         Boolean,
         Number,
         String,
@@ -178,7 +179,13 @@ function isArray(arg) {
  * @return {Boolean}
  */
 function isArrayLike(arg) {
-    return isInteger(arg.length);
+    var len = arg.length;
+
+    if (isArray(arg)) return true;
+
+    //any object which has a length property and do has 0->length-1 items
+    //we consider it is a array-like object
+    return typeof len == 'number' && len >= 0 && arg[0] && (len - 1) in arg;
 }
 
 function isFunction(arg) {
@@ -189,9 +196,9 @@ function isNumber(arg) {
     return _toString.call(arg) == '[object Number]';
 }
 
-function isFinitNumber(arg) {
+function isFiniteNumber(arg) {
     if (arg === null) return false;
-    return isFinit(arg);
+    return isFinite(arg);
 }
 /**
  * isInteger
@@ -258,7 +265,7 @@ function typename(arg) {
         return 'Null';
     } else if (t in _primitives) {
         return _primitives[t];
-    } else if (isFunction(arg.getClass)) {
+    } else if (isFunction(arg.$getClass)) {
         return arg.$getClass().typename();
     } else {
         return ctorName(arg);
@@ -294,4 +301,8 @@ function object(proto, attributes) {
  */
 function hasSameTypeName(a, b) {
     return typename(a) == typename(b);
+}
+
+function isWindow(w) {
+    return w != null && w.window == w;
 }

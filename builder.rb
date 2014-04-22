@@ -4,7 +4,6 @@ require 'pry'
 require 'pp'
 require './bin/aztec.rb'
 
-release_dir = "./release/requirejs"
 man = Aztec::JsModuleManager.new('src',:verbose => true)
 
 opt_parser = OptionParser.new do |opts|
@@ -72,7 +71,7 @@ if $0 =~/watchr/
 		$stdout.write "#{path} saved."
 		begin
 			man.release_single_js('./release/requirejs', path) do |namespace|
-				$stdout.write "re-generate..."
+				$stdout.write "Re-generate..."
 			end
 			$stdout.puts " Done!"
 		rescue => e

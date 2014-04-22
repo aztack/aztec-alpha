@@ -1,6 +1,5 @@
-test("$root.lang.type", function(require, specs) {
-    var _enum = require('$root.lang.enumerable'),
-        _ = _enum._;
+test("$root.lang.enumerable", function(require, specs) {
+    var _enum = require('$root.lang.enumerable');
 
     var obj = {
         'a': 1,

@@ -24,7 +24,6 @@
         bindApplyNew,
         callNew,
         applyNew,
-        breakpoint,
         log,
         stop,
         ntimes,
@@ -239,11 +238,6 @@ function applyNew(ctor, args) {
         case 7:
             return new ctor(args[0], args[1], args[2], args[3], args[4], args[5], args[6]);
     }
-}
-
-function breakpoint(fn) {
-    debugger;
-    return fn.apply(this, arguments);
 }
 
 function log(fn) {

@@ -82,36 +82,5 @@ test('lang.fn', function(require, specs) {
                 p = P();
             return [p.getName(), p.getAge()];
         })
-        .___('fn#Callbacks')
-        .it.maybe.anything(0, function() {
-            var Callbacks = _fn.Callbacks,
-                p = new Person('jack', 42);
-
-            var cbs = Callbacks();
-            cbs.add(function(a) {
-                console.log(a, this.name);
-                return false;
-            }).add(function(a) {
-                console.log(a + 1, this.age);
-            });
-            cbs.fire(p, [1]);
-            
-            console.log('---');
-            p.name = 'jackson';
-            p.age = 10;
-            cbs.fireAll(p, [2]);
-            
-            console.log('---');
-            var s = cbs.get(0).toString();
-            eval('fff = ' + s)
-            console.log(fff);
-            
-            console.log('---');
-            cbs.remove(cbs.get(0));
-        })
-        .___('fn#stop')
-        .it.maybe.anything(true, function() {
-            _fn.stop('fn.do', obj).fn['do']();
-        })
         .done();
 });

@@ -12,15 +12,18 @@ test("$root.lang.range", function(require, specs) {
             ];
         })
         .___('range#toArray')
-        .it.should.equal(true, function() {
-            return ary.equal([-1, 0, 1, 2], range.create(-1, 2));
+        .it.should.equal([true, true], function() {
+            var r = range.create(-1, 2);
+            return [ary.equal([-1, 0, 1], r.toArray()), ary.equal([-1, 0, 1, 2], r.toArray(true))];
         })
         .___('range#toString')
         .it.should.equal([true, true], function() {
-            var r = range.create(123, 456);
+            var r = range.create(123, 456),
+                s1 = r.toString(),
+                s2 = r.toString('[', ')');
             return [
-                r.toString() == '[123,345]',
-                r.toString('[', ')') == '[123,456)'
+                s1 == '[123,456]',
+                s2 == '[123,456)'
             ];
         })
         .done();

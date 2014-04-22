@@ -453,7 +453,7 @@ function Class(name, parent) {
         }
         return ret;
     };
-    _.getClass = clazz$getClass;
+    _.$getClass = clazz$getClass;
     _.methods = clazz$methods;
     _.aliases = clazz$aliases;
     _.statics = clazz$statics;
@@ -489,7 +489,7 @@ function Class(name, parent) {
     return _;
 }
 
-Class.getClass = clazz$getClass;
+Class.$getClass = clazz$getClass;
 Class.methods = clazz$methods;
 Class.extend = clazz$extend;
 Class.readonly = clazz$readonly;

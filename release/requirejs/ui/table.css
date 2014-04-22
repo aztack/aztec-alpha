@@ -1,0 +1,22 @@
+/* $root.ui.table */
+.ui-table {
+border: 1px solid #aaa; border-collapse: collapse;
+}
+.ui-table .ui-tbody-loading td {
+text-align: center;
+}
+.ui-table .ui-tbody-nodata td {
+text-align: center;
+}
+.ui-table thead {
+text-align: left;
+}
+.ui-table thead th {
+min-width: 3em; white-space: nowrap;
+}
+.ui-table thead {
+background-image: -webkit-linear-gradient(90deg, #fff, #ccc);
+}
+.ui-table tbody tr td {
+border: 1px solid #ccc;
+}
