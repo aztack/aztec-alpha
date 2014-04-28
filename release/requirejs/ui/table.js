@@ -135,8 +135,8 @@
             if (isTriggerEvent) {
               this.trigger(Table.Events.OnSetData, [data]);
             }
-            this.$attr('data', data);
-            Table_setData(this, type, data);
+            var args = [this, type, data].concat(_arguments.toArray(arguments, 3));
+            Table_setData.apply(null, args);
           });
         return this;
       },
@@ -169,6 +169,7 @@
         return this;
       },
       clearAll: function() {
+        //TODO
         this.$set('data', this.data);
       },
       setStatus: function(status) {
@@ -247,11 +248,20 @@
         html;
       html = varArg(args, self)
         .when('array<array>', function(data) {
+          self.$attr('data', data);
           return [array_to_table(data)];
         })
-        .when('array<object>', function(data) {
+        .when('array<object>', '*', function(data, transform) {
           var headers = _object.keys(data[0]);
+          if (_type.isPlaintObject(transform)) {
+            header = _object.map(header, function(n) {
+              return transform[n] || '';
+            });
+          } else if (_type.isFunction(transform)) {
+            header = transform(header);
+          }
           this.setHeader(headers);
+          self.$attr('data', data);
           return [array_to_table(data)];
         })
         .when(DataSource.constructorOf, function(dataSrc) {

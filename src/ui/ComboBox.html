@@ -2,45 +2,12 @@
     <head>
         <title>ComboBox</title>
         <base href="../../release/requirejs/" />
-        <style>
-            .ui-menu {
-                position: absolute;
-                margin: 0;
-                padding: 0;
-                border: 1px solid gray;
-                cursor: pointer;
-                min-width: 100px;
-                box-shadow: 2px 2px 2px #888;
-                background-color: #fff;
-            }
-            .ui-menu-item {
-                list-style: none;
-                padding: 0;
-                margin: 2px;
-                display: block;
-            }
-            .ui-menu-item a{
-                text-decoration: none;
-                color: #000;
-            }
-            .ui-menu-item a:hover{
-                color: #fff;
-            }
-            .ui-menu-item:hover {
-                background-color: gray;
-                color: #fff;
-            }
-            .ui-menu-item:hover a{
-                color: #fff;
-                text-decoration: none;
-            }
-        </style>
         <script src="requirejs.js"></script>
         <link rel="stylesheet" type="text/css" href="ui/menu.css">
     </head>
 
     <body>
-    <div xtemplate="$root.ui.ComboBox.box,delete" style="display:none">
+    <div class="ui-combobox" xtemplate="$root.ui.ComboBox.box,delete" style="display:none">
         
     </div>
         <script>
@@ -51,6 +18,9 @@
                 a.menu.add(456)
                 a.menu.add(789);
                 a.appendTo('body');
+                a.on(ComboBox.Events.OnItemSelected, function(){
+                    console.log(arguments);
+                });
             });
         </script>
     </body>

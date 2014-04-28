@@ -102,14 +102,13 @@
             return Menu_asContextMenuOf(this, target);
         }
     }).statics({
-        DefaultMenuItemType: MenuItem,
-        Events: {
-            OnItemSelected: 'OnItemSelected.Menu'
-        }
+        DefaultMenuItemType: MenuItem
+    }).events({
+        OnItemSelected: 'OnItemSelected.Menu'
     });
     
     function Menu_initialize(self) {
-        self.css('position','absolute').on('mouseup', function(e) {
+        self.css('position', 'absolute').on('mouseup', function(e) {
             var index = self.indexOf(e.target),
                 item;
             if (index < 0) {
@@ -123,9 +122,10 @@
     }
     
     function Menu_asContextMenuOf(self, target) {
-        var owner = $(target), position = owner.css('position');
-        if(position != 'relative' && position != 'absolute' && position != 'fixed') {
-            owner.css('position','relative');
+        var owner = $(target),
+            position = owner.css('position');
+        if (position != 'relative' && position != 'absolute' && position != 'fixed') {
+            owner.css('position', 'relative');
         }
         owner.append(self).on('contextmenu', function(e) {
             if (e.target === owner[0]) {
@@ -134,12 +134,10 @@
                 return false;
             }
         }).on('click', function() {
-            _fn.bindTimeout(self.hide, self)();
+            _fn.bindTimeout(self.hide, self, 50)();
         });
         return self;
     }
-    
-    ///exports
         
     ///sigils
     if (!Menu.Sigils) Menu.Sigils = {};

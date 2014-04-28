@@ -30,15 +30,16 @@ var ComboBox = _type.create('$root.ui.ComboBox', jQuery, {
 		this.$attr('menu', new Menu());
 		ComboBox_initialize(this);
 	},
-	showMenu: function() {
+	showMenu: function(x, y) {
 		var tf = this.textfield,
 			w = this.textfield.width(),
-			l = tf.css('left');
+			h = this.textfield.outerHeight(true);
 		this.menu.show().css({
-			left: l,
-			width: w
+			left: x || '2px',
+			top: h,
+			width: Math.max(w, this.menu.width())
 		});
-
+		console.log(this.menu[0].style);
 	},
 	hideMenu: function() {
 		this.menu.hide();
@@ -46,25 +47,26 @@ var ComboBox = _type.create('$root.ui.ComboBox', jQuery, {
 }).statics({
 	Template: {
 		BoxTemplate: boxTemplate
-	},
-	Events: {}
-});
+	}
+}).events(Menu.Events, TextField.Events);
 
 function ComboBox_initialize(self) {
 	var menu = self.menu,
 		hideMenu = _fn.bindTimeout(self.hideMenu, self, 100),
-		showMenu = _fn.bind(self.showMenu, self);
+		showMenu = _fn.bind(function(){
+			self.showMenu();
+		}, self);
 
-	self.textfield
+	self.css('position','relative')
+		.textfield
 		.focus(showMenu)
 		.blur(hideMenu);
 
 	menu.on(Menu.Events.OnItemSelected, function(e, item, index) {
 		var text = item.text();
 		self.textfield.val(text);
-	});
+	}).hide();
 
-	self.append(self.textfield);
-	self.menu.hide();
-	self.append(self.menu);
+	self.append(self.textfield)
+		.append(self.menu);
 }

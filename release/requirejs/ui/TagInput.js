@@ -93,14 +93,13 @@
             return result;
         }
     }).statics({
-        Events: {
-            OnInputChange: 'InputChange(event,text)',
-            OnItemAdd: 'ItemAdded(event,item)',
-            OnItemRemove: 'ItemRemoved(event,item)'
-        },
         Values: {
             InputChangeDelay: 400
         }
+    }).events({
+        OnInputChange: 'InputChange(event,text).TagInput',
+        OnItemAdd: 'ItemAdded(event,item).TagInput',
+        OnItemRemove: 'ItemRemoved(event,item).TagInput'
     });
     
     function TagInput_initialize(self) {

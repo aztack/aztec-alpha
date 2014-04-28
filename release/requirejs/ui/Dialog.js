@@ -177,12 +177,11 @@
         Position: {
             Center: 'center',
             GoldenRation: 'golden'
-        },
-        Events: {
-            OnShowAt: 'ShowAt(event,x,y)',
-            OnClose: 'Close(event)',
-            OnButtonClick: 'ButtonClick(event,buttonIndex,buttonCaption)'
         }
+    }).events({
+        OnShowAt: 'ShowAt(event,x,y).Dialog',
+        OnClose: 'Close(event).Dialog',
+        OnButtonClick: 'ButtonClick(event,buttonIndex,buttonCaption).Dialog'
     });
     
     function GenericDialog_createButton() {

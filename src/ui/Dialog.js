@@ -161,12 +161,11 @@ var GenericDialog = _type.create('$root.ui.GenericDialog', jQuery, {
     Position: {
         Center: 'center',
         GoldenRation: 'golden'
-    },
-    Events: {
-        OnShowAt: 'ShowAt(event,x,y)',
-        OnClose: 'Close(event)',
-        OnButtonClick: 'ButtonClick(event,buttonIndex,buttonCaption)'
     }
+}).events({
+    OnShowAt: 'ShowAt(event,x,y).Dialog',
+    OnClose: 'Close(event).Dialog',
+    OnButtonClick: 'ButtonClick(event,buttonIndex,buttonCaption).Dialog'
 });
 
 function GenericDialog_createButton() {
@@ -277,7 +276,6 @@ var Alert = _type.create('$root.ui.Alert', GenericDialog, {
         var opts = this.options = options || {};
         this.base.apply(this, arguments);
         this.header.text(opts.title || '');
-        this.addClass('ui-alert');
         Alert_initialize(this, opts);
     }
 }).aliases({

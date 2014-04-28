@@ -44,6 +44,26 @@ function instance$is(t) {
 
 var objectToStringValue = '[object Object]';
 
+function arrayEach(ary, fn, thisValue) {
+    var i = 0,
+        len = ary.length,
+        ret;
+
+    for (; i < len; ++i) {
+        ret = fn.call(thisValue, ary[i], i, i, ary);
+    }
+    return ary;
+}
+
+function objectEach(obj, fn, thisValue) {
+    var key, ret, i = 0;
+
+    for (key in obj) {
+        ret = fn.call(thisValue, obj[key], key, i++, obj);
+    }
+    return obj;
+}
+
 /* simplified tryget/tryset */
 function tryget(o, path, v) {
     var parts = path.split('.'),
@@ -371,6 +391,19 @@ function clazz$statics(props) {
     return this;
 }
 
+function clazz$events() {
+    if (!arguments.length === 0) return this;
+    var Events = this.Events,
+        name, evt;
+
+    arrayEach(arguments, function(evts) {
+        objectEach(evts, function(evt, name) {
+            Events[name] = evt;
+        })
+    });
+    return this;
+}
+
 function clazz$extend() {
     var len = arguments.length,
         name, methods;
@@ -416,6 +449,7 @@ function Class(name, parent) {
     }
     var _ = function() {
         var ret, init, id;
+        //all meta-programming related methods and propertys are started with $
         this.$getClass = instance$getClass;
         this.$toString = instance$toString;
         this.$methods = instance$methods;
@@ -443,7 +477,7 @@ function Class(name, parent) {
             if (!isFunction(init)) {
                 init = _.prototype.init;
             }
-            ret = init.apply(this, arguments);
+            ret = init.apply(this, arguments);//step into ..
         } else if (isFunction(_.prototype.initialize)) {
             init = this.initialize;
             if (!isFunction(init)) {
@@ -468,6 +502,8 @@ function Class(name, parent) {
     _.constructorOf = function(obj) {
         return obj instanceof _;
     };
+    _.events = clazz$events;
+    _.Events = {};
     if (parent) {
         //create a instance of parent without invoke constructor
         _.prototype = object(parent.prototype); //, parent.prototype || parent);
