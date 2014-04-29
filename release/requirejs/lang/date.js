@@ -18,6 +18,7 @@
  * - thisYear
  * - isLeapYear
  * - daysOfMonth
+ * - calendar
  * files:
  * - src/lang/date.js
  */
@@ -108,7 +109,7 @@
         return new Date(y, 1, 29).getMonth() == 1;
     }
     
-    function daysOfMonth(y, m) {
+    function daysOfMonth() {
         return _daysOfMonth[isLeapYear(y)][m];
     }
     
@@ -136,6 +137,7 @@
     exports['thisYear'] = thisYear;
     exports['isLeapYear'] = isLeapYear;
     exports['daysOfMonth'] = daysOfMonth;
+    exports['calendar'] = calendar;
     exports.__doc__ = "Date Utils";
     return exports;
 });

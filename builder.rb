@@ -1,5 +1,6 @@
 # encoding:utf-8
 require 'optparse'
+require 'fileutils'
 require 'pry'
 require 'pp'
 require './bin/aztec.rb'
@@ -49,6 +50,8 @@ opt_parser = OptionParser.new do |opts|
 			man.release output_dir, overwrite, spec.to_sym do |path|
 				$stdout.puts path
 			end
+			$stdout.puts "Copying Images..."
+			FileUtils.cp_r "src/ui/images/*", "#{output_dir}/ui/images"
 			$stdout.puts 'Done!'
 		end
 	end

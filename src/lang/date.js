@@ -17,7 +17,8 @@
         thisMonth,
         thisYear,
         isLeapYear,
-        daysOfMonth
+        daysOfMonth,
+        calendar
     ]
 });
 

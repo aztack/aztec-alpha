@@ -175,7 +175,7 @@ function varArg(args, context) {
             }
         }
         if (typeof otherwise == 'function') {
-            ret = otherwise.call(context, args);
+            ret = otherwise.call(context, toArray(args));
             return postprocess(ret);
         }
         return [];

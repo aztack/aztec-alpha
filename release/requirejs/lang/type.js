@@ -191,9 +191,14 @@
      * @return {Boolean}
      */
     function isArrayLike(arg) {
-        var len = arg.length;
+        var len = arg.length,
+            t = typename(arg);
     
-        if (isArray(arg)) return true;
+        if (len === 0 || arg.nodeType === 1 && len || t == exports.Array || t == exports.String) return true
+    
+        if( t == exports.Function || isWindow(arg)) {
+            return false;
+        }
     
         //any object which has a length property and do has 0->length-1 items
         //we consider it is a array-like object
@@ -320,7 +325,7 @@
     }
     // src/lang/type.oop.js
     /**
-     *  Object-Orientated Programming Support
+     * Object-Orientated Programming Support
      */
     var Classes = {}, $ObjectSpace = {}, ObjectSpace = function() {};
     
@@ -352,8 +357,6 @@
         }
         return false;
     }
-    
-    var objectToStringValue = '[object Object]';
     
     function arrayEach(ary, fn, thisValue) {
         var i = 0,
@@ -461,7 +464,7 @@
     
     function instance$set(keyPath, value, notifyObservers) {
         var typename = this.$getClass().typename(),
-            objSpace, attrs, cacheKey = typename + '@' + this.__id__,
+            attrs, cacheKey = typename + '@' + this.__id__,
             metaData = metaDataCache[cacheKey];
     
         if (typeof notifyObservers == 'undefined') {
@@ -471,7 +474,7 @@
         if (!metaData) {
             metaData = initMetaData(typename, cacheKey, this.__id__);
         }
-        observers = metaData.observers;
+        var observers = metaData.observers;
         attrs = metaData.attrs;
         tryset(attrs, keyPath, value);
         if ( !! notifyObservers && observers) {
@@ -488,6 +491,7 @@
             throw new Error('$attr only support reference type value!');
         }
         this[name] = value;
+        
         if (rw == 'r') {
             value.__readonly__ = true;
         } else if (rw == 'rw' || rw == 'wr') {
@@ -495,6 +499,7 @@
         } else if (rw == 'w') {
             value.__writeonly__ = true;
         }
+        
         this.$set(name, value, false);
         return this;
     }
@@ -521,7 +526,7 @@
         }
     
         attrs = metaData.attrs;
-        ivars = [];
+        var ivars = [];
         for (var name in this) {
             if (!this.hasOwnProperty(name)) break;
             if (attrs.hasOwnProperty(name)) ivars.push(name);
@@ -532,14 +537,13 @@
     function instance$observe_internal(keyPath, name, fn) {
         var typename = this.$getClass().typename(),
             cacheKey = typename + '@' + this.__id__,
-            metaData = metaDataCache[cacheKey],
-            index;
+            metaData = metaDataCache[cacheKey];
     
         if (!metaData) {
             metaData = initMetaData(typename, cacheKey, this.__id__);
         }
     
-        observers = metaData.observers;
+        var observers = metaData.observers;
         if (arguments.length === 0) return observers;
     
         if (typeof fn == 'function') {
@@ -670,15 +674,14 @@
                         this.base = t;
                         return r;
                     };
-                })(methods['init']);
+                })(methods.init);
             }
         }
         return this;
     }
     
     function clazz$aliases(aliases) {
-        var from, parentProto = this.parent().prototype,
-            aliase;
+        var from, to;
         for (from in aliases) {
             if (!aliases.hasOwnProperty(from)) continue;
             to = aliases[from];
@@ -703,14 +706,13 @@
     }
     
     function clazz$events() {
-        if (!arguments.length === 0) return this;
-        var Events = this.Events,
-            name, evt;
+        if (arguments.length === 0) return this;
+        var Events = this.Events;
     
         arrayEach(arguments, function(evts) {
             objectEach(evts, function(evt, name) {
                 Events[name] = evt;
-            })
+            });
         });
         return this;
     }
@@ -863,10 +865,9 @@
      * type.create('ClassName',Parent,{method:function(){});
      */
     function create(typename, parent, methodsOrFn) {
-        var init, methods, len = arguments.length,
+        var methods, len = arguments.length,
             arg0 = arguments[0],
             arg1 = arguments[1],
-            arg2 = arguments[2],
             noop = instance$noop;
     
         if (len === 0) {

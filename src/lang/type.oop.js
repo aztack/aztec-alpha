@@ -1,6 +1,6 @@
 ({
-    description: " Object-Orientated Programming Support",
-    version: '0.0.1',
+    description: "Object-Orientated Programming Support",
+    version: "0.0.1",
     namespace: $root.lang.type,
     exports: [
         Class,
@@ -41,8 +41,6 @@ function instance$is(t) {
     }
     return false;
 }
-
-var objectToStringValue = '[object Object]';
 
 function arrayEach(ary, fn, thisValue) {
     var i = 0,
@@ -150,7 +148,7 @@ function initMetaData(typename, cacheKey, id) {
 
 function instance$set(keyPath, value, notifyObservers) {
     var typename = this.$getClass().typename(),
-        objSpace, attrs, cacheKey = typename + '@' + this.__id__,
+        attrs, cacheKey = typename + '@' + this.__id__,
         metaData = metaDataCache[cacheKey];
 
     if (typeof notifyObservers == 'undefined') {
@@ -160,7 +158,7 @@ function instance$set(keyPath, value, notifyObservers) {
     if (!metaData) {
         metaData = initMetaData(typename, cacheKey, this.__id__);
     }
-    observers = metaData.observers;
+    var observers = metaData.observers;
     attrs = metaData.attrs;
     tryset(attrs, keyPath, value);
     if ( !! notifyObservers && observers) {
@@ -177,6 +175,7 @@ function instance$attr(name, value, rw) {
         throw new Error('$attr only support reference type value!');
     }
     this[name] = value;
+    
     if (rw == 'r') {
         value.__readonly__ = true;
     } else if (rw == 'rw' || rw == 'wr') {
@@ -184,6 +183,7 @@ function instance$attr(name, value, rw) {
     } else if (rw == 'w') {
         value.__writeonly__ = true;
     }
+    
     this.$set(name, value, false);
     return this;
 }
@@ -210,7 +210,7 @@ function instance$ivars() {
     }
 
     attrs = metaData.attrs;
-    ivars = [];
+    var ivars = [];
     for (var name in this) {
         if (!this.hasOwnProperty(name)) break;
         if (attrs.hasOwnProperty(name)) ivars.push(name);
@@ -221,14 +221,13 @@ function instance$ivars() {
 function instance$observe_internal(keyPath, name, fn) {
     var typename = this.$getClass().typename(),
         cacheKey = typename + '@' + this.__id__,
-        metaData = metaDataCache[cacheKey],
-        index;
+        metaData = metaDataCache[cacheKey];
 
     if (!metaData) {
         metaData = initMetaData(typename, cacheKey, this.__id__);
     }
 
-    observers = metaData.observers;
+    var observers = metaData.observers;
     if (arguments.length === 0) return observers;
 
     if (typeof fn == 'function') {
@@ -359,15 +358,14 @@ function clazz$methods(methods) {
                     this.base = t;
                     return r;
                 };
-            })(methods['init']);
+            })(methods.init);
         }
     }
     return this;
 }
 
 function clazz$aliases(aliases) {
-    var from, parentProto = this.parent().prototype,
-        aliase;
+    var from, to;
     for (from in aliases) {
         if (!aliases.hasOwnProperty(from)) continue;
         to = aliases[from];
@@ -392,14 +390,13 @@ function clazz$statics(props) {
 }
 
 function clazz$events() {
-    if (!arguments.length === 0) return this;
-    var Events = this.Events,
-        name, evt;
+    if (arguments.length === 0) return this;
+    var Events = this.Events;
 
     arrayEach(arguments, function(evts) {
         objectEach(evts, function(evt, name) {
             Events[name] = evt;
-        })
+        });
     });
     return this;
 }
@@ -552,10 +549,9 @@ Class.toString = instance$toString;
  * type.create('ClassName',Parent,{method:function(){});
  */
 function create(typename, parent, methodsOrFn) {
-    var init, methods, len = arguments.length,
+    var methods, len = arguments.length,
         arg0 = arguments[0],
         arg1 = arguments[1],
-        arg2 = arguments[2],
         noop = instance$noop;
 
     if (len === 0) {

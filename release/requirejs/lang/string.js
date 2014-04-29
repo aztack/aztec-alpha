@@ -168,10 +168,10 @@ var format = (function() {
         var t = typeof(args[fn]);
         if (t == "function") {
             return args[fn].apply(undefined, p);
-        } else if (t == "string" || t == "object") {
-            return args[fn].toString();
-        } else {
+        } else if (args[fn] == null) {
             return w;
+        } else {
+            return String(args[fn]);
         }
     }
 

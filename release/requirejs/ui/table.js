@@ -33,7 +33,8 @@
     //'use strict';
     var exports = {};
         _tpl
-            .set('$root.ui.Table.table',"<table class=\"ui-table\">\n<thead class=\"ui-thead\"></thead>\n<tbody class=\"ui-tbody-data\"></tbody>\n<tbody class=\"ui-tbody-loading\"><tr><td>Loading</td></tr></tbody>\n<tbody class=\"ui-tbody-nodata\"><tr><td>No Data</td></tr></tbody>\n<tfoot class=\"ui-tfoot\"></tfoot>\n</table>\n");
+            .set('$root.ui.Table.table',"<table class=\"ui-table\">\n<thead class=\"ui-thead\"></thead>\n<tbody class=\"ui-tbody-data\"></tbody>\n<tbody class=\"ui-tbody-loading\"><tr><td></td></tr></tbody>\n<tbody class=\"ui-tbody-nodata\"><tr><td>No Data</td></tr></tbody>\n<tfoot class=\"ui-tfoot\"><tr><td></td></tr></tfoot>\n</table>\n")
+            .set('$root.ui.Table.fixHeadTable',"<div class=\"ui-table ui-table-fixhead\">\n<div class=\"head\"><table><thead class=\"ui-thead\"></thead></table></div>\n<div class=\"body\" style=\"overflow-y:scroll;\"><table>\n<tbody class=\"ui-tbody-data\"></tbody>\n<tbody class=\"ui-tbody-loading\"><tr><td></td></tr></tbody>\n<tbody class=\"ui-tbody-nodata\"><tr><td>No Data</td></tr></tbody>\n</table></div>\n<div class=\"foot\"><table><tfoot class=\"ui-tfoot\"><tr><td></td></tr></tfoot></table></div>\n</div>\n");
         var varArg = _arguments.varArg,
       tpl = _template.id$('$root.ui.Table');
     
@@ -86,8 +87,12 @@
           .when('string', function(sel) {
             return [this.base(sel), {}];
           })
-          .when('plainObject', function(opt) {
-            return [this.base(Table.Template.Table, opt)];
+          .when('plainObject', function(opts) {
+            var template = Table.Template.Table;
+            if (opts.fixhead || false) {
+              template = Table.Template.FixHeadTable;
+            }
+            return [this.base(template), opts];
           })
           .when(function() {
             return [this.base(Table.Template.Table), {}];
@@ -102,8 +107,13 @@
         });
       },
       setHeader: function() {
-        var self = this;
         varArg(arguments, this)
+          .when('htmlFragment', function(html) {
+            this.header.html(html);
+          })
+          .when('string', function(text) {
+            this.header.text(text);
+          })
           .when('arrayLike', function(headers) {
             var ths = _enum.map(headers, function(col) {
               return _str.format('<th>{0}</th>', [col]);
@@ -115,6 +125,21 @@
           .otherwise(function(args) {
             this.setHeader.call(this, args);
           }).resolve();
+        return this;
+      },
+      setFooter: function() {
+        var td = this.footer.find('td');
+        varArg(arguments, this)
+          .when('htmlFragment', function(html){
+            td.html(html);
+          })
+          .when('string', function(text){
+            td.text(text);
+          })
+          .when('*', function(arg){
+            td.text(arg.toString());
+          })
+          .resolve();
         return this;
       },
       setData: function() {
@@ -140,19 +165,47 @@
           });
         return this;
       },
-      addRow: function() {
+      insertRow: function() {
         varArg(arguments, this)
           .when('arrayLike', function(row) {
             var data = this.$get('data');
+            row.length = this.header.find('th').length;
             data.push(row);
-            this.refresh();
+            Table_setData(this, 'text', data);
           })
           .otherwise(function(args) {
-            this.addRow.call(this, args);
+            this.insertRow.call(this, args);
           }).resolve();
         return this;
       },
-      addColumn: function() {
+      deleteRow: function() {
+        var data = this.$get('data'),
+          tb = this.body.parent()[0];
+        varArg(arguments, this)
+          .when('int', function(index) {
+            data.splice(index, 1);
+            tb.deleteRow(index);
+          })
+          .when('array', function(indexes) {
+            var deleted = 0;
+            indexes = indexes.sort();
+            _enum.each(indexes, function(index) {
+              newIndex = index - deleted;
+              data.splice(newIndex, 1);
+              tb.deleteRow(newIndex);
+              deleted += 1;
+            });
+          })
+          .when('jqueryOrElement', function(ele) {
+            $(ele).closest('tr').remove();
+          })
+          .otherwise(function(args) {
+            this.deleteRow.call(this, args);
+          })
+          .resolve();
+        return this;
+      },
+      insertColumn: function() {
         varArg(arguments, this)
           .when('arrayLike', function(col) {
             var data = this.$get('data'),
@@ -161,12 +214,19 @@
             for (; i < len; ++i) {
               data[i].push(col[i] || '');
             }
-            this.refresh();
+            Table_setData(this, 'text', data);
           })
           .otherwise(function(args) {
-            this.addColumn.call(this, args);
+            this.insertColumn.call(this, args);
           }).resolve();
         return this;
+      },
+      deleteColumn: function() {
+        return this;
+      },
+      getCell: function(row, col) {
+        var tr = this.body.find('tr').get(row);
+        return $(tr).find('td').get(col);
       },
       clearAll: function() {
         //TODO
@@ -196,20 +256,21 @@
         } else {
           Table_setData(this, 'text', data);
         }
-    
       }
     }).statics({
       Template: {
-        Table: tpl('table')
-      },
-      Events: {
-        OnSetData: 'SetData(event,data)'
+        Table: tpl('table'),
+        FixHeadTable: tpl('fixHeadTable')
       },
       Status: {
         Loading: 'loading',
         NoData: 'nodata',
         Data: 'data'
       }
+    }).events({
+      OnSetData: 'SetData(event,data).Table',
+      OnRowClicked: 'RowClicked(event,target,rowData,rowIndex).Table',
+      OnHeaderClicked: 'HeaderClicked(event,target,index,text).Table'
     });
     
     function Table_initialize(self, opts) {
@@ -223,28 +284,44 @@
       if (opts.url) {
         self.data = new DataSource(opts);
       }
+    
+      self.body.delegate('tr', 'click', function(e) {
+        var tr = $(this),
+          i = tr.data('i'),
+          data = self.$get('data'),
+          d = data[i];
+        self.trigger(Table.Events.OnRowClicked, [e.target, d, i, tr[0]]);
+      });
+    
+      self.header.delegate('th', 'click', function(e) {
+        var ths = self.header.find('th'),
+          i = ths.index(this),
+          text = $(this).text();
+        self.trigger(Table.Events.OnHeaderClicked, [e.target, i, text]);
+      })
     }
     
     var fmt_td = '<td>{0}</td>',
-      fmt_tr = '<tr>{0}</tr>';
+      fmt_tr = '<tr data-i="{1}">{0}</tr>';
     
     function td(x) {
       return _str.format(fmt_td, [x]);
     }
     
-    function tr(x) {
-      return _str.format(fmt_tr, [x]);
+    function tr(x, i) {
+      return _str.format(fmt_tr, [x, i]);
     }
     
     function array_to_table(data) {
-      return _enum.map(data, function(row) {
-        var a = tr(_enum.map(row, td).join(''));
+      return _enum.map(data, function(row, i) {
+        var a = tr(_enum.map(row, td).join(''), i);
         return a;
       }).join('');
     }
     
     function Table_setData(self, type) {
       var args = _arguments.toArray(arguments, 2),
+        opts = self.$get('options'),
         html;
       html = varArg(args, self)
         .when('array<array>', function(data) {
@@ -271,9 +348,19 @@
         })
         .invoke(function(html) {
           self.body.html(html);
+          if (self.header.parent() != self.body.parent()) {
+            Table_adjustColumnWidthAgainstHeaderWidth(self);
+          }
           self.setStatus(Table.Status.Data);
         });
       return self;
+    }
+    
+    function Table_adjustColumnWidthAgainstHeaderWidth(self) {
+      var ths = self.header.find('th');
+      self.body.find('tr:first td').each(function(i, e) {
+        $(e).width(ths[i].offsetWidth);
+      });
     }
         
     ///sigils

@@ -24,7 +24,7 @@ var _forEach = Array.prototype.forEach,
 
 ///exports
 
-var w = function(self) {
+var w = function(self, sep) {
     if (!self || self.length === 0) {
         return [];
     }
@@ -32,7 +32,7 @@ var w = function(self) {
     if(typeof self !== 'string') {
         s = '' + self;
     }
-    return s.split(/[\s\n\t]+/);
+    return s.split(sep || /[\s\n\t]+/);
 };
 
 /**

@@ -1,6 +1,6 @@
 ({
     description: "JavaScript Type System Supplement",
-    version: '0.0.1',
+    version: "0.0.1",
     namespace: $root.lang.type,
     exports: [
         isPrimitive,
@@ -179,9 +179,14 @@ function isArray(arg) {
  * @return {Boolean}
  */
 function isArrayLike(arg) {
-    var len = arg.length;
+    var len = arg.length,
+        t = typename(arg);
 
-    if (isArray(arg)) return true;
+    if (len === 0 || arg.nodeType === 1 && len || t == exports.Array || t == exports.String) return true
+
+    if( t == exports.Function || isWindow(arg)) {
+        return false;
+    }
 
     //any object which has a length property and do has 0->length-1 items
     //we consider it is a array-like object
