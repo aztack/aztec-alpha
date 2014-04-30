@@ -87,7 +87,11 @@ module Aztec
             tmp = xtemplate_node.css(XTEMPLATE_SIGIL_ATTR_SEL).inject({}) do |sigils, ele|
                 sigil = ele.attr XTEMPLATE_SIGIL_ATTR
                 begin
-                    sigils[sigil] = get_selector_from sigil, ele
+                    if sigils.has_key? sigil
+                        sigils[sigil] += "|" + get_selector_from(sigil, ele)
+                    else
+                        sigils[sigil] = get_selector_from sigil, ele
+                    end
                 rescue => e
 
                 end
@@ -97,7 +101,11 @@ module Aztec
             @sigils[sigil_class].merge! tmp
             
             if sigil = xtemplate_node.attr('sigil')
-               @sigils[sigil_class][sigil] = get_selector_from sigil, xtemplate_node
+                if @sigils[sigil_class].has_key? sigil
+                    @sigils[sigil_class][sigil] += "|" + get_selector_from(sigil, xtemplate_node)
+                else
+                    @sigils[sigil_class][sigil] = get_selector_from sigil, xtemplate_node
+                end
             end
         end
 

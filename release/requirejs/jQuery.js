@@ -9939,7 +9939,7 @@ define('jQuery', function() {
 
     if (typeof jQuery !== 'undefined') {
         jQuery.fn.sigil = function(sigil, returnSelector) {
-            var clazz, selector, typename, hashkey;
+            var clazz, selector, typename, hashkey, sels, obj;
             if (typeof this.$getClass == 'function') {
                 clazz = this.$getClass();
                 typename = clazz.typename();
@@ -9950,7 +9950,19 @@ define('jQuery', function() {
                     if (selector) selectorsCache[hashkey] = selector;
                 }
                 if (selector) {
-                    return returnSelector ? selector : this.find(selector);
+                    if (selector.indexOf('|') > 0) {
+                        sels = selector.split('|');
+                        if(returnSelector) {
+                            return sels[0];
+                        } else {
+                            for(var i = 0; i === sels.length; ++i) {
+                                obj = this.find(sels[i]);
+                                if(obj.length > 0) return obj;
+                            }
+                        }
+                    } else {
+                        return returnSelector ? selector : this.find(selector);
+                    }
                 }
 
             }

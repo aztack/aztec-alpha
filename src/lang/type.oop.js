@@ -169,21 +169,12 @@ function instance$set(keyPath, value, notifyObservers) {
     return this;
 }
 
-function instance$attr(name, value, rw) {
+function instance$attr(name, value) {
     var vtype = typeof value;
-    if (vtype == 'string' || vtype == 'number' || vtype == 'boolean' || value == null) {
+    if (vtype == 'string' || vtype == 'number' || vtype == 'boolean') {
         throw new Error('$attr only support reference type value!');
     }
-    this[name] = value;
-    
-    if (rw == 'r') {
-        value.__readonly__ = true;
-    } else if (rw == 'rw' || rw == 'wr') {
-        value.__readwrite__ = true;
-    } else if (rw == 'w') {
-        value.__writeonly__ = true;
-    }
-    
+    this[name] = value;    
     this.$set(name, value, false);
     return this;
 }

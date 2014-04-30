@@ -82,8 +82,8 @@ var Table = _type.create('$root.ui.Table', jQuery, {
 
 		return va.invoke(function(self, opts) {
 			this.$attr('options', opts);
-			this.$attr('header', this.find('thead'));
-			this.$attr('footer', this.find('tfoot'));
+			this.$attr('header', this.sigil('.head'));
+			this.$attr('footer', this.sigil('.foot'));
 			this.$attr('body', this.sigil('.data'));
 			Table_initialize(this, opts);
 		});
@@ -101,8 +101,7 @@ var Table = _type.create('$root.ui.Table', jQuery, {
 					return _str.format('<th>{0}</th>', [col]);
 				}).join('');
 				this.header.empty().append('<tr>' + ths + '</tr>');
-				this.sigil('.loading').find('td:first').attr('colspan', headers.length);
-				this.sigil('.nodata').find('td:first').attr('colspan', headers.length);
+				Table_adjustColspan(this, headers.length);
 			})
 			.otherwise(function(args) {
 				this.setHeader.call(this, args);
@@ -110,16 +109,15 @@ var Table = _type.create('$root.ui.Table', jQuery, {
 		return this;
 	},
 	setFooter: function() {
-		var td = this.footer.find('td');
 		varArg(arguments, this)
-			.when('htmlFragment', function(html){
-				td.html(html);
+			.when('htmlFragment', function(html) {
+				this.footer.html(html);
 			})
-			.when('string', function(text){
-				td.text(text);
+			.when('string', function(text) {
+				this.footer.text(text);
 			})
-			.when('*', function(arg){
-				td.text(arg.toString());
+			.when('*', function(arg) {
+				this.footer.text(arg.toString());
 			})
 			.resolve();
 		return this;
@@ -204,26 +202,64 @@ var Table = _type.create('$root.ui.Table', jQuery, {
 		return this;
 	},
 	deleteColumn: function() {
+		var self = this,
+			data = this.$get('data'),
+			delcol = function(index) {
+				var len = data.length,
+					i = 0;
+				for (; i < len; ++i) {
+					data[i].splice(index, 1);
+				}
+			};
+		varArg(arguments, this)
+			.when('int', function(index) {
+				delcol.call(self, index);
+				Table_setData(self, 'text', data);
+			})
+			.when('arrayLike', function(indexes) {
+				var c = 0;
+				_enum.each(indexes.sort(), function(index) {
+					delcol.call(self, index - c++);
+				});
+				Table_setData(self, 'text', data);
+			})
+			.otherwise(function(args) {
+				this.deleteColumn.call(this, args);
+			})
+			.resolve();
 		return this;
 	},
 	getCell: function(row, col) {
-		var tr = this.body.find('tr').get(row);
-		return $(tr).find('td').get(col);
+		var tr = this.body.find('tr').get(row),
+			cell = $(tr).find('td').get(col);
+		return $(cell);
+	},
+	getCellData: function(row, col){
+		return this.$get('data')[row][col];
 	},
 	clearAll: function() {
-		//TODO
-		this.$set('data', this.data);
+		var d = [];
+		this.$set('data', d);
+		Table_setData(this, 'text', d);
+		this.setStatus(Table.Status.NoData);
+		return this;
 	},
 	setStatus: function(status) {
+		var loadingEle = this.sigil('.loading'),
+			nodataEle = this.sigil('.nodata'),
+			dataEle = this.sigil('.data');
 		if (status == Table.Status.Loading) {
-			this.find('tbody').hide();
-			this.sigil('.loading').show();
+			loadingEle.show();
+			nodataEle.hide();
+			dataEle.hide();
 		} else if (status == Table.Status.NoData) {
-			this.find('tbody').hide();
-			this.sigil('.nodata').show();
+			loadingEle.hide();
+			nodataEle.show();
+			dataEle.hide();
 		} else if (status == Table.Status.Data) {
-			this.find('tbody').hide();
-			this.sigil('.data').show();
+			loadingEle.hide();
+			nodataEle.hide();
+			dataEle.show();
 		} else {
 			throw new Error("Don't know status:" + status + ', see Table.Status');
 		}
@@ -266,6 +302,10 @@ function Table_initialize(self, opts) {
 	if (opts.url) {
 		self.data = new DataSource(opts);
 	}
+	if (!opts.footer) {
+		self.footer.remove();
+		self.$attr('footer', $());
+	}
 
 	self.body.delegate('tr', 'click', function(e) {
 		var tr = $(this),
@@ -280,7 +320,7 @@ function Table_initialize(self, opts) {
 			i = ths.index(this),
 			text = $(this).text();
 		self.trigger(Table.Events.OnHeaderClicked, [e.target, i, text]);
-	})
+	});
 }
 
 var fmt_td = '<td>{0}</td>',
@@ -294,7 +334,7 @@ function tr(x, i) {
 	return _str.format(fmt_tr, [x, i]);
 }
 
-function array_to_table(data) {
+function array_to_table(data, opts) {
 	return _enum.map(data, function(row, i) {
 		var a = tr(_enum.map(row, td).join(''), i);
 		return a;
@@ -308,7 +348,7 @@ function Table_setData(self, type) {
 	html = varArg(args, self)
 		.when('array<array>', function(data) {
 			self.$attr('data', data);
-			return [array_to_table(data)];
+			return [array_to_table(data, opts)];
 		})
 		.when('array<object>', '*', function(data, transform) {
 			var headers = _object.keys(data[0]);
@@ -321,7 +361,7 @@ function Table_setData(self, type) {
 			}
 			this.setHeader(headers);
 			self.$attr('data', data);
-			return [array_to_table(data)];
+			return [array_to_table(data, opts)];
 		})
 		.when(DataSource.constructorOf, function(dataSrc) {
 			dataSrc.getData(function(data) {
@@ -330,8 +370,12 @@ function Table_setData(self, type) {
 		})
 		.invoke(function(html) {
 			self.body.html(html);
-			if (self.header.parent() != self.body.parent()) {
+			var p1 = self.header.parent(),
+				p2 = self.body.parent();
+			if (p1 && p2 && p1[0] != p2[0]) {
 				Table_adjustColumnWidthAgainstHeaderWidth(self);
+			} else {
+				Table_adjustColspan(this);
 			}
 			self.setStatus(Table.Status.Data);
 		});
@@ -343,4 +387,18 @@ function Table_adjustColumnWidthAgainstHeaderWidth(self) {
 	self.body.find('tr:first td').each(function(i, e) {
 		$(e).width(ths[i].offsetWidth);
 	});
+}
+
+function Table_adjustColspan(self, span) {
+	var sel = 'td:first',
+		attr = 'colspan',
+		data = self.$get('data');
+	if (!data || data.length === 0) return;
+	setTimeout(function() {
+		span = data[0].length;
+		self.sigil('.loading').find(sel).attr(attr, span);
+		self.sigil('.nodata').find(sel).attr(attr, span);
+		self.footer.find(sel).attr(attr, span);
+	}, 0);
+
 }

@@ -35,6 +35,9 @@
                 padding: 4px;
                 text-align: right;
             }
+            .ui-table .ui-tfoot {
+                text-align: right;
+            }
             .ui-table .ui-tbody-loading {
                 background: url(ui/images/loading.gif) no-repeat center center;
                 height:100%;
@@ -44,8 +47,12 @@
                 height: 500px;
             }
 
-            .ui-table .head,
-            .ui-table .foot,
+            .ui-table-fixhead .ui-tbody-loading,
+            .ui-table-fixhead .ui-tbody-nodata{
+                text-align: center;
+                vertical-align: top;
+            }
+
             .ui-table .head table,
             .ui-table .head table th,
             .ui-table .body td:first,
@@ -55,7 +62,8 @@
             }
         </style>
         <style ignore>
-            .ui-table-fixhead {
+            .ui-table {
+                margin: 0 auto;
                 width:50%;
             }
         </style>
@@ -65,43 +73,40 @@
     </head>
     <body>
         <table xtemplate="$root.ui.Table.table,delete" class="ui-table" sigil-class="Table" style="display:none">
-            <thead class="ui-thead"></thead>
+            <thead class="ui-thead" sigil=".head"></thead>
             <tbody class="ui-tbody-data" sigil=".data"></tbody>
             <tbody class="ui-tbody-loading" sigil=".loading"><tr><td></td></tr></tbody>
             <tbody class="ui-tbody-nodata" sigil=".nodata"><tr><td>No Data</td></tr></tbody>
-            <tfoot class="ui-tfoot"><tr><td></td></tr></tfoot>
+            <tfoot class="ui-tfoot" sigil=".foot"><tr><td></td></tr></tfoot>
         </table>
 
-        <div xtemplate="$root.ui.Table.fixHeadTable,delete" class="ui-table ui-table-fixhead" style="display:none">
+        <div xtemplate="$root.ui.Table.fixHeadTable,delete" class="ui-table ui-table-fixhead" sigil-class="Table" style="display:none">
             <div class="head">
-                <table><thead class="ui-thead"></thead></table>
+                <table><thead class="ui-thead" sigil=".head"></thead></table>
             </div>
-            <div class="body" style="overflow-y:scroll;">
+            <div class="body" style="overflow-y:auto">
+                <div class="ui-tbody-loading" sigil=".loading"></div> 
+                <div class="ui-tbody-nodata" sigil=".nodata">No Data</div>
                 <table>
                     <tbody class="ui-tbody-data" sigil=".data"></tbody>
-                    <tbody class="ui-tbody-loading" sigil=".loading"><tr><td></td></tr></tbody>
-                    <tbody class="ui-tbody-nodata" sigil=".nodata"><tr><td>No Data</td></tr></tbody>
                 </table>
             </div>
-            <div class="foot">
-                <table><tfoot class="ui-tfoot"><tr><td></td></tr></tfoot></table>
-            </div>
+            <div class="ui-tfoot" sigil=".foot"></div>
         </div>
     </body>
     <script>
         require(['ui/table', 'lang/arguments','lang/array','lang/string'], function(table, args, array, str) {
-            var Table = table.Table,
-                DataSource = table.DataSource;
+            Table = table.Table;
+            DataSource = table.DataSource;
 
             t = new Table({fixhead:true});
-            t.setHeader('index<input type="checkbox"/>', 'First Name', 'Last Name', 'e-mail', 'city', 'ip')
+            t.setHeader('index', 'First Name', 'Last Name', 'e-mail', 'city', 'ip')
                 .setData(new DataSource({
                     url: 'http://localhost/table?t=' + new Date().getTime(),
                     process: function(resp) {
                         return resp.list;
                     }
                 }))
-                .deleteColumn(0)
                 .on(t.$class.Events.OnHeaderClicked, function(e,target,index,text){
                     console.log(str.format('you clicked {i}th column with caption "{text}"',{
                         i: index, text: text
