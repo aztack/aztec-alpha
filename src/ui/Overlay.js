@@ -7,15 +7,18 @@
 		_arguments: $root.lang.arguments,
 		$: jQuery
 	},
-	returns: Overlay
+	exports: [
+		Mask,
+		create
+	]
 });
 
 var varArg = _arguments.varArg,
-	tpl = _tpl.id$('$root.ui.Overlay'),
+	tpl = _tpl.id$('$root.ui.overlay'),
 	maskTemplate = tpl('mask');
 
-var Overlay = _type.create('$root.ui.Overlay', jQuery, {
-	init: function(options) {
+var Mask = _type.create('$root.ui.overlay.Mask', jQuery, {
+	init: function() {
 		this.base(maskTemplate);
 	},
 	setOpacity: function() {
@@ -32,18 +35,14 @@ var Overlay = _type.create('$root.ui.Overlay', jQuery, {
 			.invoke(function(opacity) {
 				return this.css('opacity', opacity);
 			});
+	},
+	getZIndex: function() {
+		return this.css('z-index');
 	}
-}).statics({
-	Events:{}
 });
 
-Overlay.create = function() {
-	return new Overlay();
+Mask.create = function() {
+	var m = new Mask();
+	m.appendTo('body');
+	return m;
 };
-
-function create() {
-	var o = $(tpl('mask'));
-	$(document.body).prepend(o);
-	o.show();
-	return o;
-}

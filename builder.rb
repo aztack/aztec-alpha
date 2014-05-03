@@ -19,6 +19,10 @@ opt_parser = OptionParser.new do |opts|
 		man.scan
 		pp man.dependency_hash
 	end
+
+	opts.on('-w') do
+		system 'watchr builder.rb'
+	end
 	
 	opts.on('-r [output_dir,overwrite,spec]', Array ,'release code to output_dir,spec=[amd|requirejs]') do |args|		
 		output_dir, overwrite, spec = *args
@@ -51,7 +55,7 @@ opt_parser = OptionParser.new do |opts|
 				$stdout.puts path
 			end
 			$stdout.puts "Copying Images..."
-			FileUtils.cp_r "src/ui/images/*", "#{output_dir}/ui/images"
+			FileUtils.cp_r "src/ui/images", "#{output_dir}/ui/images"
 			$stdout.puts 'Done!'
 		end
 	end

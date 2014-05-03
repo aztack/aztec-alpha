@@ -5,6 +5,8 @@
  * imports:
  *   _type: $root.lang.type
  *   _fn: $root.lang.fn
+ *   _str: $root.lang.string
+ *   _arguments: $root.lang.arguments
  *   $: jQuery
  * exports:
  * - List
@@ -15,8 +17,10 @@
 ;define('ui/list',[
     'lang/type',
     'lang/fn',
+    'lang/string',
+    'lang/arguments',
     'jQuery'
-], function (_type,_fn,$){
+], function (_type,_fn,_str,_arguments,$){
     //'use strict';
     var exports = {};
     
@@ -24,16 +28,20 @@
      * A Generic List, represents a unordered list
      */
     var List = _type.create('$root.ui.List', jQuery, {
+      init: function(container) {
+        this.base(container || List.Template.DefaultContainerTag);
+      },
       add: function(arg) {
         var Item = this.itemType,
           item;
         if (Item) {
           item = _fn.applyNew(Item, arguments);
         } else {
+          item = $(List.Template.DefaultItemTag);
           if (_str.isHtmlFragment(arg) || arg instanceof jQuery) {
-            item = $(arg);
+            item.append(arg);
           } else {
-            item = $(List.defaultItemTag).text(arg);
+            item.text(arg);
           }
         }
         this.append(item);
@@ -69,9 +77,15 @@
           this.itemType = jQuery;
           //throw Error('setItemType need a function as item constructor!');
         }
+      },
+      items: function(){
+        return this.children();
       }
     }).statics({
-      defaultItemTag: '<li>'
+      Template: {
+        DefaultContainerTag: '<ul>',
+        DefaultItemTag: '<li>'
+      }
     });
     
     exports['List'] = List;

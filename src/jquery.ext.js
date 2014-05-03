@@ -46,12 +46,12 @@
                 if (selector) {
                     if (selector.indexOf('|') > 0) {
                         sels = selector.split('|');
-                        if(returnSelector) {
+                        if (returnSelector) {
                             return sels[0];
                         } else {
-                            for(var i = 0; i === sels.length; ++i) {
+                            for (var i = 0; i === sels.length; ++i) {
                                 obj = this.find(sels[i]);
-                                if(obj.length > 0) return obj;
+                                if (obj.length > 0) return obj;
                             }
                         }
                     } else {
@@ -89,10 +89,6 @@
             return dim;
         };
 
-        jQuery.fn.opts = function(path) {
-            return _object.tryget(path, this.options || {});
-        };
-
         function extractCreateOptions(ele, prefix) {
             var optionsFromAttributes = {},
                 attrs = ele.attributes,
@@ -124,11 +120,32 @@
             opts = opts || {};
 
             //TODO: aync loading
-            require('$root.' + typenamePath, function(clazz) {
+            require(typenamePath, function(clazz) {
                 var instance = !_type.isFunction(clazz.create) ?
                     null : clazz.create(extractCreateOptions(ele, opts.prefix || 'az'));
                 if (callback) callback(instance);
             });
+        };
+
+        /**
+         * add show/hide/remove events for jQuery
+         */
+        var _hide = jQuery.fn.hide;
+        jQuery.fn.hide = function() {
+            this.trigger('hide');
+            return _hide.apply(this, arguments);
+        };
+
+        var _show = jQuery.fn.show;
+        jQuery.fn.show = function() {
+            this.trigger('show');
+            return _show.apply(this, arguments);
+        };
+
+        var _remove = jQuery.fn.remove;
+        jQuery.fn.remove = function() {
+            this.trigger('remove');
+            return _remove.apply(this, arguments);
         };
     } //we have jQuery
 })();

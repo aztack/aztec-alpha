@@ -247,12 +247,25 @@
           .resolve();
         return this;
       },
+      eachCell: function(fn) {
+        var data = this.$get('data');
+        if (typeof fn == 'function') {
+          _enum.each(data, function(row, rowIndex) {
+            var stop;
+            _enum.each(row, function(cellData, colIndex) {
+              return (stop = fn.call(this, cellData, rowIndex, colIndex));
+            }, this, true);
+            return stop;
+          }, this, true);
+        }
+        return this;
+      },
       getCell: function(row, col) {
         var tr = this.body.find('tr').get(row),
           cell = $(tr).find('td').get(col);
         return $(cell);
       },
-      getCellData: function(row, col){
+      getCellData: function(row, col) {
         return this.$get('data')[row][col];
       },
       clearAll: function() {
@@ -302,6 +315,9 @@
         Loading: 'loading',
         NoData: 'nodata',
         Data: 'data'
+      },
+      Fn: {
+        ProcessTableData: array_to_table
       }
     }).events({
       OnSetData: 'SetData(event,data).Table',
@@ -352,7 +368,7 @@
       return _str.format(fmt_tr, [x, i]);
     }
     
-    function array_to_table(data, opts) {
+    function array_to_table(data) {
       return _enum.map(data, function(row, i) {
         var a = tr(_enum.map(row, td).join(''), i);
         return a;
@@ -361,12 +377,12 @@
     
     function Table_setData(self, type) {
       var args = _arguments.toArray(arguments, 2),
-        opts = self.$get('options'),
+        process = Table.Fn.ProcessTableData || array_to_table,
         html;
       html = varArg(args, self)
         .when('array<array>', function(data) {
           self.$attr('data', data);
-          return [array_to_table(data, opts)];
+          return [process(data)];
         })
         .when('array<object>', '*', function(data, transform) {
           var headers = _object.keys(data[0]);
@@ -379,7 +395,7 @@
           }
           this.setHeader(headers);
           self.$attr('data', data);
-          return [array_to_table(data, opts)];
+          return [process(data)];
         })
         .when(DataSource.constructorOf, function(dataSrc) {
           dataSrc.getData(function(data) {

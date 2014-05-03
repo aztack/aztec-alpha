@@ -3,12 +3,10 @@
         <title>Dialog</title>
         <base href="../../release/requirejs/" />
         <style>
-            .ui-generic-dialog, .ui-dialog {
+            .ui-dialog {
                 position: absolute;
                 left: 0;
                 top: 0;
-            }
-            .ui-dialog {
                 border: 1px solid #999;
                 font-size: .875em;
                 min-height: 80px;
@@ -56,52 +54,70 @@
             .ui-dialog-button:hover {
                 background-color: #eee;
             }
+
+            .ui-dialog-notice {
+                min-height: 1em;
+                min-width: 1em;
+                cursor: default;
+            }
         </style>
+        <link rel="stylesheet" href="ui/overlay.css" />
         <script src="requirejs.js"></script>
     </head>
 
     <body>
-        <div xtemplate="$root.ui.Dialog.dialog,delete" sigil-class="GenericDialog" class="ui-dialog" sigil=".dialog" style="display:none">
+        <div xtemplate="$root.ui.Dialog.dialog,delete" sigil-class="Dialog" class="ui-dialog" sigil=".dialog" style="display:none">
             <div class="ui-dialog-header" sigil=".header"></div>
             <div class="ui-dialog-body" sigil=".body"></div>
             <div class="ui-dialog-footer" sigil=".footer"></div>
         </div>
 
-        <button xtemplate="$root.ui.Dialog.alertButton,delete" data-action="ok" class="ui-dialog-button" sigil=".button" sigil-class="GenericDialog" style="display:none"></button>
+        <button xtemplate="$root.ui.Dialog.alertButton,delete" data-action="ok" class="ui-dialog-button" sigil=".button" sigil-class="Dialog" style="display:none"></button>
+
+        <div style="width:400px;height:400px;background-color: gray"></div>
 
         <script>
-            require(['ui/dialog'],function(dialog) {
-                var Dialog = dialog.Dialog,
-                    GenericDialog = dialog.GenericDialog,
-                    Alert = dialog.Alert;
+            require(['lang/type'], function(type) {
+                type.onCreate(function(e, typename) {
+                    console.log(e, typename);
+                });
+            });
+            require(['ui/dialog','ui/overlay'], function(dialog) {
+                window.dialog = dialog
+                Dialog = dialog.Dialog;
+                Alert = dialog.Alert;
+                Notice = dialog.Notice;
 
-                window.Alert = Alert;
-                window.GenericDialog = GenericDialog;
-                window.$alert = dialog.alert;
-                window.d = new Alert({title:'Hello'});
-                d.on(GenericDialog.Events.OnShowAt,function(e, x,y){
-                    console.log(x,y);
-                }).on(GenericDialog.Events.OnClose,function(e){
+                $alert = dialog.alert;
+                d = new Alert({
+                    title: 'Hello',
+                    mask: true
+                });
+                d.on(Dialog.Events.OnShowAt, function(e, x, y) {
+                    console.log(x, y);
+                }).on('hide', function(e) {
                     console.log(e);
                 });
 
                 d.setTitle('Hello World')
                     .setContent('<p><center>你好，世界</center></p>')
-                    .showAt(100,100)
-                    .setButtons('确定','取消')
-                    .on(GenericDialog.Events.OnButtonClick,function(e, index, text){
-                        if(index == 1) {
+                    .showAt(100, 100)
+                    .setButtons('确定', '取消')
+                    .on(Dialog.Events.OnButtonClick, function(e, index, text) {
+                        if (index == 1) {
                             d.setContent('Ciao, mondo')
-                                .setButtons(['Bene','Cancellare'])
-                                .showAt(100,200);
+                                .setButtons(['Bene', 'Cancellare'])
+                                .showAt(100, 200);
                         } else {
-                            d.setContent('Γεια σου, κόσμε')
-                                .setButtons('εντάξει','ακύρωση')
-                                .show();
+                            dialog.notice("Operation Successfully Performed!", 4000, {
+                                autoReposition: true,
+                                closeWhenLostFocus: true,
+                                mask: true
+                            });
                         }
                     });
 
-                $('body').click(function(){
+                $('body').click(function() {
                     d.show();
                 });
 

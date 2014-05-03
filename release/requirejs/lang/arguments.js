@@ -94,7 +94,7 @@
         } else {
             regexMatch = pred.match(/array<(.*?)>/);
             if (regexMatch) {
-                if (arg.length > 0) {
+                if (arg.length > 0 && _type.isArray(arg)) {
                     pattern = regexMatch[1];
                     if (pattern == '*') return true;
                     for (i = 0; i < arg.length; ++i) {

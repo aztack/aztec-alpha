@@ -7,7 +7,9 @@
  *   _tpl: $root.browser.template
  *   _arguments: $root.lang.arguments
  *   $: jQuery
- * returns: Overlay
+ * exports:
+ * - Mask
+ * - create
  * files:
  * - src/ui/overlay.js
  */
@@ -19,14 +21,16 @@
     'jQuery'
 ], function (_type,_tpl,_arguments,$){
     //'use strict';
+    var exports = {};
         _tpl
-            .set('$root.ui.Overlay.mask',"<div class=\"ui-overlay\"></div>\n");
+            .set('$root.ui.overlay.iframeMask',"<iframe src=\"about:blank\" class=\"ui-overlay\"></iframe>\n")
+            .set('$root.ui.overlay.mask',"<div class=\"ui-overlay\"></div>\n");
         var varArg = _arguments.varArg,
-      tpl = _tpl.id$('$root.ui.Overlay'),
+      tpl = _tpl.id$('$root.ui.overlay'),
       maskTemplate = tpl('mask');
     
-    var Overlay = _type.create('$root.ui.Overlay', jQuery, {
-      init: function(options) {
+    var Mask = _type.create('$root.ui.overlay.Mask', jQuery, {
+      init: function() {
         this.base(maskTemplate);
       },
       setOpacity: function() {
@@ -43,24 +47,23 @@
           .invoke(function(opacity) {
             return this.css('opacity', opacity);
           });
+      },
+      getZIndex: function() {
+        return this.css('z-index');
       }
-    }).statics({
-      Events:{}
     });
     
-    Overlay.create = function() {
-      return new Overlay();
+    Mask.create = function() {
+      var m = new Mask();
+      m.appendTo('body');
+      return m;
     };
-    
-    function create() {
-      var o = $(tpl('mask'));
-      $(document.body).prepend(o);
-      o.show();
-      return o;
-    }
         
     ///sigils
 
-    return Overlay;
+    exports['Mask'] = Mask;
+//     exports['create'] = create;
+    exports.__doc__ = "Overlay";
+    return exports;
 });
 //end of $root.ui.overlay

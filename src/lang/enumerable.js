@@ -15,7 +15,8 @@
         findAll,
         map,
         compact,
-        pluck
+        pluck,
+        parallel
     ]
 });
 
@@ -63,6 +64,7 @@ function _object_each(obj, fn, thisValue, stopWhenFnReturnFalse) {
 function each(obj) {
     return _type.isArrayLike(obj) ? _array_each.apply(null, arguments) : _object_each.apply(null, arguments);
 }
+
 
 /**
  * Inject
@@ -204,11 +206,11 @@ function pluck(objs, key, doNotReturn) {
     }
     if (key[0] == '&') {
         key = key.substring(1);
-        f = function(e, i) {
+        f = function(e) {
             return e[key] ? e[key].call(e) : undefined;
         };
     } else {
-        f = function(e, i) {
+        f = function(e) {
             return e[key];
         };
     }
@@ -250,4 +252,42 @@ function compact(objs) {
         });
     }
     return ret;
+}
+
+var parallelNoCallback = 'No callback provided!',
+    parallelArgumentsError = 'parallel needs at least  3 parameters!';
+
+function parallel() {
+    if (arguments.length < 3) {
+        throw new Error(parallelArgumentsError);
+    }
+    var args = _slice.call(arguments),
+        upbounds = Math.max,
+        up, lengths, i = 0,
+        j, fn, items;
+    if (args[args.length - 1] === true) {
+        upbounds = Math.min;
+        args.pop();
+    }
+    fn = args.pop();
+    if (!fn) {
+        throw new Error(parallelNoCallback);
+    }
+
+    if (args.length === 2) {
+        up = upbounds(args[0], args[1]);
+        for (; i < up; ++i) {
+            fn.call(null, a[i], b[i]);
+        }
+    } else {
+        lengths = pluck(args, 'length');
+        up = upbounds(lengths);
+        for (; i < up; ++i) {
+            items = [];
+            for (; j < args.length; ++j) {
+                items.push(args[i][j]);
+            }
+            fn.apply(null, items);
+        }
+    }
 }

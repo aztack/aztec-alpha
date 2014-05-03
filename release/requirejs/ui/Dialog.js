@@ -9,12 +9,14 @@
  *   _tpl: $root.browser.template
  *   _arguments: $root.lang.arguments
  *   _drag: $root.ui.draggable
- *   Overlay: $root.ui.overlay
+ *   _overlay: $root.ui.overlay
  *   $: jQuery
  * exports:
- * - GenericDialog
+ * - Dialog
  * - Alert
  * - alert
+ * - Notice
+ * - notice
  * files:
  * - src/ui/dialog.js
  */
@@ -28,7 +30,7 @@
     'ui/draggable',
     'ui/overlay',
     'jQuery'
-], function (_type,_array,_enum,_tpl,_arguments,_drag,Overlay,$){
+], function (_type,_array,_enum,_tpl,_arguments,_drag,_overlay,$){
     //'use strict';
     var exports = {};
         _tpl
@@ -44,17 +46,16 @@
      *     can not be dragged
      *     extends this class to implements your own dialog
      */
-    var GenericDialog = _type.create('$root.ui.GenericDialog', jQuery, {
+    var Dialog = _type.create('$root.ui.dialog.Dialog', jQuery, {
         init: function(options) {
             //if(!options) return this;
             this.options = options || {};
-            this.base(GenericDialog.Template.DefaultTemplate || options.template);
+            this.base(Dialog.Template.DefaultTemplate || options.template);
             this.$attr('header', this.sigil('.header'));
             this.$attr('body', this.sigil('.body'));
             this.$attr('footer', this.sigil('.footer'));
             this.$attr('buttons', this.sigil('.button'));
-            this.mask = null;
-            GenericDialog_initialize(this, this.options);
+            Dialog_initialize(this, this.options);
         },
         showAt: function() {
             var parent = this.parent();
@@ -66,28 +67,10 @@
                     return [parent, this.css('left'), this.css('top')];
                 })
                 .same(['string'], ['int', 'string'], ['string', 'int'], function(xpos, ypos) {
-                    var x = xpos,
-                        w,
-                        y = ypos,
-                        h,
-                        dim = this.dimension(),
-                        Center = GenericDialog.Position.Center,
-                        GoldenRation = GenericDialog.Position.GoldenRation;
-                    if (typeof ypos == 'undefined') {
-                        ypos = Center;
-                    }
-                    if (xpos == Center || xpos == GoldenRation) {
-                        w = parent.width();
-                        x = w / 2 - dim.width / 2;
-                    }
-                    if (ypos == Center || ypos == GoldenRation) {
-                        h = parent.height();
-                        y = h / 2 - dim.height / 2;
-                    }
-                    if (xpos == GoldenRation || ypos == GoldenRation) {
-                        y = y * 0.618;
-                    }
-                    return [parent, x, y];
+                    this.data('showAt', [xpos, ypos]);
+                    var coord = Dialog_getShowPosition(this, xpos, ypos);
+                    coord.unshift(parent);
+                    return coord;
                 })
                 .when('int', 'int', function(x, y) {
                     return [parent, x, y];
@@ -99,7 +82,7 @@
                     return [parent, x || 0, y || 0];
                 })
                 .invoke(function(parent, x, y) {
-                    this.trigger(GenericDialog.Events.OnShowAt, [x, y]);
+                    this.trigger(Dialog.Events.OnShowAt, [x, y]);
                     parent = this.parent();
                     if (parent.length === 0) {
                         parent = document.body;
@@ -111,30 +94,31 @@
                 });
             return this;
         },
-        close: function() {
-            this.trigger(GenericDialog.Events.OnClose, [this]);
-            if (this.mask) {
-                this.mask.hide();
-            }
-            return this.hide();
+        remove: function() {
+            var mask = this.$get('mask');
+            if (mask) mask.remove();
+            this.base();
+            return this;
         },
         setHeader: function(arg) {
-            return GenericDialog_setPart(this, 'header', arg);
+            return Dialog_setPart(this, 'header', arg);
         },
         setBody: function(arg) {
-            return GenericDialog_setPart(this, 'body', arg);
+            return Dialog_setPart(this, 'body', arg);
         },
         setFooter: function(arg) {
-            return GenericDialog_setPart(this, 'footer', arg);
+            return Dialog_setPart(this, 'footer', arg);
         },
         bringToFront: function() {
-            return GenericDialog_setLayerPosition(this, 'front');
+            return Dialog_setLayerPosition(this, 'front');
         },
         sendToBack: function() {
-            return GenericDialog_setLayerPosition(this, 'back');
+            return Dialog_setLayerPosition(this, 'back');
         },
         setDraggable: function(isDraggable) {
             var draggable = _drag.isDraggable(this.header);
+            if (draggable == null) return this;
+    
             if (typeof isDraggable == 'undefined') {
                 isDraggable = true;
             }
@@ -156,7 +140,7 @@
                     captions = captions || args;
                     footer.empty();
                     _array.forEach(captions, function(arg) {
-                        var btn = GenericDialog_createButton(arg);
+                        var btn = Dialog_createButton(arg);
                         btn.appendTo(footer);
                     });
                 });
@@ -164,7 +148,8 @@
         }
     }).aliases({
         setTitle: 'setHeader',
-        setContent: 'setBody'
+        setContent: 'setBody',
+        close: 'remove'
     }).statics({
         Template: {
             DefaultTemplate: tpl('dialog'),
@@ -180,15 +165,15 @@
         }
     }).events({
         OnShowAt: 'ShowAt(event,x,y).Dialog',
-        OnClose: 'Close(event).Dialog',
+        OnRemove: 'remove',
         OnButtonClick: 'ButtonClick(event,buttonIndex,buttonCaption).Dialog'
     });
     
-    function GenericDialog_createButton() {
+    function Dialog_createButton() {
         var button;
         varArg(arguments)
             .when('plainObject', function(config) {
-                button = $(config.template || GenericDialog.Template.DefaultButton);
+                button = $(config.template || Dialog.Template.DefaultButton);
                 button.text(config.caption);
                 if (config.css) button.css(config.css);
                 _enum.each(config.data, function(k, v) {
@@ -196,14 +181,14 @@
                 });
             })
             .when('*', function(cap) {
-                button = $(GenericDialog.Template.DefaultButton);
+                button = $(Dialog.Template.DefaultButton);
                 button.text(String(cap));
             })
             .resolve();
         return button;
     }
     
-    function GenericDialog_initialize(self, opts) {
+    function Dialog_initialize(self, opts) {
         self.addClass('ui-generic-dialog');
         _drag.draggable(self.header, self);
     
@@ -213,7 +198,7 @@
     
         //register OnClose event handler if provided in create options
         if (_type.isFunction(self.options.onClose)) {
-            self.on(GenericDialog.Events.OnClose, self.options.onClose);
+            self.on(Dialog.Events.OnClose, self.options.onClose);
         }
     
         //bring dialog to front when active
@@ -235,23 +220,65 @@
                 caption = button.text(),
                 action = button.data('action');
     
-            self.trigger(GenericDialog.Events.OnButtonClick, [index, caption]);
+            self.trigger(Dialog.Events.OnButtonClick, [index, caption]);
             if (action == 'ok' || action == 'cancel') {
                 self.close();
             }
         });
     
         if ( !! opts.mask) {
-            self.$attr('mask', new Overlay());
-            var mask = self.mask;
-            mask.appendTo('body');
-            mask.click(function() {
+            self.$attr('mask', _overlay.Mask.create());
+            self.mask.appendTo('body').click(function() {
                 self.close();
+            }).before(self);
+        }
+    
+        if ( !! opts.autoReposition) {
+            $(window).on('resize', function() {
+                var pos = self.data('showAt'),
+                    coord = Dialog_getShowPosition(self, pos[0], pos[1]);
+                self.css({
+                    left: coord[0],
+                    top: coord[1]
+                });
             });
+        }
+        if ( !! opts.closeWhenLostFocus) {
+            setTimeout(function() {
+                $(document).click(function(e) {
+                    if (!self.find(e.target).length) self.remove();
+                });
+            }, 0);
         }
     }
     
-    function GenericDialog_setPart(self, whichPart) {
+    function Dialog_getShowPosition(self, xpos, ypos) {
+        var x = xpos,
+            w,
+            y = ypos,
+            h,
+            dim = self.dimension(),
+            Center = Dialog.Position.Center,
+            GoldenRation = Dialog.Position.GoldenRation,
+            parent = self.parent();
+        if (typeof ypos == 'undefined') {
+            ypos = Center;
+        }
+        if (xpos == Center || xpos == GoldenRation) {
+            w = parent.width();
+            x = w / 2 - dim.width / 2;
+        }
+        if (ypos == Center || ypos == GoldenRation) {
+            h = parent.height();
+            y = h / 2 - dim.height / 2;
+        }
+        if (xpos == GoldenRation || ypos == GoldenRation) {
+            y = y * 0.618;
+        }
+        return [x, y];
+    }
+    
+    function Dialog_setPart(self, whichPart) {
         var part = self[whichPart];
         if (!part || part.length === 0) {
             return self;
@@ -271,7 +298,7 @@
         return self;
     }
     
-    function GenericDialog_setLayerPosition(self, frontOrBack) {
+    function Dialog_setLayerPosition(self, frontOrBack) {
         var sel = self.sigil('.dialog', true),
             parent = self.parent(),
             dialogs = parent.find(sel);
@@ -287,27 +314,24 @@
     /**
      * Alert Dialog
      */
-    var Alert = _type.create('$root.ui.Alert', GenericDialog, {
+    var Alert = Dialog.extend('$root.ui.dialog.Alert', {
         init: function(options) {
             var opts = this.options = options || {};
             this.base.apply(this, arguments);
             this.header.text(opts.title || '');
-            this.addClass('ui-alert');
             Alert_initialize(this, opts);
         }
-    }).aliases({
-        setTitle: 'setHeader',
-        setContent: 'setBody'
     });
     
     function Alert_initialize(self, opts) {
         //if no buttons specified, create a default 'OK' button
         var button;
         if (!opts.buttons && self.buttons.length === 0) {
-            self.setButtons(GenericDialog.Text.OK);
+            self.setButtons(Dialog.Text.OK);
         } else {
             self.setButtons(opts.buttons);
         }
+        self.addClass('ui-dialog-alert');
     }
     
     
@@ -351,23 +375,74 @@
             alertSingleton = null;
         }
         alertSingleton = Alert.create.apply(null, arguments);
-        alertSingleton.showAt(GenericDialog.Position.GoldenRation).on(GenericDialog.Events.OnButtonClick, function() {
+        alertSingleton.showAt(Dialog.Position.GoldenRation).on(Dialog.Events.OnButtonClick, function() {
             alertSingleton.close();
         }).setDraggable(false);
         return alertSingleton;
     }
+    
+    /**
+     * Notice
+     */
+    var Notice = Dialog.extend('$root.ui.dialog.Notice', {
+        init: function(options) {
+            this.$attr('options', options || {});
+            this.base.apply(this, arguments);
+            this.header.remove();
+            this.footer.remove();
+            this.addClass('ui-dialog-notice');
+            Notice_initialize(this, options);
+        },
+        showAt: function() {
+            var self = this,
+                opts = this.$get('options');
+            this.base.apply(this, arguments);
+            setTimeout(function() {
+                self.remove();
+            }, opts.duration || 2000);
+            return this;
+        }
+    }).events({
+    
+    }).statics({
+        Values: {
+    
+        },
+        DefaultOptions: {
+            Type: 'info'
+        }
+    });
+    
+    function Notice_initialize(self, opts) {
+        self.body.click(function() {
+            self.remove();
+        });
+    }
+    
+    function notice(content, duration, opts) {
+        var n;
+        opts = opts || {};
+        opts.duration = duration;
+        opts.content = content;
+        n = new Notice(opts);
+        n.showAt(Dialog.Position.GoldenRation)
+            .appendTo('body');
+        return notice;
+    }
         
     ///sigils
-    if (!GenericDialog.Sigils) GenericDialog.Sigils = {};
-    GenericDialog.Sigils[".header"] = ".ui-dialog-header";
-    GenericDialog.Sigils[".body"] = ".ui-dialog-body";
-    GenericDialog.Sigils[".footer"] = ".ui-dialog-footer";
-    GenericDialog.Sigils[".dialog"] = ".ui-dialog";
-    GenericDialog.Sigils[".button"] = ".ui-dialog-button";
+    if (!Dialog.Sigils) Dialog.Sigils = {};
+    Dialog.Sigils[".header"] = ".ui-dialog-header";
+    Dialog.Sigils[".body"] = ".ui-dialog-body";
+    Dialog.Sigils[".footer"] = ".ui-dialog-footer";
+    Dialog.Sigils[".dialog"] = ".ui-dialog";
+    Dialog.Sigils[".button"] = ".ui-dialog-button";
 
-    exports['GenericDialog'] = GenericDialog;
+    exports['Dialog'] = Dialog;
     exports['Alert'] = Alert;
     exports['alert'] = alert;
+    exports['Notice'] = Notice;
+    exports['notice'] = notice;
     exports.__doc__ = "Dialog";
     return exports;
 });

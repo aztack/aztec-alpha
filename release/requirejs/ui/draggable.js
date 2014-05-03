@@ -45,7 +45,7 @@
      *     A Draggable has a `handle` with which user click and drag the `dragged`.
      *     After user release mouse key, the Draggable only responsed to `mousedown`
      */
-    var Draggable = _type.create('Draggable', {
+    var Draggable = _type.create('$root.ui.Draggable', {
         init: function(handle, dragged, opts) {
             var self = this;
             this.$ = $(handle);
@@ -112,7 +112,7 @@
         var dx = $parent.scrollLeft(),
             dy = $parent.scrollTop(),
             p = $parent;
-        if (_type.isFunction(self.options.onMouseMove)) {
+        if (_type.isFunction(onMoveFn)) {
             $parent.on(mouseMoveEvent, function(e) {
                 offset = {
                     left: e.clientX - mouseDownPosition.x + dx,
@@ -187,7 +187,7 @@
                     o = $.extend(true, arg3, defaultOptions);
                 return [h, d, o];
             })
-            .when('*', '*', '*', function(arg1, arg2, arg3) {
+            .when('*', '*', '*', function(arg1, arg2) {
                 var h = $(arg1),
                     d = $(arg2);
                 return [h, d, defaultOptions];
@@ -197,7 +197,7 @@
                     d = $(arg2);
                 return [h, d, defaultOptions];
             })
-            .when('*', function(arg1) {
+            .when('*', function() {
                 var h = $(handle);
                 return [h, h, undefined];
             })

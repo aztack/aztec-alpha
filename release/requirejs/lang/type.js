@@ -37,6 +37,7 @@
  * - Classes
  * - ObjectSpace
  * - create
+ * - onCreate
  * files:
  * - src/lang/type.js
  * - src/lang/type.oop.js
@@ -439,15 +440,39 @@
         return ret;
     }
     
-    function instance$methods(includeMethodOnThisObject) {
-        var ret = [],
-            proto = this.$getClass().prototype;
-        ret = getMethodsOn(proto);
-        if (includeMethodOnThisObject === true) {
-            ret = getMethodsOn(this).concat(ret);
-        }
-        return ret;
+    function array_grep(pattern) {
+        var result = [];
+        arrayEach(this, function(name) {
+            if (name.match(pattern)) {
+                result.push(name);
+            }
+        });
+        return result;
+    }
     
+    function instance$methods(depth, thisIsAClass) {
+        var ret = [],
+            proto = true,
+            clazz = true;
+        if (thisIsAClass) {
+            clazz = this;
+            proto = this.prototype;
+        } else {
+            clazz = this.$getClass();
+            proto = clazz.prototype;
+        }
+    
+        if (typeof depth == 'undefined') {
+            depth = 0;
+        }
+        while (depth >= 0 && clazz && proto) {
+            ret = ret.concat(getMethodsOn(proto));
+            clazz = clazz.parent ? clazz.parent() : null;
+            proto = clazz ? clazz.prototype : null;
+            depth--;
+        }
+        ret.grep = array_grep;
+        return ret;
     }
     
     var metaDataCache = {};
@@ -490,7 +515,7 @@
         if (vtype == 'string' || vtype == 'number' || vtype == 'boolean') {
             throw new Error('$attr only support reference type value!');
         }
-        this[name] = value;    
+        this[name] = value;
         this.$set(name, value, false);
         return this;
     }
@@ -594,7 +619,7 @@
      */
     function clazz$methods(methods) {
         if (!methods) {
-            return instance$methods.call(this);
+            return instance$methods.call(this, false, true);
         }
         var name, parentProto = this.parent().prototype,
             m;
@@ -681,31 +706,61 @@
         return this;
     }
     
-    function clazz$statics(props) {
-        var name, methods;
-        if (isFunction(props)) {
-            methods = props();
-        } else {
-            methods = props || {};
-        }
+    var reStaticNames = /^[A-Z]|^[$_]+[A-Z]+/,
+        staticNameErrorMsg = 'Statics name must begin with upper case letter or one or more "$" or "_" followed by upper case letter';
     
-        for (name in methods) {
-            if (!methods.hasOwnProperty(name)) continue;
-            this[name] = methods[name];
+    function clazz$statics(arg) {
+        var name, props = arg;
+        if (typeof arg == 'undefined') {
+            props = {};
+            for (name in this) {
+                if (this.hasOwnProperty(name) && name.match(reStaticNames)) {
+                    props[name] = this[name];
+                }
+            }
+            return props;
+        } else {
+            if (isFunction(arg)) {
+                props = arg();
+            }
+    
+            for (name in props) {
+                if (!props.hasOwnProperty(name)) continue;
+                if (!reStaticNames.test(name)) {
+                    throw new Error(staticNameErrorMsg);
+                }
+                this[name] = props[name];
+            }
         }
         return this;
     }
     
-    function clazz$events() {
-        if (arguments.length === 0) return this;
+    function clazz$events(events) {
+        if (arguments.length === 0) return this.Events;
         var Events = this.Events;
     
-        arrayEach(arguments, function(evts) {
-            objectEach(evts, function(evt, name) {
-                Events[name] = evt;
-            });
+        objectEach(events, function(evt, name) {
+            Events[name] = evt;
         });
         return this;
+    }
+    
+    function clazz$copyParentsEvents() {
+        var events = true,
+            clazz = this,
+            Events = this.Events;
+        if (!Events) return;
+    
+        clazz = clazz.parent ? clazz.parent() : null;
+        events = clazz ? clazz.Events : null;
+    
+        while (events) {
+            objectEach(events, function(evt, name) {
+                Events[name] = evt;
+            });
+            clazz = clazz.parent ? clazz.parent() : null;
+            events = clazz ? clazz.Events : null;
+        }
     }
     
     function clazz$extend() {
@@ -721,9 +776,9 @@
             return new Class(name, this);
         } else if (len === 1) {
             name = this.typename ? this.typename() + '$' : '';
-            return new Class('', this).$methods(arguments[1]);
+            return new Class('', this).methods(arguments[1]);
         }
-        return new Class(name, this).$methods(methods);
+        return new Class(name, this).methods(methods);
     }
     
     function clazz$readonly(name, initValue, force) {
@@ -781,7 +836,7 @@
                 if (!isFunction(init)) {
                     init = _.prototype.init;
                 }
-                ret = init.apply(this, arguments);//step into ..
+                ret = init.apply(this, arguments); //step into ..
             } else if (isFunction(_.prototype.initialize)) {
                 init = this.initialize;
                 if (!isFunction(init)) {
@@ -808,6 +863,7 @@
         };
         _.events = clazz$events;
         _.Events = {};
+        clazz$copyParentsEvents.call(_);
         if (parent) {
             //create a instance of parent without invoke constructor
             _.prototype = object(parent.prototype); //, parent.prototype || parent);
@@ -859,40 +915,55 @@
         var methods, len = arguments.length,
             arg0 = arguments[0],
             arg1 = arguments[1],
-            noop = instance$noop;
+            noop = instance$noop,
+            ret;
     
         if (len === 0) {
             //type.create();
-            return new Class('', Object, noop);
+            ret = new Class('', Object, noop);
         } else if (len === 1) {
             if (isString(arg0)) {
                 //type.create('ClassName');
-                return new Class(typename, Object, noop);
+                ret = new Class(typename, Object, noop);
             } else if (isFunction(arg0)) {
                 //type.create(Parent);
-                return new Class('', arg0, noop);
+                ret = new Class('', arg0, noop);
             } else if (isPlainObject(arg0)) {
                 //type.create({method:function(){}});
-                return new Class('', Object, noop).methods(arg0);
+                ret = new Class('', Object, noop).methods(arg0);
             }
         } else if (len === 2) {
             if (isString(arg0) && isFunction(arg1)) {
                 //type.create('ClassName',Parent);
-                return new Class(arg0, arg1, noop);
+                ret = new Class(arg0, arg1, noop);
             } else if (isString(arg0) && isPlainObject(arg1)) {
                 //type.create('ClassName',{method:function(){}})
-                return new Class(arg0, Object, noop).methods(arg1);
+                ret = new Class(arg0, Object, noop).methods(arg1);
             } else if (isFunction(arg0) && isPlainObject(arg1)) {
                 //type.create(Parent,{method:function(){}})
-                return new Class('', arg0).methods(arg1);
+                ret = new Class('', arg0).methods(arg1);
             }
         } else {
             //type.create('ClassName',Parent,{method:function(){});
             typename = isString(typename) ? typename : '';
             parent = isFunction(parent) ? parent : Object;
             methods = (isFunction(methodsOrFn) ? methodsOrFn() : methodsOrFn) || {};
-            return new Class(typename, parent).methods(methods);
+            ret = new Class(typename, parent).methods(methods);
         }
+        dispatchEvent('create', typename, ret);
+        return ret;
+    }
+    
+    var callbacks = [];
+    
+    function onCreate(callback) {
+        callbacks.push(callback);
+    }
+    
+    function dispatchEvent(eventName, arg) {
+        arrayEach(callbacks, function(cbk) {
+            cbk(eventName, arg);
+        });
     }
     
     exports['isPrimitive'] = isPrimitive;
@@ -928,6 +999,7 @@
     exports['Classes'] = Classes;
     exports['ObjectSpace'] = ObjectSpace;
     exports['create'] = create;
+    exports['onCreate'] = onCreate;
     exports.__doc__ = "JavaScript Type System Supplement";
     return exports;
 });

@@ -74,7 +74,7 @@
                 })
                 .when('int', function(i) {
                     return all.splice(i, 1);
-                }).args();
+                }).resolve();
         },
         indexOf: function() {
             var all = this.tags(),
