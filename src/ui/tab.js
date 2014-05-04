@@ -132,7 +132,7 @@ function Tab_initialize(self, opts) {
 	var tabs = self.$get('tabs');
 	if (opts.tabs && opts.tabs.length) {
 		_enum.each(opts.tabs, function(caption, i) {
-			item = tabs.add('<a href="javascript:;">' + caption + '</a>');
+			var item = tabs.add('<a href="javascript:;">' + caption + '</a>');
 			if (i === 0) item.addClass(selectedstr);
 		});
 	}

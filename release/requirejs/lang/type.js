@@ -950,7 +950,9 @@
             methods = (isFunction(methodsOrFn) ? methodsOrFn() : methodsOrFn) || {};
             ret = new Class(typename, parent).methods(methods);
         }
-        dispatchEvent('create', typename, ret);
+        if (callbacks.length > 0) {
+            dispatchEvent('create', typename, ret);
+        }
         return ret;
     }
     

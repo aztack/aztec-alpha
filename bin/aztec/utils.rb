@@ -32,11 +32,9 @@ module Aztec
                     (@property_nodes.size == 1 && @property_nodes.last.name == 'imports')
                     %Q|"#{o.name}": "#{o.value.to_ecma}"|
                 else
-                    @indent += 1
                     @property_nodes.push o
                     code = %Q|"#{o.name}": #{o.value.accept(self)}|
                     @property_nodes.pop
-                    @indent -= 1
                     code
                 end
             end

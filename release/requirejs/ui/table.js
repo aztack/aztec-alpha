@@ -78,6 +78,9 @@
       }
     });
     
+    /**
+     * Table
+     */
     var Table = _type.create('$root.ui.Table', jQuery, {
       init: function() {
         var va = varArg(arguments, this)
