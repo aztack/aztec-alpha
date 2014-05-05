@@ -1,0 +1,69 @@
+<html>
+    <head>
+        <title>SpinEdit</title>
+        <base href="../../release/requirejs/" />
+        <!--[if IE]><script type="text/javascript">
+            // Fix for IE ignoring relative base tags.
+            (function() {
+                var baseTag = document.getElementsByTagName('base')[0];
+                baseTag.href = baseTag.href;
+            })();
+        </script><![endif]-->
+        <style>
+            .ui-spinedit {
+                border: 1px solid #ccc;
+                background: #fff;
+                display: inline-block;
+            }
+            .ui-spinedit .button {
+                cursor: pointer;
+                list-style-type: none;
+                -webkit-user-select: none;
+            }
+            .ui-spinedit .buttons {
+                margin:0;
+                padding:0;
+            }
+        </style>
+        <style ignore>
+
+        </style>
+        <script src="requirejs.js"></script>
+        <link type="text/css" href="aztec.css">
+        <link type="text/css" href="ui/spinedit.css">
+    </head>
+    <body>
+        <div xtemplate="$root.ui.SpinEdit.SpinEdit,delete" class="ui-spinedit" sigil-class="SpinEdit" style="display:none">
+            <ul class="buttons">
+                <li class="button" sigil=".button">↑</li>
+                <li class="button">↓</li>
+            </ul>
+        </div>
+    </body>
+    <script>
+        require(['ui/spinEdit','ui/draggable'], function(spin, drag) {
+            window.SpinEdit = spin.SpinEdit;
+            function inspect() {
+                console.log(arguments);
+            }
+            var week = ['Sun','Mon','Tue','Wed','Thur','Fri','Sat'];
+            s = new SpinEdit({
+                maxValue: week.length - 1,
+                value: 3,
+                cycle: true,
+                onSetVal:function(i) {
+                    return week[i];
+                }
+            });
+            s.on(SpinEdit.Events.OnChanged, inspect).appendTo('body');
+            
+            new SpinEdit({
+                value: 2,
+                maxValue: 10,
+                minValue: -3,
+                cycle: true
+            }).on(SpinEdit.Events.OnChanged, inspect).appendTo('body');
+        });
+
+    </script>
+</html>

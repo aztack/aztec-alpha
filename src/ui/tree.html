@@ -1,0 +1,25 @@
+<html>
+    <head>
+        <title>Tree</title>
+        <base href="../../release/requirejs/" />
+        <style>
+            .ui-tree {
+            }
+        </style>
+        <script src="requirejs.js"></script>
+    </head>
+
+    <body>
+        <div xtemplate="$root.ui.Tree.root,delete" class="ui-tree" sigil=".root" sigil-class="Tree" style="display:none">
+        </div>
+
+        <script>
+            require(['ui/tree'], function(tree) {
+                Tree = tree.Tree;
+                t = new Tree();
+                t.setData([]);
+                t.appendTo('body');
+            });
+        </script>
+    </body>
+</html>

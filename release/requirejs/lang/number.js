@@ -8,6 +8,7 @@
  * - random
  * - max
  * - min
+ * - confined
  * files:
  * - src/lang/number.js
  */
@@ -89,9 +90,40 @@
         }
     }
     
+    /**
+     * confined
+     * input number will be confined between [min, max]
+     * @param  {int} self, input
+     * @param  {int} min
+     * @param  {int}} max
+     * @param  {bool} cycle, e.g. if input equal max + 2, output will be min+1 rather than max
+     * @return {int}
+     */
+    function confined(self, mi, ma, cycle) {
+        var dis, min = Math.min(mi, ma),
+            max = Math.max(mi, ma);
+        if (isNaN(self) || !isFinite(self) || min == max) return min;
+        if (cycle) {
+            if (self >= min && self <= max) return self;
+            dis = Math.abs(max - min) + 1;
+            if (self < min) {
+                return max - (Math.abs(min - self - 1) % dis);
+            } else /* (self > max) */ {
+                return min + (Math.abs(self - max - 1) % dis);
+            }
+        } else {
+            if (self >= max) {
+                return max;
+            } else if (self <= min) {
+                return min;
+            } else return self;
+        }
+    }
+    
     exports['random'] = random;
     exports['max'] = max;
     exports['min'] = min;
+    exports['confined'] = confined;
     exports.__doc__ = "Number Utils";
     return exports;
 });
