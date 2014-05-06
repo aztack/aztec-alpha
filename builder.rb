@@ -72,13 +72,17 @@ opt_parser.parse! ARGV
 if $0 =~/watchr/
 	man.scan
 	$stdout.puts "Start watching..."
+	count = Hash.new(0)
+	total = 0
 	watch 'src/.*\.(js|html)' do |path|
 		path = path[0]
 		path.sub!('.html','.js')
-		$stdout.write "#{path} saved."
+		$stdout.write "#{Time.now} #{path} saved."
 		begin
+			c = count[path] += 1
+			total += 1
 			man.release_single_js('./release/requirejs', path) do |namespace|
-				$stdout.write "Re-generate..."
+				$stdout.write " Re-generating... #{c}/#{total}"
 			end
 			$stdout.puts " Done!"
 		rescue => e

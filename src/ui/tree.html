@@ -4,21 +4,114 @@
         <base href="../../release/requirejs/" />
         <style>
             .ui-tree {
+                overflow:auto;
+            }
+            .ui-tree ul{
+                margin: 0;
+                padding: 0;
+                list-style-type: none;
+            }
+            .ui-tree a,.ui-tree a:active {
+                color: black;
+                text-decoration: none;
+            }
+            .ui-tree .root {
+                background: none;
+            }
+            .ui-tree li {
+                cursor: pointer;
+                background-image: url(ui/images/tree.png);
+                background-position: -292px -4px;
+                background-repeat: repeat-y;
+            }
+            .ui-tree li ul {
+                display: none;
+            }
+            .ui-tree .open ul {
+                display: inherit;
+            }
+            .ui-tree .icon {
+                width: 20px;
+                height: 20px;
+                display: inline-block;
+                background-image: url(ui/images/tree.png);
+                cursor: pointer;
+            }
+            .ui-tree .theme {
+                background-position: -260px -4px;
+            }
+            .ui-tree .checkbox {
+                background-position: -166px -4px;
+            }
+            .ui-tree .checked .checkbox {
+                background-position: -229px -4px;
+            }
+
+            .ui-tree .expander {
+                background-position: -68px -4px;
+            }
+            .ui-tree .last .expander {
+                background-position: -68px -4px;
+            }
+            .ui-tree .more .close-expander {
+                background-position: -100px -4px;    
+            }
+            .ui-tree .more .open-expander {
+                background-position: -133px -72px;
+            }
+            .ui-tree .last {
+                background: none;
+            }
+            .ui-tree .anchor {
+                line-height: 20px;
+            }
+            .ui-tree .text {
+                margin-left: 4px;
+            }
+            .ui-tree.nocheckbox .checkbox{
+                display:none;
             }
         </style>
         <script src="requirejs.js"></script>
     </head>
-
     <body>
-        <div xtemplate="$root.ui.Tree.root,delete" class="ui-tree" sigil=".root" sigil-class="Tree" style="display:none">
+        <div id="tree" style="width:300px;height:400px;">
+            <span class="title">测试数据</span>
         </div>
-
+        <script type="text/xtemplate" xtemplate="$root.ui.Tree.node,delete" sigil-class="Tree">
+        <li>
+            <i class="icon expander" sigil=".expander"></i>
+            <a class="anchor" href="javascript:;">
+                <i class="icon checkbox" sigil=".checkbox"></i>
+                <i class="icon theme" sigil=".icon"></i>
+                <span class="text" sigil=".text"></span>
+            </a>
+        </li>
+        </script>
         <script>
-            require(['ui/tree'], function(tree) {
+            require(['lang/array', 'ui/tree','ui/draggable'], function(array, tree, drag) {
+                function inspect() {
+                    console.log(arguments);
+                }
                 Tree = tree.Tree;
-                t = new Tree();
-                t.setData([]);
+                t = new Tree("#tree", {
+                    noCheckbox: true,
+                    indent: 10
+                });
+                t.setData([
+                    {text: 'Root node 2', expand: true, items:[{
+                        text: 'Child node 1',
+                        checked: true,
+                        expand: true,
+                        items: ['Child node 2', {text:'Child node 3',items:[{text:'Grand Child node 1', check: true,checkbox:true}]}]
+                    }]},
+                    1,2,3,{text:'xx',items:[11,22,33]},5,6,7
+                ]);
                 t.appendTo('body');
+                t.on(Tree.Events.OnNodeSelected, function(e, text, node) {
+                    console.log(text, node);
+                });
+                drag.draggable(t.find('.title'),t);
             });
         </script>
     </body>

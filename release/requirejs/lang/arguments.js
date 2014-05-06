@@ -8,6 +8,7 @@
  *   _color: $root.lang.color
  * exports:
  * - toArray
+ * - asArray
  * - varArg
  * - registerPlugin
  * files:
@@ -43,6 +44,7 @@
             "bool": "boolean",
             "object": "object",
             "plainObject": _type.isPlainObject,
+            "{*}": _type.isPlainObject,
             "primitive": _type.isPrimitive,
             "emptyObject": _type.isEmptyObject,
             "{}": _type.isEmptyObject,
@@ -61,6 +63,15 @@
      */
     function toArray(args, n) {
         return _slice.call(args, n || 0);
+    }
+    
+    /**
+     * asArray
+     * return arguments as an array
+     * @return {Array}
+     */
+    function asArray() {
+        return _slice.call(arguments);
     }
     
     function registerPlugin(name, pred) {
@@ -311,6 +322,7 @@
     }
     
     exports['toArray'] = toArray;
+    exports['asArray'] = asArray;
     exports['varArg'] = varArg;
     exports['registerPlugin'] = registerPlugin;
     exports.__doc__ = "Arguments Utils";

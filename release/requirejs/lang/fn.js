@@ -79,6 +79,10 @@
         return b;
     }
     
+    function return2nd$(a, b) {
+        return b;
+    }
+    
     function return3rd(a, b, c) {
         return c;
     }

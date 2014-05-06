@@ -7,6 +7,7 @@
     },
     exports: [
         toArray,
+        asArray,
         varArg,
         registerPlugin
     ]
@@ -32,6 +33,7 @@ var _slice = Array.prototype.slice,
         "bool": "boolean",
         "object": "object",
         "plainObject": _type.isPlainObject,
+        "{*}": _type.isPlainObject,
         "primitive": _type.isPrimitive,
         "emptyObject": _type.isEmptyObject,
         "{}": _type.isEmptyObject,
@@ -50,6 +52,15 @@ var _slice = Array.prototype.slice,
  */
 function toArray(args, n) {
     return _slice.call(args, n || 0);
+}
+
+/**
+ * asArray
+ * return arguments as an array
+ * @return {Array}
+ */
+function asArray() {
+    return _slice.call(arguments);
 }
 
 function registerPlugin(name, pred) {
