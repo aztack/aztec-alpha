@@ -111,10 +111,10 @@
         }
         var table = calendarTable.slice(0),
             d = now(),
-            today = new Date(d).getDate(),
-            i, j, day, days, lastDays, x, y, thisYear, thisMonth, lastYear, lastMonth, nextYear, nextMonth;
-        if(year)d.setYear(year);
-        if(month)d.setMonth(month - 1);
+            today = new Date(d),
+            i, j, day, days, lastDays, x, y, thisYear, thisMonth, lastYear, lastMonth, nextYear, nextMonth, flag = true;
+        if (year) d.setYear(year);
+        if (month) d.setMonth(month - 1);
         d.setDate(date || 1);
         day = d.getDay();
         thisYear = d.getFullYear();
@@ -146,8 +146,9 @@
                     valueOf: _returnDay
                 };
                 if (x <= days && (i > 0 || (i === 0 && j >= day))) {
-                    if(x === today) {
+                    if (flag && x === today.getDate() && thisMonth === today.getMonth() + 1 && thisYear === today.getFullYear()) {
                         dayInfo.today = true;
+                        flag = false;
                     }
                     dayInfo.day = x++;
                     dayInfo.year = thisYear;
