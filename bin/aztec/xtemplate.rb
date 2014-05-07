@@ -62,7 +62,7 @@ module Aztec
                 if clazz.nil? or clazz.empty?
                     throw "#{sigil} has no corresponding class attribute!"
                 else
-                    '.' + clazz.split(' ').first
+                    '.' + clazz.split(' ').last
                 end
             elsif sigil[0] == '#'
                 id = ele.attr('id')
@@ -75,7 +75,7 @@ module Aztec
                 ele.name
             end
         end
-
+        
         def collect_sigils(xtemplate_node)
             sigil_class = xtemplate_node.attr('sigil-class')
             #$stdout.puts xtemplate_node.css(XTEMPLATE_SIGIL_ATTR_SEL).map{|e|e.attr(XTEMPLATE_SIGIL_ATTR)}
@@ -83,6 +83,9 @@ module Aztec
             return if sigil_class.nil? or sigil_class.empty?
             #binding.pry if @path['dialog']
             @sigils[sigil_class] = {} if not @sigils.has_key?(sigil_class)
+            if xtemplate_node.name.downcase == 'script'
+                xtemplate_node = Nokogiri::HTML(xtemplate_node.inner_html)
+            end
 
             tmp = xtemplate_node.css(XTEMPLATE_SIGIL_ATTR_SEL).inject({}) do |sigils, ele|
                 sigil = ele.attr XTEMPLATE_SIGIL_ATTR

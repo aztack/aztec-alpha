@@ -13,7 +13,8 @@
         equal,
         strictEqual,
         compact,
-        flatten
+        flatten,
+        fill
     ]
 });
 
@@ -29,7 +30,7 @@ var w = function(self, sep) {
         return [];
     }
     var s = self;
-    if(typeof self !== 'string') {
+    if (typeof self !== 'string') {
         s = '' + self;
     }
     return s.split(sep || /[\s\n\t]+/);
@@ -170,4 +171,28 @@ function flatten(self) {
         }
     }
     return ret;
+}
+
+function fill(self, v, start, end) {
+    var len = self.length,
+        start_i = start == null ? 0 : +start,
+        end_i = len;
+    if (typeof end != 'undefined') end_i = +end;
+    if (start_i < 0) {
+        start_i += len;
+        if (start_i < 0) start_i = 0;
+    } else {
+        if (start_i > len) start_i = len;
+    }
+
+    if (end_i < 0) {
+        end_i += len;
+        if (end_i < 0) end_i = 0;
+    } else {
+        if (end_i > len) end_i = len;
+    }
+    for (var i = start_i; i < end_i; ++i) {
+        self[i] = v;
+    }
+    return self;
 }

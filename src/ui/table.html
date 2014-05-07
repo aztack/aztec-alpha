@@ -22,7 +22,7 @@
                 padding: 4px;
             }
             .ui-table thead, .ui-table tfoot {
-                background: url(ui/images/table-header_bg.png) repeat-x 0 0;
+                background: url(images/table-header_bg.png) repeat-x 0 0;
             }
 
             .ui-table tbody td {
@@ -39,7 +39,7 @@
                 text-align: right;
             }
             .ui-table .ui-tbody-loading {
-                background: url(ui/images/loading.gif) no-repeat center center;
+                background: url(images/loading.gif) no-repeat center center;
                 height:100%;
             }
             /* fixhead */
@@ -68,8 +68,8 @@
             }
         </style>
         <script src="requirejs.js"></script>
-        <link type="text/css" href="aztec.css">
-        <link type="text/css" href="ui/table.css">
+        <link rel="stylesheet" href="aztec.css">
+        <link rel="stylesheet" href="ui/table.css">
     </head>
     <body>
         <table xtemplate="$root.ui.Table.table,delete" class="ui-table" sigil-class="Table" style="display:none">

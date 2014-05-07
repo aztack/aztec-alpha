@@ -244,7 +244,10 @@
         
     ///sigils
     if (!Tree.Sigils) Tree.Sigils = {};
-
+    Tree.Sigils[".expander"] = ".expander";
+    Tree.Sigils[".checkbox"] = ".checkbox";
+    Tree.Sigils[".icon"] = ".theme";
+    Tree.Sigils[".text"] = ".text";
 
     exports['Tree'] = Tree;
     exports.__doc__ = "Tree";

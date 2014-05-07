@@ -28,7 +28,7 @@ var DataSource = _type.create('$root.ui.DataSource', Array, {
 		ad.method = ad.method || 'get';
 		ad.contentType = ad.contentType || 'application/json';
 		if (opts.data) {
-			this.$attr('data', opts.data);
+			this.$attr('tableData', opts.data);
 		}
 	},
 	getData: function(success, process, failed) {
@@ -49,7 +49,7 @@ var DataSource = _type.create('$root.ui.DataSource', Array, {
 				if (process) {
 					result = process.call(this, resp);
 				}
-				self.$attr('data', result);
+				self.$attr('tableData', result);
 				success.call(this, result);
 			}).fail(failed);
 		}
@@ -102,8 +102,14 @@ var Table = _type.create('$root.ui.Table', jQuery, {
 			.when('arrayLike', function(headers) {
 				var ths = _enum.map(headers, function(col) {
 					return _str.format('<th>{0}</th>', [col]);
-				}).join('');
-				this.header.empty().append('<tr>' + ths + '</tr>');
+				}).join(''),
+					lastTr = this.header.children().last(),
+					html ='<tr>' + ths + '</tr>'; 
+				if(lastTr.length) {
+					lastTr.replaceWith(html);
+				} else {
+					this.header.empty().append(html);
+				}
 				Table_adjustColspan(this, headers.length);
 			})
 			.otherwise(function(args) {
@@ -151,7 +157,7 @@ var Table = _type.create('$root.ui.Table', jQuery, {
 	insertRow: function() {
 		varArg(arguments, this)
 			.when('arrayLike', function(row) {
-				var data = this.$get('data');
+				var data = this.$get('tableData');
 				row.length = this.header.find('th').length;
 				data.push(row);
 				Table_setData(this, 'text', data);
@@ -162,7 +168,7 @@ var Table = _type.create('$root.ui.Table', jQuery, {
 		return this;
 	},
 	deleteRow: function() {
-		var data = this.$get('data'),
+		var data = this.$get('tableData'),
 			tb = this.body.parent()[0];
 		varArg(arguments, this)
 			.when('int', function(index) {
@@ -191,7 +197,7 @@ var Table = _type.create('$root.ui.Table', jQuery, {
 	insertColumn: function() {
 		varArg(arguments, this)
 			.when('arrayLike', function(col) {
-				var data = this.$get('data'),
+				var data = this.$get('tableData'),
 					len = data.length,
 					i = 0;
 				for (; i < len; ++i) {
@@ -206,7 +212,7 @@ var Table = _type.create('$root.ui.Table', jQuery, {
 	},
 	deleteColumn: function() {
 		var self = this,
-			data = this.$get('data'),
+			data = this.$get('tableData'),
 			delcol = function(index) {
 				var len = data.length,
 					i = 0;
@@ -233,7 +239,7 @@ var Table = _type.create('$root.ui.Table', jQuery, {
 		return this;
 	},
 	eachCell: function(fn) {
-		var data = this.$get('data');
+		var data = this.$get('tableData');
 		if (typeof fn == 'function') {
 			_enum.each(data, function(row, rowIndex) {
 				var stop;
@@ -255,7 +261,7 @@ var Table = _type.create('$root.ui.Table', jQuery, {
 	},
 	clearAll: function() {
 		var d = [];
-		this.$set('data', d);
+		this.$set('tableData', d);
 		Table_setData(this, 'text', d);
 		this.setStatus(Table.Status.NoData);
 		return this;
@@ -282,7 +288,7 @@ var Table = _type.create('$root.ui.Table', jQuery, {
 		return this;
 	},
 	refresh: function() {
-		var data = this.$get('data');
+		var data = this.$get('tableData');
 		if (data instanceof DataSource) {
 			data.getData(function(data) {
 				Table_setData(this, 'text', data);
@@ -306,7 +312,7 @@ var Table = _type.create('$root.ui.Table', jQuery, {
 	}
 }).events({
 	OnSetData: 'SetData(event,data).Table',
-	OnRowClicked: 'RowClicked(event,target,rowData,rowIndex).Table',
+	OnCellClicked: 'RowClicked(event,target,row,col).Table',
 	OnHeaderClicked: 'HeaderClicked(event,target,index,text).Table'
 });
 
@@ -326,12 +332,14 @@ function Table_initialize(self, opts) {
 		self.$attr('footer', $());
 	}
 
-	self.body.delegate('tr', 'click', function(e) {
-		var tr = $(this),
-			i = tr.data('i'),
-			data = self.$get('data'),
-			d = data[i];
-		self.trigger(Table.Events.OnRowClicked, [e.target, d, i, tr[0]]);
+	self.body.delegate('td', 'click', function(e) {
+		var data = self.$get('tableData'),
+			td = $(this),
+			tr = td.closest('tr'),
+			data = self.$get('tableData'),
+			col = tr.children().index(td),
+			row = tr.parent().children().index(tr);
+		self.trigger(Table.Events.OnCellClicked, [e.target, row, col, data[row][col]]);
 	});
 
 	self.header.delegate('th', 'click', function(e) {
@@ -353,21 +361,24 @@ function tr(x, i) {
 	return _str.format(fmt_tr, [x, i]);
 }
 
-function array_to_table(data) {
+function array_to_table(data, opts) {
+	var _tr = opts.tr || tr,
+		_td = opts.td || td;
 	return _enum.map(data, function(row, i) {
-		var a = tr(_enum.map(row, td).join(''), i);
+		var a = _tr(_enum.map(row, _td).join(''), i);
 		return a;
 	}).join('');
 }
 
 function Table_setData(self, type) {
 	var args = _arguments.toArray(arguments, 2),
-		process = Table.Fn.ProcessTableData || array_to_table,
+		opts = self.$get('options'),
+		process = opts.process || Table.Fn.ProcessTableData,
 		html;
 	html = varArg(args, self)
 		.when('array<array>', function(data) {
-			self.$attr('data', data);
-			return [process(data)];
+			self.$attr('tableData', data);
+			return [process(data, opts)];
 		})
 		.when('array<object>', '*', function(data, transform) {
 			var headers = _object.keys(data[0]);
@@ -379,8 +390,8 @@ function Table_setData(self, type) {
 				header = transform(header);
 			}
 			this.setHeader(headers);
-			self.$attr('data', data);
-			return [process(data)];
+			self.$attr('tableData', data);
+			return [process(data, opts)];
 		})
 		.when(DataSource.constructorOf, function(dataSrc) {
 			dataSrc.getData(function(data) {
@@ -411,7 +422,7 @@ function Table_adjustColumnWidthAgainstHeaderWidth(self) {
 function Table_adjustColspan(self, span) {
 	var sel = 'td:first',
 		attr = 'colspan',
-		data = self.$get('data');
+		data = self.$get('tableData');
 	if (!data || data.length === 0) return;
 	setTimeout(function() {
 		span = data[0].length;

@@ -21,10 +21,10 @@ text-align: left;
 min-width: 3em; white-space: nowrap; padding: 4px;
 }
 .ui-table thead {
-background: url(ui/images/table-header_bg.png) repeat-x 0 0;
+background: url(images/table-header_bg.png) repeat-x 0 0;
 }
 .ui-table tfoot {
-background: url(ui/images/table-header_bg.png) repeat-x 0 0;
+background: url(images/table-header_bg.png) repeat-x 0 0;
 }
 .ui-table tbody td {
 border: 1px solid #ccc; border-left: none; border-right: none; padding: 4px;
@@ -36,7 +36,7 @@ padding: 4px; text-align: right;
 text-align: right;
 }
 .ui-table .ui-tbody-loading {
-background: url(ui/images/loading.gif) no-repeat center center; height: 100%;
+background: url(images/loading.gif) no-repeat center center; height: 100%;
 }
 .ui-table-fixhead .body {
 height: 500px;

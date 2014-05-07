@@ -1,17 +1,51 @@
-<doctype html>
 <html>
     <head>
         <title>Calendar</title>
+        <base href="../../release/requirejs/" />
         <style>
-
+        .ui-calendar td, .ui-calendar th {
+            cursor: pointer;
+        }
+        .ui-calendar td:hover{
+            background: #efefef;
+        }
+        .ui-calendar .selected, .ui-calendar .today.selected {
+            background: #fdfdac;
+        }
+        .ui-calendar .today {
+            background: #ccc;
+        }
+        .ui-calendar .left-button {
+            float: left;
+        }
+        .ui-calendar .right-button {
+            float: right;
+        }
         </style>
-        <script src="/scripts/$root.ui.calendar"></script>
+        <script src="requirejs.js"></script>
+        <link rel="stylesheet" href="aztec.css">
+        <link rel="stylesheet" href="ui/table.css">
     </head>
     <body>
-        <div data-xtemplate="$root.ui.calendar,delete" style="display:none;">
-        </div>
+        <script type="text/xtemplate" xtemplate="$root.ui.Calendar.header,delete" sigil-class="Calendar" style="display:none;">
+            <tr>
+                <th colspan="7" style="text-align: center;">
+                  <span class="button left-button" data-action="prev">◄</span>
+                  <span class="title"></span>
+                  <span class="button right-button" data-action="next">►</span>
+                </th>
+            </tr>
+        </script>
+        <script type="text/xtemplate" xtemplate="$root.ui.Calendar.footer,delete" sigil-class="Calendar" style="display:none;">
+        </script>
+        <div id="calendar" style="width:400px;height:200px;margin:1em"></div>
     </body>
     <script>
-
+        require(['lang/date','ui/calendar'], function(date, cale) {
+            window.date = date;
+            Calendar = cale.Calendar;
+            c = new Calendar();
+            c.appendTo('#calendar');
+        });
     </script>
 </html>
