@@ -195,6 +195,11 @@ function instance$set(keyPath, value, notifyObservers) {
 }
 
 function instance$attr(name, value) {
+    if(arguments.length === 0) {
+        return instance$ivars.call(this);
+    }else if(arguments.length == 1) {
+        return this.$get(name);
+    }
     var vtype = typeof value;
     if (vtype == 'string' || vtype == 'number' || vtype == 'boolean') {
         throw new Error('$attr only support reference type value!');
@@ -312,6 +317,7 @@ function clazz$methods(methods) {
         if (!methods.hasOwnProperty(name)) continue;
 
         if (!parentProto[name]) {
+            /*
             m = methods[name];
             if (name == 'init') {
                 //init method MUST do nothing and just return this
@@ -329,6 +335,8 @@ function clazz$methods(methods) {
                 //just added it to prototype(instance method)
                 this.prototype[name] = m;
             }
+            */
+           this.prototype[name] = methods[name];
             continue;
         }
 
@@ -506,7 +514,6 @@ function Class(name, parent) {
         this.$set = instance$set;
         this.$get = instance$get;
         this.$attr = instance$attr;
-        this.$ivars = instance$ivars;
         this.$observe = instance$observe;
         this.$unobserve = instance$unobserve;
         this.$dispose = instance$dispose;

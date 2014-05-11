@@ -24,6 +24,7 @@
  * - isPlainObject
  * - isEmptyObject
  * - isElement
+ * - isDate
  * - typename
  * - object
  * - hasSameTypeName
@@ -174,6 +175,10 @@
         return _toString.call(arg) == '[object String]';
     }
     
+    function isDate(arg) {
+        return _toString.call(arg) == '[object Date]' && arg.toString() != 'Invalid Date' && !isNaN(arg);
+    }
+    
     /**
      * isArray
      * return true if given arg is truly an array
@@ -211,7 +216,7 @@
     }
     
     function isNumber(arg) {
-        return _toString.call(arg) == '[object Number]';
+        return _toString.call(arg) == '[object Number]' && isFinite(arg);
     }
     
     function isFiniteNumber(arg) {
@@ -511,6 +516,11 @@
     }
     
     function instance$attr(name, value) {
+        if(arguments.length === 0) {
+            return instance$ivars.call(this);
+        }else if(arguments.length == 1) {
+            return this.$get(name);
+        }
         var vtype = typeof value;
         if (vtype == 'string' || vtype == 'number' || vtype == 'boolean') {
             throw new Error('$attr only support reference type value!');
@@ -628,6 +638,7 @@
             if (!methods.hasOwnProperty(name)) continue;
     
             if (!parentProto[name]) {
+                /*
                 m = methods[name];
                 if (name == 'init') {
                     //init method MUST do nothing and just return this
@@ -645,6 +656,8 @@
                     //just added it to prototype(instance method)
                     this.prototype[name] = m;
                 }
+                */
+               this.prototype[name] = methods[name];
                 continue;
             }
     
@@ -822,7 +835,6 @@
             this.$set = instance$set;
             this.$get = instance$get;
             this.$attr = instance$attr;
-            this.$ivars = instance$ivars;
             this.$observe = instance$observe;
             this.$unobserve = instance$unobserve;
             this.$dispose = instance$dispose;
@@ -988,6 +1000,7 @@
     exports['isPlainObject'] = isPlainObject;
     exports['isEmptyObject'] = isEmptyObject;
     exports['isElement'] = isElement;
+    exports['isDate'] = isDate;
     exports['typename'] = typename;
     exports['object'] = object;
     exports['hasSameTypeName'] = hasSameTypeName;

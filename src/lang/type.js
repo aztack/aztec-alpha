@@ -23,6 +23,7 @@
         isPlainObject,
         isEmptyObject,
         isElement,
+        isDate,
         typename,
         object,
         hasSameTypeName,
@@ -161,6 +162,10 @@ function isString(arg) {
     return _toString.call(arg) == '[object String]';
 }
 
+function isDate(arg) {
+    return _toString.call(arg) == '[object Date]' && arg.toString() != 'Invalid Date' && !isNaN(arg);
+}
+
 /**
  * isArray
  * return true if given arg is truly an array
@@ -198,7 +203,7 @@ function isFunction(arg) {
 }
 
 function isNumber(arg) {
-    return _toString.call(arg) == '[object Number]';
+    return _toString.call(arg) == '[object Number]' && isFinite(arg);
 }
 
 function isFiniteNumber(arg) {

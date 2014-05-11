@@ -30,9 +30,11 @@
         <script type="text/xtemplate" xtemplate="$root.ui.Calendar.header,delete" sigil-class="Calendar" style="display:none;">
             <tr>
                 <th colspan="7" style="text-align: center;">
-                  <span class="button left-button" data-action="prev">◄</span>
+                  <span class="button left-button" data-action="prev-year">◄</span>
+                  <span class="button left-button" data-action="prev-month">◄</span>
                   <span class="title"></span>
-                  <span class="button right-button" data-action="next">►</span>
+                  <span class="button right-button" data-action="next-year">►</span>
+                  <span class="button right-button" data-action="next-month">►</span>
                 </th>
             </tr>
         </script>
@@ -43,6 +45,7 @@
     <script>
         require(['lang/date','ui/calendar'], function(date, cale) {
             window.date = date;
+            a = new date.DateTime();
             Calendar = cale.Calendar;
             c = new Calendar();
             c.appendTo('#calendar');

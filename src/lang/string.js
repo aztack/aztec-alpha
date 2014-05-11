@@ -154,19 +154,21 @@ var format = (function() {
     function o(w, m, args) {
         var fn = m,
             p = [],
-            x = m.split(':');
+            x = m.split(':'),
+            ret;
         if (x.length == 2) {
             fn = x[0];
             p.push(x[1]);
         }
         var t = typeof(args[fn]);
         if (t == "function") {
-            return args[fn].apply(undefined, p);
+            ret = args[fn].apply(undefined, p);
         } else if (args[fn] == null) {
-            return w;
+            ret = w;
         } else {
-            return String(args[fn]);
+            ret = String(args[fn]);
         }
+        return ret;
     }
 
     return function(self, args) {

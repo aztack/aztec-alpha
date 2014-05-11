@@ -13,7 +13,7 @@
  * exports:
  * - Calendar
  * files:
- * - src/ui/calendar.js
+ * - src/ui/Calendar.js
  */
 
 ;define('ui/calendar',[
@@ -28,7 +28,7 @@
     //'use strict';
     var exports = {};
         _tpl
-            .set('$root.ui.Calendar.header',"<tr><th colspan=\"7\" style=\"text-align: center;\">\n<span class=\"button left-button\" data-action=\"prev\">&#9668;</span><span class=\"title\"></span><span class=\"button right-button\" data-action=\"next\">&#9658;</span>\n</th></tr>\n")
+            .set('$root.ui.Calendar.header',"<tr><th colspan=\"7\" style=\"text-align: center;\">\n<span class=\"button left-button\" data-action=\"prev-year\">&#9668;</span><span class=\"button left-button\" data-action=\"prev-month\">&#9668;</span><span class=\"title\"></span><span class=\"button right-button\" data-action=\"next-year\">&#9658;</span><span class=\"button right-button\" data-action=\"next-month\">&#9658;</span>\n</th></tr>\n")
             .set('$root.ui.Calendar.footer',"\n");
         var varArg = _arguments.varArg,
       tpl = _tpl.id$('$root.ui.Calendar'),

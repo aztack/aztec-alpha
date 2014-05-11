@@ -28,6 +28,7 @@
     var _slice = Array.prototype.slice,
         varArgTypeMapping = {
             "string": "string",
+            "date": _type.isDate,
             "undefined": "undefined",
             "null": _type.isNull,
             "array": _type.isArray,
@@ -45,9 +46,9 @@
             "object": "object",
             "plainObject": _type.isPlainObject,
             "{*}": _type.isPlainObject,
+            "{}": _type.isEmptyObject,
             "primitive": _type.isPrimitive,
             "emptyObject": _type.isEmptyObject,
-            "{}": _type.isEmptyObject,
             "regex": _type.isRegExp,
             "regexp": _type.isRegExp,
             "*": _fn.alwaysTrue

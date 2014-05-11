@@ -5,6 +5,7 @@
  * namespace: $root.lang.date
  * imports:
  *   _type: $root.lang.type
+ *   _fn: $root.lang.fn
  *   _arguments: $root.lang.arguments
  *   _str: $root.lang.string
  * exports:
@@ -21,15 +22,17 @@
  * - daysOfMonth
  * - format
  * - calendar
+ * - DateTime
  * files:
  * - src/lang/date.js
  */
 
 ;define('lang/date',[
     'lang/type',
+    'lang/fn',
     'lang/arguments',
     'lang/string'
-], function (_type,_arguments,_str){
+], function (_type,_fn,_arguments,_str){
     //'use strict';
     var exports = {};
     
@@ -162,11 +165,172 @@
                     dayInfo.year = nextYear;
                     dayInfo.month = nextMonth;
                 }
+                dayInfo.hours = 12;
+                dayInfo.minutes = dayInfo.seconds = 0;
                 table[i][j] = dayInfo;
             }
         }
         return table;
     }
+    
+    function gsetter(g, s) {
+        return function(v) {
+            var value = this.$get('value');
+            if (v == null) {
+                return value[g]();
+            } else {
+                value[s](v);
+            }
+            return this;
+        };
+    }
+    
+    var DateTime = _type.create('$root.lang.DateTime', Object, {
+        init: function() {
+            var value;
+            return varArg(arguments, this)
+                .when('string', function() {
+    
+                })
+                .when('date', function(d) {
+                    return [d];
+                })
+                .when(DateTime.constructorOf, function(dt) {
+                    return [dt.$get('value')];
+                })
+                .otherwise(function(args) {
+                    return [_fn.applyNew(Date, args)];
+                }).invoke(function(value) {
+                    this.$attr('value', value);
+                });
+        },
+        year: gsetter('getFullYear', 'setFullYear'),
+        month: function(v) {
+            var value = this.$get('value');
+            if (_type.isEmpty(v)) {
+                return value.getMonth();
+            } else {
+                value.setMonth(v - 1);
+            }
+            return this;
+        },
+        day: gsetter('getDate', 'setDate'),
+        hours: gsetter('getHours', 'setHours'),
+        minutes: gsetter('getMinutes', 'setMinutes'),
+        seconds: gsetter('getSeconds', 'setSeconds'),
+        milliseconds: gsetter('getMilliseconds', 'setMilliseconds'),
+        toString: function() {
+            var t = this.$get('value');
+            return _str.format(DateTime.DefaultDateTimeFormat, {
+                year: t.getFullYear(),
+                month: t.getMonth() + 1,
+                day: t.getDate(),
+                hour: t.getHours(),
+                minute: t.getMinutes(),
+                second: t.getSeconds()
+            })
+        },
+        format: function(fmt) {
+            if (!fmt) return this.toString();
+            //TODO
+        },
+        valueOf: function() {
+            return this.$get('value').getTime();
+        },
+        set: function(v) {
+            var value = this.$get('value');
+            varArg(arguments, this)
+                .when('int', function(v) {
+                    value.setTime(v);
+                })
+                .when('{*}', function(v) {
+                    isNaN(v.year) || value.setFullYear(v.year);
+                    isNaN(v.month) || value.setMonth(v.month - 1);
+                    isNaN(v.day) || value.setDate(v.day);
+                    isNaN(v.hours) || value.setHours(v.hours);
+                    isNaN(v.minutes) || value.setMinutes(v.minutes);
+                    isNaN(v.seconds) || value.setSeconds(v.seconds);
+                    isNaN(v.milliseconds) || value.setMilliseconds(v.milliseconds);
+                }).resolve();
+            return this;
+        },
+        toObject: function() {
+            var value = this.$get('value');
+            return {
+                year: value.getFullYear(),
+                month: value.getMonth() + 1,
+                day: value.getDate(),
+                hours: value.getHours(),
+                minutes: value.getMinutes(),
+                seconds: value.getSeconds(),
+                milliseconds: value.getMilliseconds()
+            };
+        },
+        dup: function() {
+            return new DateTime(this.value);
+        },
+        equal: function(other) {
+            return this.value.getTime() == other.value.getTime();
+        }
+    }).methods({
+        yesterday: function() {
+            return this.set({
+                day: this.day() - 1
+            });
+        },
+        tomorrow: function() {
+            return this.set({
+                day: this.day() + 1
+            });
+        },
+        nextMonth: function() {
+            return this.set({
+                month: this.month() + 1
+            });
+        },
+        prevMonth: function() {
+            return this.set({
+                month: this.month() - 1
+            });
+        },
+        noon: function() {
+            return this.set({
+                hours: 12,
+                minutes: 0,
+                seconds: 0
+            });
+        },
+        midnight: function() {
+            return this.set({
+                hours: 24,
+                minutes: 0,
+                seconds: 0
+            });
+        },
+        beginning: function() {
+            return this.set({
+                hours: 0,
+                minutes: 0,
+                seconds: 0
+            });
+        },
+        ending: function() {
+            return this.set({
+                hours: 23,
+                minutes: 59,
+                seconds: 59
+            });
+        }
+    }).statics({
+        Today: function() {
+            return new DateTime().noon();
+        },
+        Parse: function(when) {
+            return new DateTime(Date.parse(when));
+        },
+        StandardDateTimeFormat: "{year}/{month}/{day} {hour}:{minute}:{second}",
+        DefaultDateTimeFormat: "{year}-{month}-{day} {hour}:{minute}:{second}"
+    });
     
     exports['secondsOfMinute'] = secondsOfMinute;
     exports['secondsOfHour'] = secondsOfHour;
@@ -181,6 +345,7 @@
     exports['daysOfMonth'] = daysOfMonth;
     exports['format'] = format;
     exports['calendar'] = calendar;
+    exports['DateTime'] = DateTime;
     exports.__doc__ = "Date Utils";
     return exports;
 });
