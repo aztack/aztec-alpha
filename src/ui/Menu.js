@@ -62,6 +62,10 @@ var Menu = _type.create('$root.ui.Menu', _list.List, {
         }, this);
         return this;
     },
+    setItems: function(texts) {
+        this.empty();
+        return this.addItems(texts);
+    },
     showAt: function() {
         var parent = this.parent();
         varArg(arguments, this)
@@ -82,13 +86,14 @@ var Menu = _type.create('$root.ui.Menu', _list.List, {
             });
         return this;
     },
-    asContextMenuOf: function(target) {
-        return Menu_asContextMenuOf(this, target);
+    asContextMenuOf: function(target, filter) {
+        return Menu_asContextMenuOf(this, target, filter);
     }
 }).statics({
     DefaultMenuItemType: MenuItem
 }).events({
-    OnItemSelected: 'OnItemSelected.Menu'
+    OnItemSelected: 'ItemSelected(event,item,index).Menu',
+    BeforeShowAt: 'BeforeShowAt(event,target,x,y,isActuallyShowed).Menu'
 });
 
 function Menu_initialize(self) {
@@ -105,20 +110,38 @@ function Menu_initialize(self) {
     });
 }
 
-function Menu_asContextMenuOf(self, target) {
+function Menu_asContextMenuOf(self, target, filter) {
     var owner = $(target),
+        p = owner.offsetParent(),
         position = owner.css('position');
     if (position != 'relative' && position != 'absolute' && position != 'fixed') {
         owner.css('position', 'relative');
     }
-    owner.append(self).on('contextmenu', function(e) {
-        if (e.target === owner[0]) {
-            self.showAt(e.offsetX, e.offsetY);
+    owner.on('contextmenu', function(e) {
+        var t = $(e.target),
+            offset = t.offset(),
+            poffset = owner.offsetParent().offset(),
+            x, y, isShow = true;
+        if (t.parents().filter(owner[0]).length > 0) {
+            //console.log(offset.left, e.offsetX, offset.top, e.offsetY);
+            x = offset.left + e.offsetX - poffset.left;
+            y = offset.top + e.offsetY - poffset.top;
+            if (typeof filter == 'function') {
+                isShow = filter(t[0], x, y);
+            }
+            self.trigger(Menu.Events.BeforeShowAt, [t[0], x, y, isShow]);
+            if (isShow) {
+                self.showAt(x, y);
+            } else {
+                self.hide();
+            }
             e.stopImmediatePropagation();
             return false;
         }
-    }).on('click', function() {
+    });
+    p.on('click', function() {
         _fn.bindTimeout(self.hide, self, 50)();
     });
+    self.appendTo(p).hide();
     return self;
 }

@@ -16,7 +16,7 @@
  * - Table
  * - DataSource
  * files:
- * - src/ui/table.js
+ * - src/ui/Table.js
  */
 
 ;define('ui/table',[
@@ -122,8 +122,8 @@
               return _str.format('<th>{0}</th>', [col]);
             }).join(''),
               lastTr = this.header.children().last(),
-              html ='<tr>' + ths + '</tr>'; 
-            if(lastTr.length) {
+              html = '<tr>' + ths + '</tr>';
+            if (lastTr.length) {
               lastTr.replaceWith(html);
             } else {
               this.header.empty().append(html);
@@ -275,7 +275,17 @@
         return $(cell);
       },
       getCellData: function(row, col) {
-        return this.$get('data')[row][col];
+        var data = this.$get('tableData');
+        return varArg(arguments, this)
+          .when('int', 'int', function(row, col) {
+            return data[row][col];
+          })
+          .when('jqueryOrElement', function(jq) {
+            if (!jq.jquery) jq = $(jq);
+            var col = jq.index(),
+              row = jq.parent().index();
+            return data[row][col];
+          }).args(0);
       },
       clearAll: function() {
         var d = [];
@@ -369,21 +379,21 @@
     }
     
     var fmt_td = '<td>{0}</td>',
-      fmt_tr = '<tr data-i="{1}">{0}</tr>';
+      fmt_tr = '<tr>{0}</tr>';
     
     function td(x) {
       return _str.format(fmt_td, [x]);
     }
     
-    function tr(x, i) {
-      return _str.format(fmt_tr, [x, i]);
+    function tr(x) {
+      return _str.format(fmt_tr, [x]);
     }
     
     function array_to_table(data, opts) {
       var _tr = opts.tr || tr,
         _td = opts.td || td;
-      return _enum.map(data, function(row, i) {
-        var a = _tr(_enum.map(row, _td).join(''), i);
+      return _enum.map(data, function(row) {
+        var a = _tr(_enum.map(row, _td).join(''));
         return a;
       }).join('');
     }

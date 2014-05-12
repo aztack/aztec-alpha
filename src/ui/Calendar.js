@@ -26,42 +26,28 @@ var Calendar = _type.create('$root.ui.Calendar', Table, {
 		Calendar_initialize(this);
 	},
 	set: function(year, month) {
-		Calendar_setYearMonth(this, year, month);
+		var dt = self.$get('datetime');
+		dt.year(year).month(month);
+		Calendar_set(this, dt);
 	}
 });
 
 function Calendar_initialize(self) {
-	var now = _date.now(),
-		year = now.getFullYear(),
-		month = now.getMonth() + 1;
-	Calendar_setYearMonth(self, year, month);
-	self.header.delegate('.button', 'click', function(e) {
+	var now = new _date.DateTime();
+	self.setHeader(_date.namesOfWeekday.chs.slice(0))
+		.header.prepend(tpl('header'));
+
+	self.header.delegate('.ui-button', 'click', function(e) {
 		var btn = $(e.target),
 			act = btn.data('action');
-		if (act == 'prev') {
-			Calendar_setYearMonth(self, self.year, self.month - 1);
-		} else {
-			Calendar_setYearMonth(self, self.year, self.month + 1);
+		if (act.match(/prev/)) {
+			now.prevMonth();
+			Calendar_set(self, now);
+		} else if (act.match(/next/)) {
+			now.nextMonth();
+			Calendar_set(self, now);
 		}
 	});
-}
-
-function Calendar_setTitle(self, info) {
-	self.sigil('.title').text(_str.format("{year}-{month}", info));
-}
-
-function Calendar_setYearMonth(self, year, month) {
-	self.year = year;
-	self.month = month;
-	t = _date.calendar(year, month);
-	self.setHeader(_date.namesOfWeekday.chs.slice(0));
-	self.options.td = function(data) {
-		var cls = data.today ? ' class="today"' : '';
-		return _str.format('<td{1}>{0}</td>', [data.day, cls]);
-	};
-
-	var headerTpl = tpl('header');
-	self.header.prepend(headerTpl);
 
 	var s = 'selected';
 	self.on(Calendar.Events.OnCellClicked, function(e, td, row, col, info) {
@@ -72,10 +58,22 @@ function Calendar_setYearMonth(self, year, month) {
 		self.$attr(s, td);
 		$(td).addClass(s);
 	});
+
+	Calendar_set(self, now);
+}
+
+function Calendar_set(self, dt) {
+	var t = _date.calendar(dt.year(), dt.month());
+	self.options.td = function(data, j) {
+		var cls = data.today ? ' class="today"' : '';
+		return _str.format('<td data-j="{2}" {1}>{0}</td>', [data.date, cls, j]);
+	};
+
 	self.setData(t);
-	self.$set(s, self.find('.selected')[0]);
-	Calendar_setTitle(self, {
-		year: year,
-		month: month
-	});
+	self.$set('selected', self.find('.selected')[0]);
+	Calendar_setTitle(self, dt);
+}
+
+function Calendar_setTitle(self, dt) {
+	self.sigil('.title').text(_str.format("{year}-{month,2,0}", dt.toObject()));
 }

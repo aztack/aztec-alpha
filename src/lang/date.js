@@ -22,6 +22,7 @@
         daysOfMonth,
         format,
         calendar,
+        calendarCache,
         DateTime
     ]
 });
@@ -77,38 +78,39 @@ function daysOfMonth(y, m) {
 
 function format(self, sep) {
     sep = sep || '-';
-    return _str.format("{year}{sep}{month}{sep}{day}", {
+    return _str.format("{year}{sep}{month}{sep}{date}", {
         sep: sep,
         year: self.getFullYear(),
         month: self.getMonth() + 1,
-        day: self.getDate()
+        date: self.getDate()
     });
 }
 
-var calendarTable = [
-    [null, null, null, null, null, null, null],
-    [null, null, null, null, null, null, null],
-    [null, null, null, null, null, null, null],
-    [null, null, null, null, null, null, null],
-    [null, null, null, null, null, null, null],
-    [null, null, null, null, null, null, null]
-];
-
 function _returnDay() {
-    return this.day;
+    return this.date;
 }
 
-function calendar(year, month, date) {
+function calendar(year, month) {
     if (month < 1 || month > 12) {
         throw new Error('2nd paramter is month which must between 1 and 12');
     }
-    var table = calendarTable.slice(0),
-        d = now(),
+    var cacheKey = '' + year + '-' + month;
+    if (calendar.cache[cacheKey]) return calendar.cache[cacheKey];
+
+    table = [
+        [null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null]
+    ];
+    var d = now(),
         today = new Date(d),
         i, j, day, days, lastDays, x, y, thisYear, thisMonth, lastYear, lastMonth, nextYear, nextMonth, flag = true;
     if (year) d.setYear(year);
     if (month) d.setMonth(month - 1);
-    d.setDate(date || 1);
+    d.setDate(1);
     day = d.getDay();
     thisYear = d.getFullYear();
     thisMonth = d.getMonth() + 1;
@@ -143,25 +145,25 @@ function calendar(year, month, date) {
                     dayInfo.today = true;
                     flag = false;
                 }
-                dayInfo.day = x++;
+                dayInfo.date = x++;
                 dayInfo.year = thisYear;
                 dayInfo.month = thisMonth;
             } else if (i === 0 && j < day) {
-                dayInfo.day = lastDays - day + j + 1;
+                dayInfo.date = lastDays - day + j + 1;
                 dayInfo.year = lastYear;
                 dayInfo.month = lastMonth;
             } else {
-                dayInfo.day = y++;
+                dayInfo.date = y++;
                 dayInfo.year = nextYear;
                 dayInfo.month = nextMonth;
             }
-            dayInfo.hours = 12;
-            dayInfo.minutes = dayInfo.seconds = 0;
             table[i][j] = dayInfo;
         }
     }
+    calendar.cache[cacheKey] = table;
     return table;
 }
+calendar.cache = {};
 
 function gsetter(g, s) {
     return function(v) {
@@ -178,15 +180,15 @@ function gsetter(g, s) {
 var DateTime = _type.create('$root.lang.DateTime', Object, {
     init: function() {
         var value;
-        return varArg(arguments, this)
-            .when('string', function() {
-
+        varArg(arguments, this)
+            .when('string', function(s) {
+                return [new Date(Date.parse(s))];
             })
             .when('date', function(d) {
-                return [d];
+                return [new Date(d.getTime())];
             })
             .when(DateTime.constructorOf, function(dt) {
-                return [dt.$get('value')];
+                return [new Date(dt.$get('value').getTime())];
             })
             .otherwise(function(args) {
                 return [_fn.applyNew(Date, args)];
@@ -198,36 +200,40 @@ var DateTime = _type.create('$root.lang.DateTime', Object, {
     month: function(v) {
         var value = this.$get('value');
         if (_type.isEmpty(v)) {
-            return value.getMonth();
+            return value.getMonth() + 1;
         } else {
             value.setMonth(v - 1);
         }
         return this;
     },
-    day: gsetter('getDate', 'setDate'),
+    week: function() {
+        var value = this.$get('value');
+        return value.getDay();
+    },
+    date: gsetter('getDate', 'setDate'),
     hours: gsetter('getHours', 'setHours'),
     minutes: gsetter('getMinutes', 'setMinutes'),
     seconds: gsetter('getSeconds', 'setSeconds'),
     milliseconds: gsetter('getMilliseconds', 'setMilliseconds'),
-    toString: function() {
-        var t = this.$get('value');
-        return _str.format(DateTime.DefaultDateTimeFormat, {
+    toString: function(noTime) {
+        var t = this.$get('value'),
+            fmt = noTime ? DateTime.DefaultDateFormat : DateTime.DefaultDateTimeFormat;
+        return _str.format(fmt, {
             year: t.getFullYear(),
             month: t.getMonth() + 1,
-            day: t.getDate(),
+            date: t.getDate(),
             hour: t.getHours(),
             minute: t.getMinutes(),
             second: t.getSeconds()
-        })
+        });
     },
     format: function(fmt) {
         if (!fmt) return this.toString();
-        //TODO
     },
     valueOf: function() {
         return this.$get('value').getTime();
     },
-    set: function(v) {
+    set: function() {
         var value = this.$get('value');
         varArg(arguments, this)
             .when('int', function(v) {
@@ -236,7 +242,7 @@ var DateTime = _type.create('$root.lang.DateTime', Object, {
             .when('{*}', function(v) {
                 isNaN(v.year) || value.setFullYear(v.year);
                 isNaN(v.month) || value.setMonth(v.month - 1);
-                isNaN(v.day) || value.setDate(v.day);
+                isNaN(v.date) || value.setDate(v.date);
                 isNaN(v.hours) || value.setHours(v.hours);
                 isNaN(v.minutes) || value.setMinutes(v.minutes);
                 isNaN(v.seconds) || value.setSeconds(v.seconds);
@@ -244,16 +250,21 @@ var DateTime = _type.create('$root.lang.DateTime', Object, {
             }).resolve();
         return this;
     },
-    toObject: function() {
+    toObject: function(detailed) {
         var value = this.$get('value');
-        return {
+        return detailed ? {
             year: value.getFullYear(),
             month: value.getMonth() + 1,
-            day: value.getDate(),
+            date: value.getDate(),
             hours: value.getHours(),
             minutes: value.getMinutes(),
             seconds: value.getSeconds(),
-            milliseconds: value.getMilliseconds()
+            milliseconds: value.getMilliseconds(),
+            day: value.getDay()
+        } : {
+            year: value.getFullYear(),
+            month: value.getMonth() + 1,
+            date: value.getDate()
         };
     },
     dup: function() {
@@ -263,14 +274,35 @@ var DateTime = _type.create('$root.lang.DateTime', Object, {
         return this.value.getTime() == other.value.getTime();
     }
 }).methods({
+    firstDayOfMonth: function() {
+        return this.set({
+            date: 1
+        });
+    },
+    lastDayOfMonth: function() {
+        return this.set({
+            month: this.month() + 1,
+            date: 0
+        });
+    },
     yesterday: function() {
         return this.set({
-            day: this.day() - 1
+            date: this.date() - 1
         });
     },
     tomorrow: function() {
         return this.set({
-            day: this.day() + 1
+            date: this.date() + 1
+        });
+    },
+    nextYear: function() {
+        return this.set({
+            year: this.year() - 1
+        });
+    },
+    prevYear: function() {
+        return this.set({
+            year: this.year() + 1
         });
     },
     nextMonth: function() {
@@ -311,6 +343,9 @@ var DateTime = _type.create('$root.lang.DateTime', Object, {
             seconds: 59
         });
     }
+}).aliases({
+    next: 'tomorrow',
+    prev: 'yesterday'
 }).statics({
     Today: function() {
         return new DateTime().noon();
@@ -318,6 +353,9 @@ var DateTime = _type.create('$root.lang.DateTime', Object, {
     Parse: function(when) {
         return new DateTime(Date.parse(when));
     },
-    StandardDateTimeFormat: "{year}/{month}/{day} {hour}:{minute}:{second}",
-    DefaultDateTimeFormat: "{year}-{month}-{day} {hour}:{minute}:{second}"
+    StandardDateTimeFormat: "{year}/{month,2,0}/{date,2,0} {hour,2,0}:{minute,2,0}:{second,2,0}",
+    DefaultDateTimeFormat: "{year}-{month,2,0}-{date,2,0} {hour,2,0}:{minute,2,0}:{second,2,0}",
+    StandardDateFormat: "{year}/{month,2,0}/{date,2,0}",
+    DefaultDateFormat: "{year}-{month,2,0}-{date,2,0}",
+    DefaultTimeFormat: "{hour,2,0}:{minute,2,0}:{second,2,0}"
 });

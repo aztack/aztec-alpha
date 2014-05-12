@@ -5,6 +5,7 @@
  * namespace: $root.lang.string
  * imports:
  *   _type: $root.lang.type
+ *   _object: $root.lang.object
  * exports:
  * - toInt
  * - toFloat
@@ -31,8 +32,9 @@
  */
 
 ;define('lang/string',[
-    'lang/type'
-], function (_type){
+    'lang/type',
+    'lang/object'
+], function (_type,_object){
     //'use strict';
     var exports = {};
     
@@ -148,42 +150,67 @@ function toArray(self) {
     return [self];
 }
 
-// https://gist.github.com/aztack/9ac4033ac7ec54b6fdca
 var format = (function() {
-    // handle array arguments
-    function a(w, m, args) {
-        var x = args[+m];
-        return typeof(x) == "function" ? x(m) : x;
+    function postprocess(ret, a) {
+        var align = parseInt(a.align),
+            absAlign = Math.abs(a.align),
+            result;
+
+        if (absAlign === 0) {
+            return ret;
+        } else if (absAlign < ret.length) {
+            return align > 0 ? ret.slice(0, absAlign) : ret.slice(-absAlign);
+        } else {
+            result = Array(absAlign - ret.length + 1).join(a.pad || format.DefaultPaddingChar);
+            return align > 0 ? result + ret : ret + result;
+        }
     }
 
-    // handle object arguments
-    function o(w, m, args) {
-        var fn = m,
-            p = [],
-            x = m.split(':'),
-            ret;
-        if (x.length == 2) {
-            fn = x[0];
-            p.push(x[1]);
+    function tryget(o, path, v) {
+        var parts = path.split('.'),
+            part, len = parts.length;
+        for (var t = o, i = 0; i < len; ++i) {
+            part = parts[i];
+            if (part in t) {
+                t = t[parts[i]];
+            } else {
+                return v;
+            }
         }
-        var t = typeof(args[fn]);
-        if (t == "function") {
-            ret = args[fn].apply(undefined, p);
-        } else if (args[fn] == null) {
-            ret = w;
+        return t;
+    }
+
+    function p(all) {
+        var ret = {}, p1, p2, sep = format.DefaultFieldSeperator;
+        p1 = all.indexOf(sep);
+        if (p1 < 0) {
+            ret.index = all;
         } else {
-            ret = String(args[fn]);
+            ret.index = all.substr(0, p1);
+            p2 = all.indexOf(sep, p1 + 1);
+            if (p2 < 0) {
+                ret.align = all.substring(p1 + 1, all.length);
+            } else {
+                ret.align = all.substring(p1 + 1, p2);
+                ret.pad = all.substring(p2 + 1, all.length);
+            }
         }
         return ret;
     }
 
     return function(self, args) {
-        var f = _type.isArray(args) ? a : o;
-        return self.replace(/{([a-zA-Z0-9_$:.]+)}/g, function(w, m) {
-            return f(w, m, args);
+        return self.replace(format.InterpolationPattern, function(all, m) {
+            var a = p(m);
+            ret = '' + tryget(args, a.index);
+            if (ret == null) ret = a.index;
+            return a.align == null && a.pad == null ? ret : postprocess(ret, a) || ret;
         });
     };
 })();
+
+format.DefaultPaddingChar = ' ';
+format.DefaultFieldSeperator = ',';
+format.InterpolationPattern = /\{(.*?)\}/g;
 
 function isHtmlFragment(self) {
     return typeof self == 'string' && self.charAt(0) === '<' && self.charAt(self.length - 1) === '>' && self.length >= 3;

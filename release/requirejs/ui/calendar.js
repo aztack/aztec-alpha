@@ -28,7 +28,7 @@
     //'use strict';
     var exports = {};
         _tpl
-            .set('$root.ui.Calendar.header',"<tr><th colspan=\"7\" style=\"text-align: center;\">\n<span class=\"button left-button\" data-action=\"prev-year\">&#9668;</span><span class=\"button left-button\" data-action=\"prev-month\">&#9668;</span><span class=\"title\"></span><span class=\"button right-button\" data-action=\"next-year\">&#9658;</span><span class=\"button right-button\" data-action=\"next-month\">&#9658;</span>\n</th></tr>\n")
+            .set('$root.ui.Calendar.header',"<tr><th colspan=\"7\" style=\"text-align: center;\">\n<span class=\"ui-button ui-calendar-prev-month\" data-action=\"prev-month\"></span><span class=\"ui-calendar-title\" sigil=\".title\"></span><span class=\"ui-button ui-calendar-next-month\" data-action=\"next-month\"></span>\n</th></tr>\n")
             .set('$root.ui.Calendar.footer',"\n");
         var varArg = _arguments.varArg,
       tpl = _tpl.id$('$root.ui.Calendar'),
@@ -41,42 +41,28 @@
         Calendar_initialize(this);
       },
       set: function(year, month) {
-        Calendar_setYearMonth(this, year, month);
+        var dt = self.$get('datetime');
+        dt.year(year).month(month);
+        Calendar_set(this, dt);
       }
     });
     
     function Calendar_initialize(self) {
-      var now = _date.now(),
-        year = now.getFullYear(),
-        month = now.getMonth() + 1;
-      Calendar_setYearMonth(self, year, month);
-      self.header.delegate('.button', 'click', function(e) {
+      var now = new _date.DateTime();
+      self.setHeader(_date.namesOfWeekday.chs.slice(0))
+        .header.prepend(tpl('header'));
+    
+      self.header.delegate('.ui-button', 'click', function(e) {
         var btn = $(e.target),
           act = btn.data('action');
-        if (act == 'prev') {
-          Calendar_setYearMonth(self, self.year, self.month - 1);
-        } else {
-          Calendar_setYearMonth(self, self.year, self.month + 1);
+        if (act.match(/prev/)) {
+          now.prevMonth();
+          Calendar_set(self, now);
+        } else if (act.match(/next/)) {
+          now.nextMonth();
+          Calendar_set(self, now);
         }
       });
-    }
-    
-    function Calendar_setTitle(self, info) {
-      self.sigil('.title').text(_str.format("{year}-{month}", info));
-    }
-    
-    function Calendar_setYearMonth(self, year, month) {
-      self.year = year;
-      self.month = month;
-      t = _date.calendar(year, month);
-      self.setHeader(_date.namesOfWeekday.chs.slice(0));
-      self.options.td = function(data) {
-        var cls = data.today ? ' class="today"' : '';
-        return _str.format('<td{1}>{0}</td>', [data.day, cls]);
-      };
-    
-      var headerTpl = tpl('header');
-      self.header.prepend(headerTpl);
     
       var s = 'selected';
       self.on(Calendar.Events.OnCellClicked, function(e, td, row, col, info) {
@@ -87,17 +73,29 @@
         self.$attr(s, td);
         $(td).addClass(s);
       });
+    
+      Calendar_set(self, now);
+    }
+    
+    function Calendar_set(self, dt) {
+      var t = _date.calendar(dt.year(), dt.month());
+      self.options.td = function(data, j) {
+        var cls = data.today ? ' class="today"' : '';
+        return _str.format('<td data-j="{2}" {1}>{0}</td>', [data.date, cls, j]);
+      };
+    
       self.setData(t);
-      self.$set(s, self.find('.selected')[0]);
-      Calendar_setTitle(self, {
-        year: year,
-        month: month
-      });
+      self.$set('selected', self.find('.selected')[0]);
+      Calendar_setTitle(self, dt);
+    }
+    
+    function Calendar_setTitle(self, dt) {
+      self.sigil('.title').text(_str.format("{year}-{month,2,0}", dt.toObject()));
     }
         
     ///sigils
     if (!Calendar.Sigils) Calendar.Sigils = {};
-
+    Calendar.Sigils[".title"] = ".ui-calendar-title";
 
     exports['Calendar'] = Calendar;
     exports.__doc__ = "Calendar";

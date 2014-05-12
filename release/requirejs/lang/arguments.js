@@ -245,8 +245,8 @@
             invokeNew: function(ctor) {
                 return _fn.applyNew(ctor, getArgs());
             },
-            args: function() {
-                return getArgs();
+            args: function(i) {
+                return getArgs()[i];
             },
             resolve: function() {
                 getArgs();
