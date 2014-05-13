@@ -3,8 +3,7 @@
     version: '0.0.1',
     namespace: $root.lang.string,
     imports: {
-        _type: $root.lang.type,
-        _object: $root.lang.object
+        _type: $root.lang.type
     },
     exports: [
         toInt,

@@ -50,6 +50,8 @@
     var exports = {};
     
         var _toString = Object.prototype.toString,
+        _hasOwn = Object.prototype.hasOwnProperty,
+        _getPrototypeOf = Object.getPrototypeOf,
         _primitives = {
             'boolean': 'Boolean',
             'number': 'Number',
@@ -202,7 +204,7 @@
     
         if (len === 0 || arg.nodeType === 1 && len || t == exports.Array || t == exports.String) return true
     
-        if( t == exports.Function || isWindow(arg)) {
+        if (t == exports.Function || isWindow(arg)) {
             return false;
         }
     
@@ -254,7 +256,20 @@
      * @return {Boolean}
      */
     function isPlainObject(arg) {
-        return arg && ctorName(arg) === 'Object';
+        if (_getPrototypeOf) {
+            return arg && typeof arg == 'object' && _getPrototypeOf(arg) === Object.prototype;
+        }
+        if (typename(arg) != 'Object' || arg.nodeType || isWindow(arg)) {
+            return false;
+        }
+        try {
+            if (arg.constructor && !_hasOwn.call(arg.constructor.prototype, 'isPrototypeOf')) {
+                return false;
+            }
+        } catch (e) {
+            return false;
+        }
+        return true;
     }
     
     /**

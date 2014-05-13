@@ -56,10 +56,14 @@
             c = new Calendar();
             c.appendTo('#calendar');
             m = new menu.Menu();
-            m.asContextMenuOf(c,function(target,x,y){
-            	return target.tagName.toLowerCase() == 'td';
-            }).on(m.$class.Events.BeforeShowAt,function(e,target,x,y){
-                var o = c.getCellData(target),
+            m.asContextMenuOf(c).on(m.$class.Events.BeforeShowAt,function(e,d){
+            	if(d.target.tagName.toLowerCase() != 'td') {
+            		d.isShow = false;
+            		return;
+            	} else {
+            		d.isShow = true;
+            	}
+                var o = c.getCellData(d.target),
                     dt = new date.DateTime().set(o).noon();
                 m.setItems([dt.toString(true), dt.toString()]);
             }).on(m.$class.Events.OnItemSelected,function(e,item){

@@ -102,14 +102,14 @@
                 });
             return this;
         },
-        asContextMenuOf: function(target, filter) {
-            return Menu_asContextMenuOf(this, target, filter);
+        asContextMenuOf: function(target) {
+            return Menu_asContextMenuOf(this, target);
         }
     }).statics({
         DefaultMenuItemType: MenuItem
     }).events({
         OnItemSelected: 'ItemSelected(event,item,index).Menu',
-        BeforeShowAt: 'BeforeShowAt(event,target,x,y,isActuallyShowed).Menu'
+        BeforeShowAt: 'BeforeShowAt(event,data).Menu'
     });
     
     function Menu_initialize(self) {
@@ -126,7 +126,7 @@
         });
     }
     
-    function Menu_asContextMenuOf(self, target, filter) {
+    function Menu_asContextMenuOf(self, target) {
         var owner = $(target),
             p = owner.offsetParent(),
             position = owner.css('position');
@@ -137,16 +137,19 @@
             var t = $(e.target),
                 offset = t.offset(),
                 poffset = owner.offsetParent().offset(),
-                x, y, isShow = true;
+                x, y, data;
             if (t.parents().filter(owner[0]).length > 0) {
                 //console.log(offset.left, e.offsetX, offset.top, e.offsetY);
                 x = offset.left + e.offsetX - poffset.left;
                 y = offset.top + e.offsetY - poffset.top;
-                if (typeof filter == 'function') {
-                    isShow = filter(t[0], x, y);
-                }
-                self.trigger(Menu.Events.BeforeShowAt, [t[0], x, y, isShow]);
-                if (isShow) {
+                data = {
+                    target: t[0],
+                    x: x,
+                    y: y,
+                    isShow: true
+                };
+                self.trigger(Menu.Events.BeforeShowAt, [data]);
+                if (data.isShow) {
                     self.showAt(x, y);
                 } else {
                     self.hide();

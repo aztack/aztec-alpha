@@ -3,26 +3,22 @@
 	namespace: <%=@namespace%>,
 	imports: {
 		_type: $root.lang.type,
-		_str: $root.lang.string
-		//$: jQuery
+		_arguments: $root.lang.arguments,
+		_enum: $root.lang.enumerable,
+		_str: $root.lang.string,
+		$: jQuery
 	},
 	exports: [
 	]
 });
 
-///vars
+var varArg = _arguments.varArg;
 
+var <%=@namespace.split('.').last.capitalize%> = _type.create('<%=@namespace%>', jQuery, {
+	
+}).events({
+	
+}).statics({
+	
+});
 
-///helper
-
-
-///impl
-
-/**
- * main function is called when DOMReady
- */
-//function main(){}
-//$(main);
-
-
-///exports

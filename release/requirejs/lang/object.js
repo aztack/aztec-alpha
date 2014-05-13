@@ -11,12 +11,10 @@
  * - mix
  * - keys
  * - values
- * - map
  * - tryget
  * - tryset
  * - pairs
  * - fromPairs
- * - fromKeyValuePairString1
  * files:
  * - src/lang/object.js
  */
@@ -156,12 +154,10 @@
     exports['mix'] = mix;
     exports['keys'] = keys;
     exports['values'] = values;
-//     exports['map'] = map;
     exports['tryget'] = tryget;
     exports['tryset'] = tryset;
     exports['pairs'] = pairs;
     exports['fromPairs'] = fromPairs;
-//     exports['fromKeyValuePairString1'] = fromKeyValuePairString1;
     exports.__doc__ = "Object utils";
     return exports;
 });

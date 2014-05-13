@@ -40,7 +40,7 @@ var Draggable = _type.create('$root.ui.Draggable', {
         var self = this;
         this.$ = $(handle);
         this.$dragged = $(dragged);
-        this.options = opts || {};
+        this.$attr('options',opts || {});
         this.$offsetParent = this.$dragged.offsetParent();
         this.$.on(mouseDownEvent, function(e) {
             Draggable_onMouseDown(self, e);
@@ -65,10 +65,11 @@ var Draggable = _type.create('$root.ui.Draggable', {
     finalize: function() {
         Draggable_finalize(this);
     }
-}).statics({
+}).events({
     MouseMoveEvent: mouseMoveEvent,
     MouseDownEvent: mouseDownEvent,
-    MouseUpEvent: mouseUpEvent,
+    MouseUpEvent: mouseUpEvent
+}).statics({
     CreateOptions: {
         onMouseDown: _fn.noop,
         onMouseMove: _fn.noop,
@@ -171,16 +172,17 @@ var defaultOptions = {
 function draggable(handle, dragged, opts) {
     opts = opts || {};
     return varArg(arguments)
-        .when('*', '*', 'plainObject', function(arg1, arg2, arg3) {
+        .when('*', '*', '{*}', function(arg1, arg2, opts) {
             var h = $(arg1),
                 d = $(arg2),
-                o = $.extend(true, arg3, defaultOptions);
+                o = $.extend(true, defaultOptions, opts);
             return [h, d, o];
         })
-        .when('*', '*', '*', function(arg1, arg2) {
+        .when('*', '{*}', function(arg1, opts) {
             var h = $(arg1),
-                d = $(arg2);
-            return [h, d, defaultOptions];
+                d = $(arg1);
+            opts = $.extend(true, defaultOptions, opts);
+            return [h, d, opts];
         })
         .when('*', '*', function(arg1, arg2) {
             var h = $(arg1),
@@ -189,7 +191,7 @@ function draggable(handle, dragged, opts) {
         })
         .when('*', function() {
             var h = $(handle);
-            return [h, h, undefined];
+            return [h, h, defaultOptions];
         })
         .when(function() {
             throw Error('function `draggable` need at least one parameter');

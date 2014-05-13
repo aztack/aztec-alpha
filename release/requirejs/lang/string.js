@@ -5,7 +5,6 @@
  * namespace: $root.lang.string
  * imports:
  *   _type: $root.lang.type
- *   _object: $root.lang.object
  * exports:
  * - toInt
  * - toFloat
@@ -32,9 +31,8 @@
  */
 
 ;define('lang/string',[
-    'lang/type',
-    'lang/object'
-], function (_type,_object){
+    'lang/type'
+], function (_type){
     //'use strict';
     var exports = {};
     

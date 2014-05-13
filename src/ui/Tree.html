@@ -20,7 +20,7 @@
             }
             .ui-tree li {
                 cursor: pointer;
-                background-image: url(images/tree.png);
+                background-image: url(ui/images/tree.png);
                 background-position: -292px -4px;
                 background-repeat: repeat-y;
             }
@@ -34,7 +34,7 @@
                 width: 20px;
                 height: 20px;
                 display: inline-block;
-                background-image: url(images/tree.png);
+                background-image: url(ui/images/tree.png);
                 cursor: pointer;
             }
             .ui-tree .theme {
@@ -75,6 +75,7 @@
         <script src="requirejs.js"></script>
         <link rel="stylesheet" href="aztec.css">
         <link rel="stylesheet" href="ui/table.css">
+        <link rel="stylesheet" href="ui/menu.css">
     </head>
     <body>
         <div id="tree" style="width:300px;height:400px;">
@@ -91,7 +92,7 @@
         </li>
         </script>
         <script>
-            require(['lang/array', 'ui/tree','ui/draggable'], function(array, tree, drag) {
+            require(['lang/array', 'ui/tree','ui/draggable','ui/menu'], function(array, tree, drag, menu) {
                 function inspect() {
                     console.log(arguments);
                 }
@@ -114,6 +115,10 @@
                     console.log(text, node);
                 });
                 drag.draggable(t.find('.title'),t);
+
+                m = new menu.Menu();
+                m.addItems(['a','b']);
+                m.asContextMenuOf(t);
             });
         </script>
     </body>

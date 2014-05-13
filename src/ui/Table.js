@@ -375,8 +375,7 @@ function array_to_table(data, opts) {
 	var _tr = opts.tr || tr,
 		_td = opts.td || td;
 	return _enum.map(data, function(row) {
-		var a = _tr(_enum.map(row, _td).join(''));
-		return a;
+		return _tr(_enum.map(row, _td).join(''));
 	}).join('');
 }
 

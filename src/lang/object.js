@@ -11,12 +11,10 @@
         mix,
         keys,
         values,
-        map,
         tryget,
         tryset,
         pairs,
-        fromPairs,
-        fromKeyValuePairString1
+        fromPairs
     ]
 });
 
