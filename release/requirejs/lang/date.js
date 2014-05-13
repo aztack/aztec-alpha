@@ -22,8 +22,8 @@
  * - daysOfMonth
  * - format
  * - calendar
- * - calendarCache
  * - DateTime
+ * - TimeSpan
  * files:
  * - src/lang/date.js
  */
@@ -355,7 +355,9 @@
         }
     }).aliases({
         next: 'tomorrow',
-        prev: 'yesterday'
+        prev: 'yesterday',
+        sec: 'seconds',
+        min: 'minutes'
     }).statics({
         Today: function() {
             return new DateTime().noon();
@@ -368,6 +370,81 @@
         StandardDateFormat: "{year}/{month,2,0}/{date,2,0}",
         DefaultDateFormat: "{year}-{month,2,0}-{date,2,0}",
         DefaultTimeFormat: "{hour,2,0}:{minute,2,0}:{second,2,0}"
+    });
+    
+    var TimeSpan = _type.create('$root.lang.TimeSpan', Number, {
+        init: function(millis) {
+            this.value = Math.abs(millis);
+            var obj = this.toObject();
+            this.$attr('object', obj);
+        },
+        val: function(v) {
+            if (v == null) {
+                return this.value;
+            } else {
+                this.value = v;
+                this.$attr('object', this.toObject());
+            }
+            return this;
+        },
+        year: function() {
+            return this.object.year;
+        },
+        day: function() {
+            return this.object.year;
+        },
+        hour: function() {
+            return this.object.hour;
+        },
+        minute: function() {
+            return this.object.minute;
+        },
+        second: function() {
+            return this.object.second;
+        },
+        toString: function(fmt) {
+            var obj = this.$attr('object');
+            return _str.format(fmt || '{year}Y {day}D {hour,2,0}:{minute,2,0}:{second,2,0}', obj);
+        },
+        toObject: function() {
+            var obj = TimeSpan.ToObject(this.value);
+            this.$attr('object', obj);
+            return obj;
+        }
+    }).statics({
+        MINUTE: 60,
+        HOUR: 3600,
+        DAY: 86400,
+        YEAR: 315360000,
+        ToObject: function(v) {
+            var ret = {};
+            if (v >= TimeSpan.YEAR) {
+                ret.year = ~~ (v / TimeSpan.YEAR);
+                v -= TimeSpan.YEAR * ret.year;
+            } else {
+                ret.year = 0;
+            }
+            if (v >= TimeSpan.DAY) {
+                ret.day = ~~ (v / TimeSpan.DAY);
+                v -= TimeSpan.DAY * ret.day;
+            } else {
+                ret.day = 0;
+            }
+            if (v >= TimeSpan.HOUR) {
+                ret.hour = ~~ (v / TimeSpan.HOUR);
+                v -= TimeSpan.HOUR * ret.hour;
+            } else {
+                ret.hour = 0;
+            }
+            if (v >= TimeSpan.MINUTE) {
+                ret.minute = ~~ (v / TimeSpan.MINUTE);
+                v -= TimeSpan.MINUTE * ret.minute;
+            } else {
+                ret.minute = 0;
+            }
+            ret.second = v;
+            return ret;
+        }
     });
     
     exports['secondsOfMinute'] = secondsOfMinute;
@@ -383,8 +460,8 @@
     exports['daysOfMonth'] = daysOfMonth;
     exports['format'] = format;
     exports['calendar'] = calendar;
-//     exports['calendarCache'] = calendarCache;
     exports['DateTime'] = DateTime;
+    exports['TimeSpan'] = TimeSpan;
     exports.__doc__ = "Date Utils";
     return exports;
 });
