@@ -95,6 +95,14 @@ module Aztec
             code.gsub(/\t/,'  ')
         end
 
+        def to_umd
+            tpl = Utils.load_template :umd
+            eruby = Erubis::Eruby.new tpl
+            ctx = prepare_context
+            code = eruby.evaluate ctx
+            code.gsub(/\t/,'  ')
+        end
+
         def prepare_context
             ctx = Erubis::Context.new
             ctx[:notransform] = @config.notransform
@@ -109,8 +117,8 @@ module Aztec
                     js << ".set('#{id}',#{t})".indent(8)
                 end
                 js.join("\n").indent(4) + ';'
-                ctx[:xtemplate_amd] = ["require('$root.browser.template')"].concat(js).join("\n").indent(4) + ';'
-                ctx[:xtemplate_requirejs] = ["_tpl"].concat(js).join("\n").indent(4) + ';'
+                ctx[:xtemplate_amd] = ["require('$root.browser.template')"].concat(js).join("\n")+ ';'
+                ctx[:xtemplate_requirejs] = ["_tpl"].concat(js).join("\n")+ ';'
                 imports['_tpl'] = '$root.browser.template';
             else
                 ctx[:xtemplate_amd] = ctx[:xtemplate_requirejs]  = ''
@@ -118,11 +126,11 @@ module Aztec
 
             if not imports.size.zero?
                 ctx[:imports] = imports
-                ctx[:imports_amd] = imports.values.map{|e|"\n" + "'#{e}'".indent(4)}.join(',') + "\n"
+                ctx[:imports_amd] = imports.values.map{|e|"'#{e}'"}.join(',')
                 
-                requires = imports.map{|k,v| "#{k} = require('#{v}')"}.join(",\n" + ' '*8)
+                requires = imports.map{|k,v| "#{k} = require('#{v}')"}.join(",")
                 ctx[:requires] = "var #{requires};"
-                ctx[:imports_requirejs] = imports.size == 0 ? '' : imports.values.map{|e|"\n" + "'#{Utils.namespace_to_file_path(e)}'".indent(4)}.join(',') + "\n"
+                ctx[:imports_requirejs] = imports.size == 0 ? '' : imports.values.map{|e|"'#{Utils.namespace_to_file_path(e)}'"}.join(',')
             else
                 ctx[:imports] = ctx[:imports_amd] = ctx[:imports_requirejs] = {}
                 ctx[:requires] = ''

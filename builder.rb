@@ -8,7 +8,7 @@ require './bin/aztec.rb'
 man = Aztec::JsModuleManager.new('src',:verbose => true)
 
 opt_parser = OptionParser.new do |opts|
-	opts.banner = "builder.rb [options] or `watchr builder.rb`"
+	opts.banner = "builder.rb [options]"
 
 	opts.on('-g [png]','generate dependency graph') do |png|
 		man.save_dependency_graph(png || 'module_dependency.png')
@@ -22,6 +22,13 @@ opt_parser = OptionParser.new do |opts|
 
 	opts.on('-w') do
 		system 'watchr builder.rb'
+	end
+
+	opts.on('-u [namespace]','generate code under namespace with dependency') do |namespace|
+		man.scan
+		s = man.js_with_dependency(namespace)
+		File.write(namespace +'.js',s);
+		$stdout.puts 'Done!'
 	end
 	
 	opts.on('-r [output_dir,overwrite,spec]', Array ,'release code to output_dir,spec=[amd|requirejs]') do |args|		

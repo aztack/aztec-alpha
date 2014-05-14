@@ -199,9 +199,9 @@ module Aztec
             mod == '$root' ? [mod] : _dependency_of(mod, include_self).unshift('$root').uniq
         end
 
-        def js_with_dependency(mod)
+        def js_with_dependency(mod, spec = :requirejs)
             mods = dependency_of mod, true
-            js mods
+            js mods, spec
         end
 
         def css_with_dependency(mod)
@@ -209,15 +209,16 @@ module Aztec
             css mods
         end
 
-        def js(mods)
+        def js(mods, spec)
             js = mods.join("\n").to_comment.endl
             js << mods.inject("") do |code, mod|
-                if $man[mod].nil?
+                if self[mod].nil?
                     code
                 else
-                    code << self.to_ecma(mod)
+                    code << self.to_ecma(mod, spec)
                 end
             end
+            js
         end
 
         def css(mods)

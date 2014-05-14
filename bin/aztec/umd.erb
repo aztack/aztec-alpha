@@ -1,0 +1,32 @@
+<%=@meta%>
+<% if @notransform -%>
+<%=@original -%>
+<% else %>
+(function (root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        define('<%=@name_requirejs%>',[<% unless @imports_requirejs.empty?%><%=@imports_requirejs%><% end %>], factory);
+    } else {
+        if(typeof $root == 'undefined') {
+            $root = {};
+        }
+        root['<%=@name%>'] = factory(<% unless @imports.empty?%><%=@imports.values.join(',')%><% end %>);
+    }
+}(this, function (<%=@imports.keys.join(',')%>) {
+    <%=@usestrict%>
+    
+    <% if not @custom_return -%>
+    var exports = {};
+    <% end -%>
+    
+    <%=@xtemplate_requirejs%>
+    <%=@original%>
+    <%=@sigils%>
+    
+    <% if not @custom_return -%>
+    <%=@exports%>
+    <% end -%>
+    
+    <%=@returnstatement%>
+}));
+//end of <%=@name%>
+<% end %>
