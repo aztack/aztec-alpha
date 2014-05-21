@@ -1,0 +1,74 @@
+<html>
+    <head>
+        <title>Calendar</title>
+        <base href="../../release/requirejs/" />
+        <style>
+        .ui-calendar td, .ui-calendar th {
+            cursor: pointer;
+        }
+        .ui-calendar td:hover{
+            background: #efefef;
+        }
+        .ui-calendar .selected, .ui-calendar .today.selected {
+            background: #fdfdac;
+        }
+        .ui-calendar .today {
+            background: #ccc;
+        }
+        .ui-calendar-prev-month, .ui-calendar-next-month {
+            display:inline-block;
+            height: 1em;
+            width: 2em;
+        }
+        .ui-calendar-prev-month {
+            background : url(ui/images/calendar-prev.png) center center no-repeat;
+            float: left;
+        }
+        .ui-calendar-next-month {
+            background : url(ui/images/calendar-next.png) center center no-repeat;
+            float: right;
+        }
+        </style>
+        <script src="requirejs.js"></script>
+        <link rel="stylesheet" href="aztec.css">
+        <link rel="stylesheet" href="ui/table.css">
+        <link rel="stylesheet" href="ui/menu.css">
+    </head>
+    <body>
+        <script type="text/xtemplate" xtemplate="$root.ui.Calendar.header,delete" sigil-class="Calendar" style="display:none;">
+            <tr>
+                <th colspan="7" style="text-align: center;">
+                  <span class="ui-button ui-calendar-prev-month" data-action="prev-month"></span>
+                  <span class="ui-calendar-title" sigil=".title"></span>
+                  <span class="ui-button ui-calendar-next-month" data-action="next-month"></span>
+                </th>
+            </tr>
+        </script>
+        <script type="text/xtemplate" xtemplate="$root.ui.Calendar.footer,delete" sigil-class="Calendar" style="display:none;">
+        </script>
+        <div id="calendar" style="width:400px;height:200px;margin:3em auto;"></div>
+    </body>
+    <script>
+        require(['lang/date','ui/calendar','ui/menu'], function(date, cale, menu) {
+            window.date = date;
+            a = new date.DateTime();
+            Calendar = cale.Calendar;
+            c = new Calendar();
+            c.appendTo('#calendar');
+            m = new menu.Menu();
+            m.asContextMenuOf(c).on(m.$class.Events.BeforeShowAt,function(e,d){
+            	if(d.target.tagName.toLowerCase() != 'td') {
+            		d.isShow = false;
+            		return;
+            	} else {
+            		d.isShow = true;
+            	}
+                var o = c.getCellData(d.target),
+                    dt = new date.DateTime().set(o).noon();
+                m.setItems([dt.toString(true), dt.toString()]);
+            }).on(m.$class.Events.OnItemSelected,function(e,item){
+                alert(item.text());
+            })
+        });
+    </script>
+</html>

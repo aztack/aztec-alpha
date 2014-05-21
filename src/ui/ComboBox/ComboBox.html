@@ -1,0 +1,27 @@
+<html>
+    <head>
+        <title>ComboBox</title>
+        <base href="../../release/requirejs/" />
+        <script src="requirejs.js"></script>
+        <link rel="stylesheet" type="text/css" href="ui/menu.css">
+    </head>
+
+    <body>
+    <div class="ui-combobox" xtemplate="$root.ui.ComboBox.box,delete" style="display:none">
+        
+    </div>
+        <script>
+            require(['ui/comboBox'], function(comboBox) {
+                ComboBox = comboBox.ComboBox;
+                a = new ComboBox();
+                a.menu.add(123)
+                a.menu.add(456)
+                a.menu.add(789);
+                a.appendTo('body');
+                a.on(ComboBox.Events.OnItemSelected, function(){
+                    console.log(arguments);
+                });
+            });
+        </script>
+    </body>
+</html>

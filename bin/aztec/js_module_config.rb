@@ -47,6 +47,10 @@ module Aztec
             @config['files']
         end
 
+        def directory
+            @config['directory']
+        end
+
         def <<(config)
             merge('imports', config, :merge, {})
             merge('exports', config, :'+', [])
@@ -55,6 +59,10 @@ module Aztec
 
         def to_ecma
             @config.to_yaml
+        end
+
+        def deprecated?
+            not @config['deprecated'].nil?
         end
 
         private

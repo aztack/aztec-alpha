@@ -1,7 +1,8 @@
 ({
   description: 'Handlebars',
   namespace: Handlebars,
-  notransform: true
+  notransform: true,
+  priority: 0
 });
 /*!
 

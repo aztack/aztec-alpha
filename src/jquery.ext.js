@@ -33,7 +33,7 @@
 
     if (typeof jQuery !== 'undefined') {
         jQuery.fn.sigil = function(sigil, returnSelector) {
-            var clazz, selector, typename, hashkey, sels, obj;
+            var clazz, selector, typename, hashkey, sels, obj, parent;
             if (typeof this.$getClass == 'function') {
                 clazz = this.$getClass();
                 typename = clazz.typename();
@@ -124,6 +124,7 @@
                 var instance = !_type.isFunction(clazz.create) ?
                     null : clazz.create(extractCreateOptions(ele, opts.prefix || 'az'));
                 if (callback) callback(instance);
+                instance.removeAttr('az-typename');
             });
         };
 

@@ -1,0 +1,36 @@
+<html>
+    <head>
+        <title>TextField</title>
+        <base href="../../release/requirejs/" />
+        <style>
+            .ui-textfield {
+                border: 1px solid gray;
+                padding: 0;
+                margin: 0;
+                outline: none;
+            }
+            .placeholder { color: #aaa; }
+        </style>
+        <script src="requirejs.js"></script>
+    </head>
+
+    <body>
+        <input xtemplate="$root.ui.TextField.textfield,delete"
+            type="text"
+            class="ui-textfield"
+            _placeholder="placeholder"
+            sigil=".tag" 
+            sigil-class="TextField" 
+            style="display:none" />
+
+        <input id="tf" placeholder="test"/>
+
+        <script>
+            require(['ui/textField'], function(textField) {
+                TextField = textField.TextField;
+                a = new TextField($('#tf'));
+                a.appendTo('body');
+            });
+        </script>
+    </body>
+</html>

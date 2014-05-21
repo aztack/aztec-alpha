@@ -1,5 +1,6 @@
 ({
     description: 'Handlebars Extension',
     namespace: Handlebars,
-    notransform: true
+    notransform: true,
+	priority: 1
 });

@@ -1,0 +1,59 @@
+<html>
+    <head>
+        <title>Overlay</title>
+        <base href="../../release/requirejs/" />
+        <style>
+            .ui-overlay {
+                position: fixed;
+                width: 100%;
+                height: 100%;
+                opacity: 0.5;
+                left: 0;
+                top: 0;
+                background-color: #000;
+                z-index: 9999
+            }
+        </style>
+        <style ignore>
+            body{margin:0;}
+        </style>
+        <script src="requirejs.js"></script>
+    </head>
+    <body>
+        <iframe src="about:blank"unselectable="on" tabindex="-1" xtemplate="$root.ui.overlay.iframeMask,delete" class="ui-overlay" style="display:none;"></iframe>
+        <div xtemplate="$root.ui.overlay.mask,delete" class="ui-overlay" unselectable="on" tabindex="-1" style="display:none;"></div>
+        <div>
+        Hello World!<br/>
+        Hello World!<br/>
+        Hello World!<br/>
+        Hello World!<br/>
+        Hello World!<br/>
+        Hello World!<br/>
+        Hello World!<br/>
+        Hello World!<br/>
+        Hello World!<br/>
+        Hello World!<br/>
+        Hello World!<br/>
+        Hello World!<br/>
+        Hello World!<br/>
+        Hello World!<br/>
+        Hello World!<br/>
+        Hello World!<br/>
+        Hello World!<br/>
+        Hello World!<br/>
+        Hello World!<br/>
+        Hello World!<br/>
+        Hello World!<br/>
+        Hello World!<br/>
+        Hello World!<br/>
+        Hello World!<br/>
+        </div>
+    </body>
+    <script>
+    require(['ui/overlay'],function(overlay){
+        var Mask = overlay.Mask;
+        m = Mask.create();
+        m.show();
+    });
+    </script>
+</html>

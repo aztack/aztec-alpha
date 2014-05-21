@@ -22,8 +22,12 @@ module Aztec
             @config['files'] = [path.sub(%r|^.*/src|,'')]
             parse
         end
+        def basename
+            File.basename(@path)
+        end
+
         def dup
-            m = JsModule.new(@path)
+            JsModule.new(@path)
         end
 
         def <=>(other)
@@ -38,6 +42,7 @@ module Aztec
 
         attr_reader :config
         attr_reader :source
+        attr_reader :path
         
         def parse(drop_config_object = true)
             if @config.notransform
@@ -110,6 +115,7 @@ module Aztec
             ctx[:name_requirejs] = Utils.namespace_to_file_path(name)
             imports = @config.imports
             
+            #xtemplate
             if not @xtemplate.nil? and @xtemplate.templates.size > 0
                 js = []
                 @xtemplate.templates.each do |data, t|
@@ -124,6 +130,7 @@ module Aztec
                 ctx[:xtemplate_amd] = ctx[:xtemplate_requirejs]  = ''
             end
 
+            #imports
             if not imports.size.zero?
                 ctx[:imports] = imports
                 ctx[:imports_amd] = imports.values.map{|e|"'#{e}'"}.join(',')
@@ -161,6 +168,7 @@ module Aztec
             ctx[:original] = is_root ? @source : @source.indent(4)
             ctx[:usestrict] = "//'use strict';"
             
+            #exports
             doc = "\n" + ("exports.__doc__ = " + @config['description'].inspect + ";").indent(4)
             exports = @config.exports
             if not exports.size.zero?

@@ -6,26 +6,19 @@
     if (typeof define === 'function' && define.amd) {
         define('<%=@name_requirejs%>',[<% unless @imports_requirejs.empty?%><%=@imports_requirejs%><% end %>], factory);
     } else {
-        if(typeof $root == 'undefined') {
-            $root = {};
-        }
-        root['<%=@name%>'] = factory(<% unless @imports.empty?%><%=@imports.values.join(',')%><% end %>);
+        var exports = $root._createNS('<%=@name%>');
+        <% @mods = @imports.values.clone %>
+        factory(<%=@mods.push('exports').join(',')%>);
     }
-}(this, function (<%=@imports.keys.join(',')%>) {
+}(this, function (<%=@imports.keys.push('exports').join(',')%>) {
     <%=@usestrict%>
-    
-    <% if not @custom_return -%>
-    var exports = {};
-    <% end -%>
-    
+    exports = exports || {};
     <%=@xtemplate_requirejs%>
     <%=@original%>
     <%=@sigils%>
-    
     <% if not @custom_return -%>
     <%=@exports%>
     <% end -%>
-    
     <%=@returnstatement%>
 }));
 //end of <%=@name%>

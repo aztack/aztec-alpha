@@ -1,0 +1,31 @@
+/* $root.ui.calendar */
+.ui-calendar td {
+cursor: pointer;
+}
+.ui-calendar th {
+cursor: pointer;
+}
+.ui-calendar td:hover {
+background: #efefef;
+}
+.ui-calendar .selected {
+background: #fdfdac;
+}
+.ui-calendar .today.selected {
+background: #fdfdac;
+}
+.ui-calendar .today {
+background: #ccc;
+}
+.ui-calendar-prev-month {
+display: inline-block; height: 1em; width: 2em;
+}
+.ui-calendar-next-month {
+display: inline-block; height: 1em; width: 2em;
+}
+.ui-calendar-prev-month {
+background: url(ui/images/calendar-prev.png) center center no-repeat; float: left;
+}
+.ui-calendar-next-month {
+background: url(ui/images/calendar-next.png) center center no-repeat; float: right;
+}

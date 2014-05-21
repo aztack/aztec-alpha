@@ -1,0 +1,10 @@
+/* $root.ui.spinEdit */
+.ui-spinedit {
+border: 1px solid #ccc; background: #fff; display: inline-block;
+}
+.ui-spinedit .button {
+cursor: pointer; list-style-type: none; -webkit-user-select: none;
+}
+.ui-spinedit .buttons {
+margin: 0; padding: 0;
+}

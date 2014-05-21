@@ -1,0 +1,57 @@
+<html>
+    <head>
+        <title>Slider</title>
+        <base href="../../release/requirejs/" />
+        <!--[if IE]><script type="text/javascript">
+            // Fix for IE ignoring relative base tags.
+            (function() {
+                var baseTag = document.getElementsByTagName('base')[0];
+                baseTag.href = baseTag.href;
+            })();
+        </script><![endif]-->
+        <style>
+            .ui-slider {
+                position: relative;
+                width: 100%;
+                height: 16px;
+                border: 1px solid red;
+            }
+            .ui-slider-line {
+                position: absolute;
+                height: 1px;
+                width: 100%;
+                overflow: visible;
+                background-color: #CCC;
+            }
+            .ui-slider-handle {
+                width: 10px;
+                height: 16px;
+                background: gray;
+                position: absolute;
+                left: 0;
+                cursor: pointer;
+            }
+        </style>
+        <style ignore>
+
+        </style>
+        <script src="requirejs.js"></script>
+        <link rel="stylesheet" href="aztec.css">
+        <link rel="stylesheet" href="ui/slider.css">
+    </head>
+    <body>
+        <div xtemplate="$root.ui.slider.Slider,delete" class="ui-slider" sigil-class="Slider" style="display:none">
+            <div class="ui-slider-line" sigil=".line"></div>
+            <div class="ui-slider-handle" sigil=".handle"></div>
+        </div>
+        <div style="margin:5em;">
+            <div id="slider" style="width:200px"></div>
+        </div>
+    </body>
+    <script>
+        require(['ui/slider'], function(slider) {
+            s = new slider.Slider('#slider',{value:50});
+        });
+
+    </script>
+</html>

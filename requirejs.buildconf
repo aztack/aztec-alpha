@@ -1,0 +1,10 @@
+{
+	"desc": "",
+	"output_dir": "requirejs",
+	"css_dir": "",
+	"img_dir": "",
+	"excluded": {
+		"jQuery":[0],
+		"Handlebars":[0]
+	}
+}

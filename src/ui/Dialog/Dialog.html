@@ -1,0 +1,141 @@
+<html>
+    <head>
+        <title>Dialog</title>
+        <style>
+            .ui-dialog {
+                position: absolute;
+                left: 0;
+                top: 0;
+                border: 1px solid #999;
+                font-size: .875em;
+                min-height: 80px;
+                min-width: 200px;
+                z-index: 10000;
+                background-color: white;
+                box-shadow: 0 0 8px rgba(0,0,0,0.5);
+                max-width: 500px;
+                min-height: 150px;
+                min-width: 300px;
+            }
+            .ui-generic-dialog, .ui-dialog-header{
+                -webkit-user-select: none;
+                -moz-user-select:none;
+                -ms-user-select:none;
+                -o-user-select:none;
+                user-select:none;
+            }
+            .ui-dialog-header {
+                background-color: #eee;
+                border-bottom: 1px solid #ddd;
+                color: #000;
+                text-align: center;
+                vertical-align: middle;
+                cursor: move;
+                min-height:1em;
+                line-height: 24px;
+                min-height: 24px;
+            }
+            .ui-dialog-body {
+                padding: 5px;
+            }
+            .ui-dialog-footer {
+                text-align: right;
+                position: absolute;
+                bottom: 0.2em;
+                right: 0.2em;
+            }
+            .ui-dialog-button {
+                background-color: white;
+                border: 1px solid #ccc;
+                cursor: pointer;
+                min-width: 1em;
+                min-height: 24px;
+            }
+            .ui-dialog-close-button {
+                border-left: 1px solid transparent;
+                width: 24px;
+                height: 24px;
+                float: right;
+                cursor: pointer;
+                background: url(images/dialog-close-button.png) no-repeat center center;
+            }
+            .ui-dialog-close-button:hover{
+                border-left: 1px solid #ddd;
+                background: url(images/dialog-close-button-hover.png) no-repeat center center;
+            }
+            .ui-dialog-button:hover {
+                background-color: #eee;
+            }
+
+            .ui-dialog-notice {
+                min-height: 1em;
+                min-width: 1em;
+                cursor: default;
+            }
+        </style>
+        <link rel="stylesheet" href="../../../release/css/overlay.css" />
+        <script src="../../../release/scripts/requirejs.js"></script>
+    </head>
+
+    <body>
+        <div xtemplate="$root.ui.Dialog.dialog,delete" sigil-class="Dialog" class="ui-dialog" sigil=".dialog" style="display:none">
+            <div class="ui-dialog-header" sigil=".header">
+                <a class="ui-dialog-title" sigil=".dialog-title"></a>
+                <a class="ui-dialog-close-button" sigil=".close-button"></a>
+            </div>
+            <div class="ui-dialog-body" sigil=".body"></div>
+            <div class="ui-dialog-footer" sigil=".footer"></div>
+        </div>
+
+        <button xtemplate="$root.ui.Dialog.button,delete" data-action="ok" class="ui-dialog-button" sigil=".button" sigil-class="Dialog" style="display:none"></button>
+
+        <a xtemplate="$root.ui.Dialog.titleButton,delete" class="ui-dialog-close-button" sigil-calss="Dialog" sigil=".close-button">×</a>
+
+        <div style="width:400px;height:400px;background-color: gray"></div>
+
+        <script>
+            require.config({
+                baseUrl: '../../../release/scripts/'
+            });
+            require(['ui/dialog','ui/overlay'], function(dialog) {
+                window.dialog = dialog
+                Dialog = dialog.Dialog;
+                Alert = dialog.Alert;
+                Notice = dialog.Notice;
+
+                $alert = dialog.alert;
+                d = new Alert({
+                    title: 'Hello',
+                    mask: true
+                });
+                d.on(Dialog.Events.OnShowAt, function(e, x, y) {
+                    console.log(x, y);
+                });
+
+                d.setTitle('Hello World')
+                    .setContent('<p><center>你好，世界</center></p>')
+                    .showAt(100, 100)
+                    .setButtons('确定', '取消')
+                    .on(Dialog.Events.OnButtonClick, function(e, index, text) {
+                        if (index == 1) {
+                            d.setContent('Ciao, mondo')
+                                .setButtons(['Bene', 'Cancellare'])
+                                .showAt(100, 200);
+                        } else {
+                            dialog.notice("Operation Successfully Performed!", 4000, {
+                                autoReposition: true,
+                                closeWhenLostFocus: true,
+                                mask: true
+                            });
+                        }
+                    });
+
+                $('body').click(function() {
+                    d.show();
+                });
+
+                a = $alert();
+            });
+        </script>
+    </body>
+</html>

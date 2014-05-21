@@ -1,7 +1,8 @@
 ({
 	description: 'jQuery',
 	namespace: jQuery,
-	returns: jQuery
+	returns: jQuery,
+	priority: 0
 });
 /*!
  * jQuery JavaScript Library v1.10.2

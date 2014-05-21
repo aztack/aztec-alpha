@@ -7,8 +7,12 @@ require './bin/aztec.rb'
 
 man = Aztec::JsModuleManager.new('src',:verbose => true)
 
-opt_parser = OptionParser.new do |opts|
+OptionParser.new do |opts|
 	opts.banner = "builder.rb [options]"
+
+	opts.on('-w','release code when source code changed') do
+		system "watchr builder.rb"
+	end
 
 	opts.on('-g [png]','generate dependency graph') do |png|
 		man.save_dependency_graph(png || 'module_dependency.png')
@@ -20,13 +24,10 @@ opt_parser = OptionParser.new do |opts|
 		pp man.dependency_hash
 	end
 
-	opts.on('-w') do
-		system 'watchr builder.rb'
-	end
-
-	opts.on('-u [namespace]','generate code under namespace with dependency') do |namespace|
+	opts.on('-u [namespace,spec,exclude]', Array, 'generate code under namespace with dependency') do |args|
+		namespace,spec,exclude = *args
 		man.scan
-		s = man.js_with_dependency(namespace)
+		s = man.js_with_dependency(namespace,spec,exclude.split(';'))
 		File.write(namespace +'.js',s);
 		$stdout.puts 'Done!'
 	end
@@ -44,7 +45,7 @@ opt_parser = OptionParser.new do |opts|
 		end
 		
 		overwrite = !!output_dir[release_dir] if overwrite.nil?
-		spec = :requirejs if spec.nil?
+		spec = :umd if spec.nil?
 
 		if File.absolute_path(output_dir)[File.absolute_path('./src')]
 			$stderr.puts "DO NOT release code into the source directory!!!"
@@ -61,9 +62,6 @@ opt_parser = OptionParser.new do |opts|
 			man.release output_dir, overwrite, spec.to_sym do |path|
 				$stdout.puts path
 			end
-			$stdout.puts "Copying Images..."
-			FileUtils.cp_r "src/ui/images", "#{output_dir}/ui/images"
-			$stdout.puts 'Done!'
 		end
 	end
 
@@ -72,9 +70,7 @@ opt_parser = OptionParser.new do |opts|
 		exit
 	end
 
-end
-
-opt_parser.parse! ARGV
+end.parse! ARGV
 
 if $0 =~/watchr/
 	man.scan
@@ -88,7 +84,7 @@ if $0 =~/watchr/
 		begin
 			c = count[path] += 1
 			total += 1
-			man.release_single_js('./release/requirejs', path) do |namespace|
+			man.release_single_js('./release', path) do |namespace|
 				$stdout.write " Re-generating... #{c}/#{total}"
 			end
 			$stdout.puts " Done!"

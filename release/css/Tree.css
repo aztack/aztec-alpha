@@ -1,0 +1,61 @@
+/* $root.ui.tree */
+.ui-tree {
+overflow: auto;
+}
+.ui-tree ul {
+margin: 0; padding: 0; list-style-type: none;
+}
+.ui-tree a {
+color: black; text-decoration: none;
+}
+.ui-tree a:active {
+color: black; text-decoration: none;
+}
+.ui-tree .root {
+background: none;
+}
+.ui-tree li {
+cursor: pointer; background-image: url(ui/images/tree.png); background-position: -292px -4px; background-repeat: repeat-y;
+}
+.ui-tree li ul {
+display: none;
+}
+.ui-tree .open ul {
+display: inherit;
+}
+.ui-tree .icon {
+width: 20px; height: 20px; display: inline-block; background-image: url(ui/images/tree.png); cursor: pointer;
+}
+.ui-tree .theme {
+background-position: -260px -4px;
+}
+.ui-tree .checkbox {
+background-position: -166px -4px;
+}
+.ui-tree .checked .checkbox {
+background-position: -229px -4px;
+}
+.ui-tree .expander {
+background-position: -68px -4px;
+}
+.ui-tree .last .expander {
+background-position: -68px -4px;
+}
+.ui-tree .more .close-expander {
+background-position: -100px -4px;
+}
+.ui-tree .more .open-expander {
+background-position: -133px -72px;
+}
+.ui-tree .last {
+background: none;
+}
+.ui-tree .anchor {
+line-height: 20px;
+}
+.ui-tree .text {
+margin-left: 4px;
+}
+.ui-tree.nocheckbox .checkbox {
+display: none;
+}

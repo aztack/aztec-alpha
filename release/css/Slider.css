@@ -1,0 +1,10 @@
+/* $root.ui.slider */
+.ui-slider {
+position: relative; width: 100%; height: 16px; border: 1px solid red;
+}
+.ui-slider-line {
+position: absolute; height: 1px; width: 100%; overflow: visible; background-color: #CCC;
+}
+.ui-slider-handle {
+width: 10px; height: 16px; background: gray; position: absolute; left: 0; cursor: pointer;
+}

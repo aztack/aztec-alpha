@@ -3,7 +3,6 @@
     namespace: $root.browser.template,
     imports: {
         _type: $root.lang.type,
-        _dom: $root.browser.dom,
         $: jQuery
     },
     exports: [
@@ -28,6 +27,29 @@ function stripAttr(matched, precedeSpace, succeedSpace) {
     return precedeSpace && succeedSpace ? ' ' : '';
 }
 
+function removeWhiteTextNode(node) {
+    var child, next;
+    if (!node) return;
+
+    switch (node.nodeType) {
+        case 3: //TextNode
+            if (node.nodeValue && node.nodeValue.match(/^\s*$/)) {
+                node.parentNode.removeChild(node);
+            }
+            break;
+        case 1: // ElementNode
+        case 9: // DocumentNode
+            child = node.firstChild;
+            while (child) {
+                next = child.nextSibling;
+                removeWhiteTextNode(next);
+                child = next;
+            }
+            break;
+    }
+    return node;
+}
+
 //exports
 
 /**
@@ -37,9 +59,8 @@ function stripAttr(matched, precedeSpace, succeedSpace) {
  * @return {Undefined}
  */
 function collect(force) {
-    if (_type.isUndefined(force)) {
-        force = false;
-    }
+    if (typeof force == 'undefined') force = false;
+    
     $(XTEMPLATE_ID_ATTR_SEL).each(function(i, ele) {
         var n = $(ele),
             data = n.attr(XTEMPLATE_ID_ATTR).split(','),
@@ -49,7 +70,7 @@ function collect(force) {
             html = n.text();
         } else {
             tmp = n.clone().removeAttr(XTEMPLATE_ID_ATTR);
-            tmp = $('<div>').append(_dom.removeWhiteTextNode(tmp[0]));
+            tmp = $('<div>').append(removeWhiteTextNode(tmp[0]));
             html = tmp.html();
         }
         if (data.length > 0 && data[1] == 'delete') {

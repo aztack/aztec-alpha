@@ -557,6 +557,7 @@ function Class(name, parent) {
     clazz$copyParentsEvents.call(_);
     if (parent) {
         //create a instance of parent without invoke constructor
+        //object function is in type.js
         _.prototype = object(parent.prototype); //, parent.prototype || parent);
         //_.prototype = new parent();
 

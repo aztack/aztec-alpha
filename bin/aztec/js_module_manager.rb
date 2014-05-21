@@ -46,6 +46,7 @@ module Aztec
                 return nil if m.nil?
             end
             cfg = m.config
+            return if cfg.deprecated?
             @modules[m.namespace] << m
             if @dependency[m.namespace].nil?
                 @dependency[m.namespace] = cfg.imports.nil? ? [] : cfg.imports.values
@@ -61,7 +62,7 @@ module Aztec
             init.scan
         end
 
-        def to_ecma(namespace, spec = :amd)
+        def to_ecma(namespace, spec = :umd)
             namespace = namespace.namespace if namespace.is_a? JsModule
             mods = @modules[namespace].sort
             return '' if mods.size.zero?
@@ -79,9 +80,9 @@ module Aztec
                 tmp.parse false
                 js.puts tmp.send(:"to_#{spec}")
             end
-            if namespace == "$root"
-                js.puts js_dependency_module
-            end
+            #if namespace == "$root"
+            #    js.puts js_dependency_module
+            #end
             js.string
         end
 
@@ -89,8 +90,10 @@ module Aztec
             #TODO
         end
 
-        def release(output_dir, overwrite = false, spec = :requirejs)
+        def release(output_dir, overwrite = false, spec = :umd)
             FileUtils.mkdir output_dir unless File.exists? output_dir
+            FileUtils.mkdir "#{output_dir}/css" rescue nil
+            FileUtils.mkdir "#{output_dir}/images" rescue nil
             #styles = StringIO.new
             @modules.each do |namespace, m|
                 #sort by priority
@@ -98,7 +101,17 @@ module Aztec
                 main = m[0]
                 mods = m[1..-1]
                 segment = Utils.namespace_to_file_path(main.namespace)
-                path = "#{output_dir}/#{segment}.js"
+                output_images_path = nil
+                filename_noext = File.basename(main.basename,'.js')
+                src_images_path = "#{File.dirname(main.path)}/images"
+                #if main.config.directory and false
+                    #path = "#{output_dir}/#{main.config.directory}/#{main.basename}"
+                    #output_images_path = "#{output_dir}/#{main.config.directory}/images"
+                    #output_css_path = "#{output_dir}/#{main.config.directory}/#{filename_noext}.css"
+                #else
+                    path = "#{output_dir}/scripts/#{segment}.js"
+                    output_css_path = "#{output_dir}/css/#{filename_noext}.css"
+                #end
                 raise "#{path} already exists!" if !overwrite and File.exists?(path)
                 yield path if block_given?
                 
@@ -119,10 +132,13 @@ module Aztec
                 #mods.each {|mod|styles.write mod.styles}
                 css_text = main.styles
                 if css_text and css_text.size > 0
-                    path = "#{output_dir}/#{segment}.css"
-                    File.open(path,"w:utf-8") do |f|
+                    File.open(output_css_path,"w:utf-8") do |f|
                         f.write main.styles
                     end
+                end
+
+                if output_images_path and File.exist?(src_images_path)
+                    FileUtils.cp_r "#{output_dir}/images/", output_images_path
                 end
             end
             #css_file_path = "#{output_dir}/#{Aztec.name('.css')}"
@@ -137,7 +153,7 @@ module Aztec
             #end
         end
 
-        def release_single_js(output_dir, path, overwrite = true, spec = :requirejs) 
+        def release_single_js(output_dir, path, overwrite = true, spec = :umd) 
             FileUtils.mkdir output_dir unless File.exists? output_dir
             ns = Utils.file_path_to_namespace(path)
 
@@ -153,7 +169,7 @@ module Aztec
             mods = mod_changed[1..-1]
 
             segment = Utils.namespace_to_file_path(main.namespace)
-            output_path = "#{output_dir}/#{segment}.js"
+            output_path = "#{output_dir}/scripts/#{segment}.js"
             raise "#{path} already exists!" if !overwrite and File.exists?(path)
             yield path if block_given?
             
@@ -199,8 +215,9 @@ module Aztec
             mod == '$root' ? [mod] : _dependency_of(mod, include_self).unshift('$root').uniq
         end
 
-        def js_with_dependency(mod, spec = :requirejs)
+        def js_with_dependency(mod, spec = :umd,exclude = [])
             mods = dependency_of mod, true
+			mods.reject!{|m|exclude.include? m} if not exclude.nil? and exclude.size > 0
             js mods, spec
         end
 
