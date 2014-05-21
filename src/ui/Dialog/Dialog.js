@@ -47,7 +47,7 @@ var Dialog = _type.create('$root.ui.dialog.Dialog', jQuery, {
         if (!this.parent().length) {
             this.appendTo('body');
         }
-        this.base();
+        this.base.apply(this, arguments);
     },
     showAt: function() {
         var parent = this.parent(),
@@ -96,7 +96,15 @@ var Dialog = _type.create('$root.ui.dialog.Dialog', jQuery, {
         return Dialog_setPart(this, 'header', arguments);
     },
     setTitle: function(title) {
-        this.sigil('.dialog-title').text(title);
+        var titleEle = this.sigil('.dialog-title');
+        varArg(arguments, this)
+            .when('htmlFragment', function(html) {
+                titleEle.html(html);
+            })
+            .when('*', function(arg) {
+                titleEle.text(String(arg));
+            })
+            .resolve();
         return this;
     },
     setBody: function() {
@@ -159,6 +167,11 @@ var Dialog = _type.create('$root.ui.dialog.Dialog', jQuery, {
     Position: {
         Center: 'center',
         GoldenRation: 'golden'
+    },
+    Parts: {
+        IconError: $(tpl('icon')).addClass('error'),
+        IconInfo: $(tpl('icon')).addClass('info'),
+        IconWarnning: $(tpl('icon')).addClass('warnning')
     }
 }).events({
     OnShowAt: 'ShowAt(event,x,y).Dialog',
@@ -240,14 +253,14 @@ function Dialog_initialize(self, opts) {
         }
     });
 
-    if (!!opts.mask) {
+    if ( !! opts.mask) {
         self.$attr('mask', _overlay.Mask.create());
         self.mask.appendTo('body').click(function() {
             self.close();
         }).before(self);
     }
 
-    if (!!opts.autoReposition) {
+    if ( !! opts.autoReposition) {
         $(window).on('resize', function() {
             var pos = self.data('showAt'),
                 coord = Dialog_getShowPosition(self, pos[0], pos[1]);
@@ -257,7 +270,7 @@ function Dialog_initialize(self, opts) {
             });
         });
     }
-    if (!!opts.closeWhenLostFocus) {
+    if ( !! opts.closeWhenLostFocus) {
         setTimeout(function() {
             $(document).click(function(e) {
                 if (!self.find(e.target).length) self.remove();

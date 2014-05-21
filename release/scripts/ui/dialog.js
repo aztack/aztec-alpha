@@ -34,9 +34,10 @@
     //'use strict';
     exports = exports || {};
     _tpl
-        .set('$root.ui.Dialog.dialog',"<div class=\"ui-dialog\">\n<div class=\"ui-dialog-header\">\n<a class=\"ui-dialog-title\"></a><a class=\"ui-dialog-close-button\"></a>\n</div>\n<div class=\"ui-dialog-body\"></div>\n<div class=\"ui-dialog-footer\"></div>\n</div>\n")
+        .set('$root.ui.Dialog.dialog',"<div class=\"ui-dialog\">\n<div class=\"ui-dialog-header\">\n<a class=\"ui-dialog-title\"></a><a class=\"ui-dialog-title-button close\"></a>\n</div>\n<div class=\"ui-dialog-body\">\n            </div>\n<div class=\"ui-dialog-footer\"></div>\n</div>\n")
         .set('$root.ui.Dialog.button',"<button data-action=\"ok\" class=\"ui-dialog-button\"></button>\n")
-        .set('$root.ui.Dialog.titleButton',"<a class=\"ui-dialog-close-button\" sigil-calss=\"Dialog\">&times;</a>\n");
+        .set('$root.ui.Dialog.titleButton',"<a class=\"ui-dialog-close-button\" sigil-calss=\"Dialog\">&times;</a>\n")
+        .set('$root.ui.Dialog.icon',"<span class=\"ui-dialog-icon\"></span>\n");
         ///vars
     var varArg = _arguments.varArg,
         tpl = _tpl.id$('$root.ui.Dialog');
@@ -62,7 +63,7 @@
             if (!this.parent().length) {
                 this.appendTo('body');
             }
-            this.base();
+            this.base.apply(this, arguments);
         },
         showAt: function() {
             var parent = this.parent(),
@@ -111,7 +112,15 @@
             return Dialog_setPart(this, 'header', arguments);
         },
         setTitle: function(title) {
-            this.sigil('.dialog-title').text(title);
+            var titleEle = this.sigil('.dialog-title');
+            varArg(arguments, this)
+                .when('htmlFragment', function(html) {
+                    titleEle.html(html);
+                })
+                .when('*', function(arg) {
+                    titleEle.text(String(arg));
+                })
+                .resolve();
             return this;
         },
         setBody: function() {
@@ -174,6 +183,11 @@
         Position: {
             Center: 'center',
             GoldenRation: 'golden'
+        },
+        Parts: {
+            IconError: $(tpl('icon')).addClass('error'),
+            IconInfo: $(tpl('icon')).addClass('info'),
+            IconWarnning: $(tpl('icon')).addClass('warnning')
         }
     }).events({
         OnShowAt: 'ShowAt(event,x,y).Dialog',
@@ -255,14 +269,14 @@
             }
         });
     
-        if (!!opts.mask) {
+        if ( !! opts.mask) {
             self.$attr('mask', _overlay.Mask.create());
             self.mask.appendTo('body').click(function() {
                 self.close();
             }).before(self);
         }
     
-        if (!!opts.autoReposition) {
+        if ( !! opts.autoReposition) {
             $(window).on('resize', function() {
                 var pos = self.data('showAt'),
                     coord = Dialog_getShowPosition(self, pos[0], pos[1]);
@@ -272,7 +286,7 @@
                 });
             });
         }
-        if (!!opts.closeWhenLostFocus) {
+        if ( !! opts.closeWhenLostFocus) {
             setTimeout(function() {
                 $(document).click(function(e) {
                     if (!self.find(e.target).length) self.remove();
@@ -465,7 +479,7 @@
     if (!Dialog.Sigils) Dialog.Sigils = {};
     Dialog.Sigils[".header"] = ".ui-dialog-header";
     Dialog.Sigils[".dialog-title"] = ".ui-dialog-title";
-    Dialog.Sigils[".close-button"] = ".ui-dialog-close-button";
+    Dialog.Sigils[".close-button"] = ".close";
     Dialog.Sigils[".body"] = ".ui-dialog-body";
     Dialog.Sigils[".footer"] = ".ui-dialog-footer";
     Dialog.Sigils[".dialog"] = ".ui-dialog";

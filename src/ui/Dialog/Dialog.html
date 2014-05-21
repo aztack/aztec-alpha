@@ -51,20 +51,25 @@
                 min-width: 1em;
                 min-height: 24px;
             }
-            .ui-dialog-close-button {
+            .ui-dialog-title-button {
                 border-left: 1px solid transparent;
                 width: 24px;
                 height: 24px;
                 float: right;
                 cursor: pointer;
+            }
+            .ui-dialog-title-button:hover {
+                border-left: 1px solid #ddd;
+            }
+            .ui-dialog-title-button.close {
                 background: url(images/dialog-close-button.png) no-repeat center center;
             }
-            .ui-dialog-close-button:hover{
-                border-left: 1px solid #ddd;
+            .ui-dialog-title-button.close:hover{
                 background: url(images/dialog-close-button-hover.png) no-repeat center center;
             }
             .ui-dialog-button:hover {
-                background-color: #eee;
+                background-color: #747474;
+                color:#fff;
             }
 
             .ui-dialog-notice {
@@ -72,6 +77,22 @@
                 min-width: 1em;
                 cursor: default;
             }
+
+            .ui-dialog-icon {
+                width: 24px;
+                height: 24px;
+                display: inline-block;
+            }
+            .ui-dialog-icon.error {
+                background: url(images/dialog-icon-error.png) center center no-repeat;
+            }
+            .ui-dialog-icon.info{
+                background: url(images/dialog-icon-info.png);
+            }
+            .ui-dialog-icon.warnning{
+                background: url(images/dialog-icon-warnning.png);
+            }
+
         </style>
         <link rel="stylesheet" href="../../../release/css/overlay.css" />
         <script src="../../../release/scripts/requirejs.js"></script>
@@ -81,15 +102,18 @@
         <div xtemplate="$root.ui.Dialog.dialog,delete" sigil-class="Dialog" class="ui-dialog" sigil=".dialog" style="display:none">
             <div class="ui-dialog-header" sigil=".header">
                 <a class="ui-dialog-title" sigil=".dialog-title"></a>
-                <a class="ui-dialog-close-button" sigil=".close-button"></a>
+                <a class="ui-dialog-title-button close" sigil=".close-button"></a>
             </div>
-            <div class="ui-dialog-body" sigil=".body"></div>
+            <div class="ui-dialog-body" sigil=".body">
+            </div>
             <div class="ui-dialog-footer" sigil=".footer"></div>
         </div>
 
         <button xtemplate="$root.ui.Dialog.button,delete" data-action="ok" class="ui-dialog-button" sigil=".button" sigil-class="Dialog" style="display:none"></button>
 
         <a xtemplate="$root.ui.Dialog.titleButton,delete" class="ui-dialog-close-button" sigil-calss="Dialog" sigil=".close-button">×</a>
+
+        <span xtemplate="$root.ui.Dialog.icon" class="ui-dialog-icon"></span>
 
         <div style="width:400px;height:400px;background-color: gray"></div>
 
