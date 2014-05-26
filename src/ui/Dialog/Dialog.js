@@ -34,7 +34,7 @@ var varArg = _arguments.varArg,
  */
 var Dialog = _type.create('$root.ui.dialog.Dialog', jQuery, {
     init: function(opts) {
-        this.options = options || {};
+        this.options = opts || {};
         this.$attr('options', Dialog.options(opts));
         this.base(this.options.template || Dialog.Template.DefaultTemplate);
         this.$attr('header', this.sigil('.header'));
@@ -158,14 +158,15 @@ var Dialog = _type.create('$root.ui.dialog.Dialog', jQuery, {
 }).options({
     okButtonText: 'OK',
     cancelButtonText: 'Cancel',
-    buttons: ['OK','Cancel'],
+    buttons: ['OK', 'Cancel'],
     draggable: true,
     closeButton: true,
     autoReposition: true,
     mask: true,
     closeWhenLostFocus: true,
     content: '',
-    title: ''
+    title: '',
+    position: 'golden'
 }).statics({
     Template: {
         DefaultTemplate: tpl('dialog'),
@@ -260,14 +261,14 @@ function Dialog_initialize(self, opts) {
         }
     });
 
-    if (!!opts.mask) {
+    if ( !! opts.mask) {
         self.$attr('mask', _overlay.Mask.create());
         self.mask.appendTo('body').click(function() {
             self.close();
         }).before(self);
     }
 
-    if (!!opts.autoReposition) {
+    if ( !! opts.autoReposition) {
         $(window).on('resize', function() {
             var pos = self.data('showAt'),
                 coord = Dialog_getShowPosition(self, pos[0], pos[1]);
@@ -277,7 +278,7 @@ function Dialog_initialize(self, opts) {
             });
         });
     }
-    if (!!opts.closeWhenLostFocus) {
+    if ( !! opts.closeWhenLostFocus) {
         setTimeout(function() {
             $(document).click(function(e) {
                 if (!self.find(e.target).length) self.remove();
@@ -438,9 +439,6 @@ var Notice = Dialog.extend('$root.ui.dialog.Notice', {
         }, opts.duration);
         return this;
     }
-}).options({
-    duration: 2000,
-    type: Notice.Type.Info
 }).statics({
     Values: {
 
@@ -453,6 +451,9 @@ var Notice = Dialog.extend('$root.ui.dialog.Notice', {
         Error: Dialog.Parts.IconError,
         Warnning: Dialog.Parts.IconWarnning
     }
+}).options({
+    duration: 2000,
+    type: Dialog.Parts.IconInfo
 });
 
 function Notice_initialize(self, opts) {
