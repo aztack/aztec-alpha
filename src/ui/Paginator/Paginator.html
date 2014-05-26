@@ -1,0 +1,54 @@
+<html>
+    <head>
+        <title>Paginator</title>
+        <style>
+            .ui-paginator {
+                margin: 0;
+                padding: 0;
+            }
+            .ui-paginator-item {
+                border: 1px solid #ccc;
+                display: inline-block;
+                cursor: pointer;
+                margin: 0 2px 0 2px;
+                padding: 0 4px 0 4px;
+                -webkit-user-select: none;
+            }
+
+            .ui-paginator .current-page {
+                color: #fff;
+                background-color: #2095F0;
+            }
+            .ui-paginator .ellipsis, .ui-paginator .ratio {
+                border: none;
+            }
+
+        </style>
+        <link rel="stylesheet" href="../../../release/css/overlay.css" />
+        <script src="../../../release/scripts/requirejs.js"></script>
+    </head>
+
+    <body>
+
+        <script>
+            require.config({
+                baseUrl: '../../../release/scripts/'
+            });
+            require(['ui/paginator'], function(paginator) {
+                Paginator = paginator.Paginator;
+                p = new Paginator({
+                    total: 50,
+                    pageIndex: 0,
+                    perPage: 3,
+                    autoCollapse: 5,
+                    collapsedButton: '…',
+                    buttonLayout: '<<|<|.|>|>>|?/?',
+                    alwaysTriggerPageChangedEvent: true
+                }).on(Paginator.Events.OnPageChanged,function(){
+                    console.log(arguments);
+                })
+                p.appendTo('body');
+            });
+        </script>
+    </body>
+</html>

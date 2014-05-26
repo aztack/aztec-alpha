@@ -1,7 +1,6 @@
 <html>
     <head>
         <title>TagInput</title>
-        <base href="../../release/requirejs/" />
         <style>
             .ui-taginput {
                 border: 1px solid gray;
@@ -27,9 +26,8 @@
                 margin: 1px;
             }
         </style>
-        <script src="requirejs.js"></script>
-        <link rel="stylesheet" type="text/css" href="ui/common.css">
-        <link rel="stylesheet" type="text/css" href="ui/tagInput.css">
+        <link rel="stylesheet" href="../../../release/css/tagInput.css" />
+        <script src="../../../release/scripts/requirejs.js"></script>
     </head>
 
     <body>
@@ -43,13 +41,16 @@
         </div>
 
         <script>
+            require.config({
+                baseUrl: '../../../release/scripts/'
+            });
             require(['ui/tagInput'], function(tagInput) {
                 TagInput = tagInput.TagInput;
                 a = new TagInput();
                 a.appendTags('html5').appendTags('css3','javascript','!')
                 a.appendTo('body');
 
-                a.on(a.$class.Events.OnItemAdd,function(e,tag){
+                a.on(TagInput.Events.OnItemAdd,function(e,tag){
                     console.log(tag.text());
                 }).on(a.$class.Events.OnItemRemove,function(e,tags){
                     console.log($(tags).text());

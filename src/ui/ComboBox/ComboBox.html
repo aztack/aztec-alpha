@@ -1,9 +1,8 @@
 <html>
     <head>
         <title>ComboBox</title>
-        <base href="../../release/requirejs/" />
-        <script src="requirejs.js"></script>
-        <link rel="stylesheet" type="text/css" href="ui/menu.css">
+        <link rel="stylesheet" href="../../../release/css/menu.css" />
+        <script src="../../../release/scripts/requirejs.js"></script>
     </head>
 
     <body>
@@ -11,6 +10,9 @@
         
     </div>
         <script>
+            require.config({
+                baseUrl: '../../../release/scripts/'
+            });
             require(['ui/comboBox'], function(comboBox) {
                 ComboBox = comboBox.ComboBox;
                 a = new ComboBox();

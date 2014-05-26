@@ -14,7 +14,8 @@
     },
     exports: [
         Menu,
-        MenuItem
+        MenuItem,
+        ScrollableMenu
     ]
 });
 
@@ -123,7 +124,7 @@ function Menu_asContextMenuOf(self, target) {
             offset = t.offset(),
             poffset = owner.offsetParent().offset(),
             x, y, data;
-        if (t.parents().filter(owner[0]).length > 0) {
+        if (t.parents().filter(owner[0]).length === 0) {
             //console.log(offset.left, e.offsetX, offset.top, e.offsetY);
             x = offset.left + e.offsetX - poffset.left;
             y = offset.top + e.offsetY - poffset.top;
@@ -149,3 +150,15 @@ function Menu_asContextMenuOf(self, target) {
     self.appendTo(p).hide();
     return self;
 }
+
+/**
+ * Scrollable Menu
+ */
+var ScrollableMenu = _type.create('$root.ui.ScrollableMenu', Menu, {
+    init: function(){
+       this.base.apply(this, arguments);
+    }
+}).events({
+    OnScrollToTop:'ScrollToTop(event)',
+    OnScrollToBottom:'ScrollToBottom(event)'
+});

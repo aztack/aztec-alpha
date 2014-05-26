@@ -33,6 +33,9 @@ var TagInput = _type.create('$root.ui.TagInput', jQuery, {
     appendTags: function(tag) {
         var self = this,
             tags = self.sigil('.tags');
+        //TODO: 
+        //varArg(arguments, this)
+        //.when('array<*>')
         _enum.each(arguments, function(tag) {
             tags.append($(tagTemplate).text(tag));
         });

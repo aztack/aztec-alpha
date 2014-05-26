@@ -270,7 +270,10 @@
     /* varArgTypeMapping must be exist */
     if (varArgTypeMapping) {
     
-        var vat = varArgTypeMapping;
+        var vat = varArgTypeMapping,
+            rehtmltag = /^\s*<.*>\s*$/,
+            rhex1 = /^[0-9a-f]{3}$/ig,
+            rhex2 = /^[0-9a-f]{6}$/ig;
     
         vat.gt0 = function(n) {
             return _type.isNumber(n) && n > 0;
@@ -304,12 +307,14 @@
             return (arg && arg.nodeType === 1) || arg.jquery;
         };
     
-        vat.htmlFragment = function(s) {
-            return typeof s == 'string' && s.charAt(0) === '<' && s.charAt(s.length - 1) === '>' && s.length >= 3;
+        vat.jqueryOrElementOrHtml = function(arg) {
+            return (arg && arg.nodeType === 1) || arg.jquery || (typeof s == 'string' && s.match(rehtmltag) && s.length >= 3);
         };
     
-        var rhex1 = /^[0-9a-f]{3}$/ig,
-            rhex2 = /^[0-9a-f]{6}$/ig;
+        vat.htmlFragment = function(s) {
+            return typeof s == 'string' && s.match(rehtmltag) && s.length >= 3;
+        };
+    
         vat.hexColorString = function(s) {
             return rhex2.test(s) || rhex1.test(s);
         };

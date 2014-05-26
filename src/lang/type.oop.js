@@ -12,36 +12,12 @@
     priority: 1
 });
 
-var Classes = {}, $ObjectSpace = {}, ObjectSpace = function() {};
+var Classes = {},
+    $ObjectSpace = {},
+    ObjectSpace = function(typename) {
+        return $ObjectSpace[typename];
+    };
 
-ObjectSpace.each = function(clazz, fn) {
-    var instances = $ObjectSpace[clazz],
-        i, len, obj;
-    if (!instances) return;
-    for (; i < len; ++i) {
-        obj = instances[i];
-        fn.call(obj, obj.__id__);
-    }
-};
-
-ObjectSpace.__objectSpace__ = $ObjectSpace;
-
-function instance$is(t) {
-    var clazz = this.$getClass();
-    if (t == Object) {
-        return true;
-    }
-    while (clazz !== Object) {
-        if (clazz === t) {
-            return true;
-        }
-        if (!isFunction(clazz.parent)) {
-            return false;
-        }
-        clazz = clazz.parent();
-    }
-    return false;
-}
 
 function arrayEach(ary, fn, thisValue) {
     var i = 0,
@@ -91,6 +67,100 @@ function tryset(obj, path, v) {
     t[parts[i]] = v;
     return obj;
 }
+
+//copy from jQuery
+function $extend() {
+    var src, copyIsArray, copy, name, options, clone,
+        target = arguments[0] || {},
+        i = 1,
+        length = arguments.length,
+        deep = false;
+
+    // Handle a deep copy situation
+    if (typeof target === "boolean") {
+        deep = target;
+        target = arguments[1] || {};
+        // skip the boolean and the target
+        i = 2;
+    }
+
+    // Handle case when target is a string or something (possible in deep copy)
+    if (typeof target !== "object" && typeof target != 'function') {
+        target = {};
+    }
+
+    // extend jQuery itself if only one argument is passed
+    if (length === i) {
+        target = this;
+        --i;
+    }
+
+    for (; i < length; i++) {
+        // Only deal with non-null/undefined values
+        if ((options = arguments[i]) != null) {
+            // Extend the base object
+            for (name in options) {
+                src = target[name];
+                copy = options[name];
+
+                // Prevent never-ending loop
+                if (target === copy) {
+                    continue;
+                }
+
+                // Recurse if we're merging plain objects or arrays
+                if (deep && copy && (isPlainObject(copy) || (copyIsArray = isArray(copy)))) {
+                    if (copyIsArray) {
+                        copyIsArray = false;
+                        clone = src && isArray(src) ? src : [];
+
+                    } else {
+                        clone = src && isPlainObject(src) ? src : {};
+                    }
+
+                    // Never move original objects, clone them
+                    target[name] = $extend(deep, clone, copy);
+
+                    // Don't bring in undefined values
+                } else if (copy !== undefined) {
+                    target[name] = copy;
+                }
+            }
+        }
+    }
+
+    // Return the modified object
+    return target;
+}
+ObjectSpace.each = function(clazz, fn) {
+    var instances = $ObjectSpace[clazz],
+        i, len, obj;
+    if (!instances) return;
+    for (; i < len; ++i) {
+        obj = instances[i];
+        fn.call(obj, obj.__id__);
+    }
+};
+
+ObjectSpace.__objectSpace__ = $ObjectSpace;
+
+function instance$is(t) {
+    var clazz = this.$getClass();
+    if (t == Object) {
+        return true;
+    }
+    while (clazz !== Object) {
+        if (clazz === t) {
+            return true;
+        }
+        if (!isFunction(clazz.parent)) {
+            return false;
+        }
+        clazz = clazz.parent();
+    }
+    return false;
+}
+
 /**
  * print object in format #<typename a=1 b="s">
  */
@@ -186,7 +256,7 @@ function instance$set(keyPath, value, notifyObservers) {
     var observers = metaData.observers;
     attrs = metaData.attrs;
     tryset(attrs, keyPath, value);
-    if ( !! notifyObservers && observers) {
+    if (!!notifyObservers && observers) {
         for (var name in observers) {
             observers[name].call(this, value);
         }
@@ -195,15 +265,27 @@ function instance$set(keyPath, value, notifyObservers) {
 }
 
 function instance$attr(name, value) {
-    if(arguments.length === 0) {
+    var i, v;
+    if (arguments.length === 0) {
         return instance$ivars.call(this);
-    }else if(arguments.length == 1) {
-        return this.$get(name);
+    } else if (arguments.length == 1) {
+        if (typeof name == 'string') {
+            return this.$get(name);
+        } else if (typeof name == 'object') {
+            for (i in arguments[0]) {
+                if (arguments[0].hasOwnProperty(i)) {
+                    v = arguments[0][i];
+                    this[i] = v;
+                    this.$set(i, v, false);
+                }
+            }
+            return this;
+        }
     }
-    var vtype = typeof value;
-    if (vtype == 'string' || vtype == 'number' || vtype == 'boolean') {
-        throw new Error('$attr only support reference type value!');
-    }
+    //var vtype = typeof value;
+    //if (vtype == 'string' || vtype == 'number' || vtype == 'boolean') {
+    //    throw new Error('$attr only support reference type value!');
+    //}
     this[name] = value;
     this.$set(name, value, false);
     return this;
@@ -289,9 +371,15 @@ function instance$dispose() {
     return this;
 }
 
+function instance$opt(key, defaultValue) {
+    var opts = this.$get('options');
+    if (!opts) return defaultValue;
+    return tryget(opts, key, defaultValue);
+}
+
 /**
- * Every instance create with class which create with type.Class or type.create
- * will has a getClass function to get it's class object
+ * Every instance created with `Class` which created with type.Class or type.create
+ * havs a $getClass function with which you to get it's class object
  * `class` is a reserved word so we use `getClass` instead
  */
 function clazz$getClass() {
@@ -336,7 +424,7 @@ function clazz$methods(methods) {
                 this.prototype[name] = m;
             }
             */
-           this.prototype[name] = methods[name];
+            this.prototype[name] = methods[name];
             continue;
         }
 
@@ -474,11 +562,46 @@ function clazz$extend() {
 }
 
 function clazz$readonly(name, initValue, force) {
-    if ( !! force || !isFunction(this[name])) {
+    if (!!force || !isFunction(this[name])) {
         this['get' + name] = function() {
             return initValue;
         };
     } else throw Error('Readonly property `' + name + '` already defined!');
+}
+
+function clazz$options(opts) {
+    var typename = this.typename(),
+        cacheKey = typename + '@static',
+        metaData = metaDataCache[cacheKey];
+
+    if (!metaData) {
+        metaData = initMetaData(typename, cacheKey, 'static');
+    }
+    if (opts) {
+        if (metaData.createOptions) {
+            //If this is not the first time YourClass.options was called
+            //return a updated copy of createOptions.
+            //Typically in init method of YourClass creating instance.options:
+            // this.$attr('options', YourClass.options(customOpts));
+            return $extend(true, {}, metaData.createOptions, opts);
+        } else {
+            //This is the first time YourClass.options is called
+            //Typically when defining YourClass.
+            var parent = this.parent(), popt, args;
+            if (typeof parent.options == 'function') {
+                args = [true, {}];
+                popt = parent.options();
+                if(popt) args.push(popt);
+                args.push(opts);
+                metaData.createOptions = $extend.apply(null, args);
+            } else {
+                metaData.createOptions = opts;
+            }
+        }
+    } else {
+        return metaData.createOptions;
+    }
+    return this;
 }
 
 
@@ -541,6 +664,7 @@ function Class(name, parent) {
     _.methods = clazz$methods;
     _.aliases = clazz$aliases;
     _.statics = clazz$statics;
+    _.options = clazz$options;
     _.typename = function() {
         return name;
     };

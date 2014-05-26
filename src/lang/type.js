@@ -175,9 +175,9 @@ function isDate(arg) {
  * @param  {Any} arg
  * @return {Boolean}
  */
-function isArray(arg) {
+var isArray = Array.isArray || function isArray(arg) {
     return _toString.call(arg) == '[object Array]';
-}
+};
 
 /**
  * isArrayLike

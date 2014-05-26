@@ -1,14 +1,6 @@
 <html>
     <head>
         <title>Tab</title>
-        <base href="../../release/requirejs/" />
-        <!--[if IE]><script type="text/javascript">
-            // Fix for IE ignoring relative base tags.
-            (function() {
-                var baseTag = document.getElementsByTagName('base')[0];
-                baseTag.href = baseTag.href;
-            })();
-        </script><![endif]-->
         <style>
             .ui-tab {
                 border: 1px solid #ccc;
@@ -55,12 +47,8 @@
                 display: block;
             }
         </style>
-        <style ignore>
-
-        </style>
-        <script src="requirejs.js"></script>
-        <link rel="stylesheet" href="aztec.css">
-        <link rel="stylesheet" href="ui/tab.css">
+        <link rel="stylesheet" href="../../../release/css/tab.css" />
+        <script src="../../../release/scripts/requirejs.js"></script>
     </head>
     <body>
         <div xtemplate="$root.ui.tab.Tab,delete" class="ui-tab" sigil-class="Tab" style="display:none">
@@ -70,6 +58,9 @@
         <div id="ctn" style="height:200px;width:300px;"></div>
     </body>
     <script>
+        require.config({
+                baseUrl: '../../../release/scripts/'
+        });
         require(['ui/tab','lang/array','ui/draggable'], function(Tab, ary, drag) {
             window.Tab = Tab;
             var evt = Tab.Events.OnTabSelected;
@@ -85,8 +76,8 @@
             t.appendTo('body').on(evt, inspect);
 
             t1 = new Tab();
-            t1.setTab(ary.w('C# Java C++'))
-                .setContent(ary.w('a b c'))
+            t1.setTabs(ary.w('C# Java C++'))
+                .setContents(ary.w('a b c'))
                 .on(evt, inspect)
                 .appendTo('body')
                 .css({width:'300px',height:'200px'});

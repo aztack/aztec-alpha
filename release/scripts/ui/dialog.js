@@ -49,10 +49,10 @@
      *     extends this class to implements your own dialog
      */
     var Dialog = _type.create('$root.ui.dialog.Dialog', jQuery, {
-        init: function(options) {
-            //if(!options) return this;
+        init: function(opts) {
             this.options = options || {};
-            this.base(Dialog.Template.DefaultTemplate || options.template);
+            this.$attr('options', Dialog.options(opts));
+            this.base(this.options.template || Dialog.Template.DefaultTemplate);
             this.$attr('header', this.sigil('.header'));
             this.$attr('body', this.sigil('.body'));
             this.$attr('footer', this.sigil('.footer'));
@@ -171,14 +171,21 @@
     }).aliases({
         setContent: 'setBody',
         close: 'hide'
+    }).options({
+        okButtonText: 'OK',
+        cancelButtonText: 'Cancel',
+        buttons: ['OK','Cancel'],
+        draggable: true,
+        closeButton: true,
+        autoReposition: true,
+        mask: true,
+        closeWhenLostFocus: true,
+        content: '',
+        title: ''
     }).statics({
         Template: {
             DefaultTemplate: tpl('dialog'),
             DefaultButton: tpl('button')
-        },
-        Text: {
-            OK: 'OK',
-            Cancel: 'Cancel'
         },
         Position: {
             Center: 'center',
@@ -269,14 +276,14 @@
             }
         });
     
-        if ( !! opts.mask) {
+        if (!!opts.mask) {
             self.$attr('mask', _overlay.Mask.create());
             self.mask.appendTo('body').click(function() {
                 self.close();
             }).before(self);
         }
     
-        if ( !! opts.autoReposition) {
+        if (!!opts.autoReposition) {
             $(window).on('resize', function() {
                 var pos = self.data('showAt'),
                     coord = Dialog_getShowPosition(self, pos[0], pos[1]);
@@ -286,7 +293,7 @@
                 });
             });
         }
-        if ( !! opts.closeWhenLostFocus) {
+        if (!!opts.closeWhenLostFocus) {
             setTimeout(function() {
                 $(document).click(function(e) {
                     if (!self.find(e.target).length) self.remove();
@@ -372,7 +379,7 @@
         //if no buttons specified, create a default 'OK' button
         var button;
         if (!opts.buttons && self.buttons.length === 0) {
-            self.setButtons(Dialog.Text.OK);
+            self.setButtons(opts.okButtonText);
         } else {
             self.setButtons(opts.buttons);
         }
@@ -431,7 +438,7 @@
      */
     var Notice = Dialog.extend('$root.ui.dialog.Notice', {
         init: function(options) {
-            this.$attr('options', options || {});
+            this.$attr('options', Notice.options(options));
             this.base.apply(this, arguments);
             this.header.remove();
             this.footer.remove();
@@ -444,17 +451,23 @@
             this.base.apply(this, arguments);
             setTimeout(function() {
                 self.remove();
-            }, opts.duration || 2000);
+            }, opts.duration);
             return this;
         }
-    }).events({
-    
+    }).options({
+        duration: 2000,
+        type: Notice.Type.Info
     }).statics({
         Values: {
     
         },
         DefaultOptions: {
             Type: 'info'
+        },
+        Type: {
+            Info: Dialog.Parts.IconInfo,
+            Error: Dialog.Parts.IconError,
+            Warnning: Dialog.Parts.IconWarnning
         }
     });
     
@@ -462,11 +475,12 @@
         self.body.click(function() {
             self.remove();
         });
+        if (opts.type && opts.type.length > 0) self.body.prepend(opts.type);
     }
     
     function notice(content, duration, opts) {
         var n;
-        opts = opts || {};
+        opts = Notice.options(opts);
         opts.duration = duration;
         opts.content = content;
         n = new Notice(opts);

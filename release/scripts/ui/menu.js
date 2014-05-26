@@ -15,6 +15,7 @@
  * exports:
  * - Menu
  * - MenuItem
+ * - ScrollableMenu
  * files:
  * - src/ui/Menu/Menu.js
  */
@@ -137,7 +138,7 @@
                 offset = t.offset(),
                 poffset = owner.offsetParent().offset(),
                 x, y, data;
-            if (t.parents().filter(owner[0]).length > 0) {
+            if (t.parents().filter(owner[0]).length === 0) {
                 //console.log(offset.left, e.offsetX, offset.top, e.offsetY);
                 x = offset.left + e.offsetX - poffset.left;
                 y = offset.top + e.offsetY - poffset.top;
@@ -163,6 +164,18 @@
         self.appendTo(p).hide();
         return self;
     }
+    
+    /**
+     * Scrollable Menu
+     */
+    var ScrollableMenu = _type.create('$root.ui.ScrollableMenu', Menu, {
+        init: function(){
+           this.base.apply(this, arguments);
+        }
+    }).events({
+        OnScrollToTop:'ScrollToTop(event)',
+        OnScrollToBottom:'ScrollToBottom(event)'
+    });
         
     ///sigils
     if (!Menu.Sigils) Menu.Sigils = {};
@@ -173,6 +186,7 @@
 
     exports['Menu'] = Menu;
     exports['MenuItem'] = MenuItem;
+    exports['ScrollableMenu'] = ScrollableMenu;
     exports.__doc__ = "Menu";
     return exports;
 }));

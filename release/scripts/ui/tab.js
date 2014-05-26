@@ -7,6 +7,7 @@
  *   _str: $root.lang.string
  *   _type: $root.lang.type
  *   _enum: $root.lang.enumerable
+ *   _num: $root.lang.number
  *   _list: $root.ui.list
  *   _tpl: $root.browser.template
  *   _arguments: $root.lang.arguments
@@ -18,12 +19,12 @@
 
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
-        define('ui/tab',['lang/string','lang/type','lang/enumerable','ui/list','browser/template','lang/arguments','jQuery'], factory);
+        define('ui/tab',['lang/string','lang/type','lang/enumerable','lang/number','ui/list','browser/template','lang/arguments','jQuery'], factory);
     } else {
         var exports = $root._createNS('$root.ui.tab');
-        factory($root.lang.string,$root.lang.type,$root.lang.enumerable,$root.ui.list,$root.browser.template,$root.lang.arguments,jQuery,exports);
+        factory($root.lang.string,$root.lang.type,$root.lang.enumerable,$root.lang.number,$root.ui.list,$root.browser.template,$root.lang.arguments,jQuery,exports);
     }
-}(this, function (_str,_type,_enum,_list,_tpl,_arguments,$,exports) {
+}(this, function (_str,_type,_enum,_num,_list,_tpl,_arguments,$,exports) {
     //'use strict';
     exports = exports || {};
     _tpl
@@ -43,7 +44,7 @@
         this.$attr('tabs', list);
         Tab_initialize(this, options);
       },
-      setTab: function() {
+      setTabs: function() {
         var tabs = this.$get('tabs');
         varArg(arguments, this)
           .when('int', 'htmlFragment', function(index, html) {
@@ -72,7 +73,7 @@
           }).resolve();
         return this;
       },
-      setContent: function() {
+      setContents: function() {
         var contents = this.$get('contents');
         varArg(arguments, this)
           .when('int', 'htmlFragment', function(index, html) {
@@ -101,13 +102,15 @@
       },
       select: function(index) {
         var tabs = this.$get('tabs'),
+          tabsChildren = tabs.children(),
           contents = this.$get('contents');
         //deselect
         tabs.find(selectedsel).removeClass(selectedstr);
         contents.find(selectedsel).removeClass(selectedstr);
     
         //select
-        $(tabs.children()[index]).addClass(selectedstr);
+        index = _num.confined(index, 0, tabsChildren.length - 1, true);
+        $(tabsChildren[index]).addClass(selectedstr);
         $(contents.children()[index]).addClass(selectedstr);
     
         this.$set('index', index);
@@ -115,8 +118,10 @@
       },
       delete: function(index) {
         var tabs = this.$get('tabs'),
+          tabsChildren = tabs.children(),
           contents = this.$get('contents');
-        $(tabs.children().get(index)).remove();
+        index = _num.confined(index, 0, tabsChildren.length - 1, true);
+        $(tabsChildren.get(index)).remove();
         $(contents.children().get(index)).remove();
         this.select(index - 1);
         return this;
@@ -136,7 +141,7 @@
           .resolve();
       }
     }).events({
-      OnTabSelected: 'TabSelected(event,index,caption).Tab'
+      OnTabSelected: 'TabSelected(event,index,caption,prevIndex).Tab'
     }).statics({
       Template: {
         DefaultTabTemplate: tpl('Tab')
@@ -187,10 +192,14 @@
       self.$attr('contents', contents);
     
       if(opts.contents) {
-        self.setContent(opts.contents);
+        self.setContents(opts.contents);
       }
     
       self.select(typeof opts.selected == 'number' ? opts.selected : 0);
+    }
+    
+    function Tab_adjustTabItemWidth(self, opts) {
+    
     }
         
     ///sigils

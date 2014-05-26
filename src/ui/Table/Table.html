@@ -1,7 +1,6 @@
 <html>
     <head>
         <title>Table</title>
-        <base href="../../release/requirejs/" />
         <style>
             .ui-table, .ui-table table{
                 border-collapse: collapse;
@@ -68,9 +67,8 @@
                 width:50%;
             }
         </style>
-        <script src="requirejs.js"></script>
-        <link rel="stylesheet" href="aztec.css">
-        <link rel="stylesheet" href="ui/table.css">
+        <link rel="stylesheet" href="../../../release/css/table.css" />
+        <script src="../../../release/scripts/requirejs.js"></script>
     </head>
     <body>
         <table xtemplate="$root.ui.Table.table,delete" class="ui-table" sigil-class="Table" style="display:none">
@@ -108,7 +106,7 @@
                         return resp.list;
                     }
                 }))
-                .on(t.$class.Events.OnHeaderClicked, function(e,target,index,text){
+                .on(Table.Events.OnHeaderClicked, function(e,target,index,text){
                     console.log(str.format('you clicked {i}th column with caption "{text}"',{
                         i: index, text: text
                     }))

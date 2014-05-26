@@ -25,28 +25,66 @@
     //'use strict';
     exports = exports || {};
     
-        /**
+        var varArg = _arguments.varArg;
+    /**
      * A Generic List, represents a unordered list
      */
     var List = _type.create('$root.ui.List', jQuery, {
-      init: function(container) {
-        this.base(container || List.Template.DefaultContainerTag);
+      init: function() {
+        varArg(arguments, this)
+          .when(function() {
+            return [null, null];
+          })
+          .when('{*}', function(opts) {
+            return [null, opts];
+          })
+          .when('*', function(arg) {
+            return [arg, null];
+          })
+          .when('*', '{*}', function(arg, opts) {
+            return [arg, opts];
+          })
+          .invoke(function(arg, opts) {
+            opts = List.options(opts || {});
+            this.$attr('options', opts);
+            this.base.call(this, arg || opts.containerTag);
+            if (opts.containerClass) {
+              this.addClass(opts.containerClass);
+            }
+          });
+        return this;
       },
-      add: function(arg) {
+      insert: function(arg, pos) {
         var Item = this.itemType,
-          item;
+          item, opts = this.options;
         if (Item) {
           item = _fn.applyNew(Item, arguments);
         } else {
-          item = $(List.Template.DefaultItemTag);
-          if (_str.isHtmlFragment(arg) || arg instanceof jQuery) {
+          item = $(opts.itemTag);
+          if (_str.isHtmlFragment(arg) || arg instanceof jQuery || arg.nodeType === 1) {
             item.append(arg);
           } else {
             item.text(arg);
           }
         }
-        this.append(item);
+    
+        var children = this.children(),
+          targetEle;
+        if (children.length === 0) {
+          this.append(item);
+        } else {
+          targetEle = children.slice(pos).first();
+          item.insertAfter(targetEle);
+        }
+    
+        opts = opts || {};
+        if (opts.itemClass) {
+          item.addClass(opts.itemClass);
+        }
         return item;
+      },
+      add: function(arg, opts) {
+        return this.insert(arg, -1, opts);
       },
       remove: function(item) {
         $(item).remove();
@@ -76,17 +114,16 @@
           this.itemType = clazz;
         } else {
           this.itemType = jQuery;
-          //throw Error('setItemType need a function as item constructor!');
         }
       },
-      items: function(){
+      items: function() {
         return this.children();
       }
-    }).statics({
-      Template: {
-        DefaultContainerTag: '<ul>',
-        DefaultItemTag: '<li>'
-      }
+    }).options({
+      containerTag: '<ul>',
+      itemTag: '<li>',
+      containerClass: '',
+      itemClass: ''
     });
     
     exports['List'] = List;

@@ -1,7 +1,6 @@
 <html>
     <head>
         <title>Calendar</title>
-        <base href="../../release/requirejs/" />
         <style>
         .ui-calendar td, .ui-calendar th {
             cursor: pointer;
@@ -21,19 +20,19 @@
             width: 2em;
         }
         .ui-calendar-prev-month {
-            background : url(ui/images/calendar-prev.png) center center no-repeat;
+            background : url(images/calendar-prev.png) center center no-repeat;
             float: left;
         }
         .ui-calendar-next-month {
-            background : url(ui/images/calendar-next.png) center center no-repeat;
+            background : url(images/calendar-next.png) center center no-repeat;
             float: right;
         }
         </style>
-        <script src="requirejs.js"></script>
-        <link rel="stylesheet" href="aztec.css">
-        <link rel="stylesheet" href="ui/table.css">
-        <link rel="stylesheet" href="ui/menu.css">
+        <link rel="stylesheet" href="../../../release/css/table.css" />
+        <link rel="stylesheet" href="../../../release/css/menu.css" />
+        <script src="../../../release/scripts/requirejs.js"></script>
     </head>
+
     <body>
         <script type="text/xtemplate" xtemplate="$root.ui.Calendar.header,delete" sigil-class="Calendar" style="display:none;">
             <tr>
@@ -48,7 +47,11 @@
         </script>
         <div id="calendar" style="width:400px;height:200px;margin:3em auto;"></div>
     </body>
+
     <script>
+        require.config({
+            baseUrl: '../../../release/scripts/'
+        });
         require(['lang/date','ui/calendar','ui/menu'], function(date, cale, menu) {
             window.date = date;
             a = new date.DateTime();
