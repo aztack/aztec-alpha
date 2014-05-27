@@ -54,37 +54,14 @@
           });
         return this;
       },
-      insert: function(arg, pos) {
-        var Item = this.itemType,
-          item, opts = this.options;
-        if (Item) {
-          item = _fn.applyNew(Item, arguments);
-        } else {
-          item = $(opts.itemTag);
-          if (_str.isHtmlFragment(arg) || arg instanceof jQuery || arg.nodeType === 1) {
-            item.append(arg);
-          } else {
-            item.text(arg);
-          }
-        }
-    
-        var children = this.children(),
-          targetEle;
-        if (children.length === 0) {
-          this.append(item);
-        } else {
-          targetEle = children.slice(pos).first();
-          item.insertAfter(targetEle);
-        }
-    
-        opts = opts || {};
-        if (opts.itemClass) {
-          item.addClass(opts.itemClass);
-        }
-        return item;
+      insertAfter: function(arg, pos) {
+        return List_insertX.call(this, arg, pos, true);
+      },
+      insertBefore: function(arg, pos) {
+        return List_insertX.call(this, arg, pos, false);
       },
       add: function(arg, opts) {
-        return this.insert(arg, -1, opts);
+        return this.insertAfter(arg, -1, opts);
       },
       remove: function(item) {
         $(item).remove();
@@ -125,6 +102,40 @@
       containerClass: '',
       itemClass: ''
     });
+    
+    function List_insertX(arg, pos, flag) {
+      var Item = this.itemType,
+        item, opts = this.options;
+      if (Item) {
+        item = _fn.applyNew(Item, arguments);
+      } else {
+        item = $(opts.itemTag);
+        if (_str.isHtmlFragment(arg) || arg instanceof jQuery || arg.nodeType === 1) {
+          item.append(arg);
+        } else {
+          item.text(arg);
+        }
+      }
+    
+      var children = this.children(),
+        targetEle;
+      if (children.length === 0) {
+        this.append(item);
+      } else {
+        targetEle = children.slice(pos).first();
+        if (flag === true) {
+          item.insertAfter(targetEle);
+        } else {
+          item.insertBefore(targetEle);
+        }
+      }
+    
+      opts = opts || {};
+      if (opts.itemClass) {
+        item.addClass(opts.itemClass);
+      }
+      return item;
+    }
     
     exports['List'] = List;
     exports.__doc__ = "List";

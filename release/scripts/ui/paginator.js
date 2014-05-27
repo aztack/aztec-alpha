@@ -71,7 +71,8 @@
                 ratioText = _str.format(this.options.ratioFormat, this);
             this.find('.current-page').removeClass(currentPage);
             this.find('.ratio').text(ratioText);
-            Paginator_updateButtonWithPageNumber(this, this.options, index);
+            this.empty();
+            Paginator_makeButtons(this, this.options);
             return this;
         },
         setPage: function(page) {
@@ -138,9 +139,12 @@
                     return;
                 }
             }
-            if (pageIndex === prevIndex && !opts.alwaysTriggerPageChangedEvent) return;
-            self.setPageIndex(pageIndex)
-                .trigger(Paginator.Events.OnPageChanged, [pageIndex, prevIndex, target.text()]);
+            if (pageIndex != prevIndex) {
+                self.setPageIndex(pageIndex);
+            }
+            if(opts.alwaysTriggerPageChangedEvent || pageIndex != prevIndex) {
+                self.trigger(Paginator.Events.OnPageChanged, [pageIndex, prevIndex, target.text()]);
+            }
         });
         if (opts.page) {
             self.$attr('page', opts.page);
@@ -168,7 +172,7 @@
             } else if (btn == '<' || btn == 'prev') {
                 self.add(opts.prevPageButton, opt).data('action', 'prev').addClass('prev-page');
             } else if (btn == '.') {
-                Paginator_updateButtonWithPageNumber(self, opts, self.pageIndex);
+                Paginator_updateNumberedButton(self, opts, self.pageIndex);
             } else if (btn == '>' || btn == 'next') {
                 self.add(opts.nextPageButton, opt).data('action', 'next').addClass('next-page');
             } else if (btn == '>>' || btn == 'last') {
@@ -184,7 +188,7 @@
         }
     }
     
-    function Paginator_updateButtonWithPageNumber(self, opts, index) {
+    function Paginator_updateNumberedButton(self, opts, index) {
         var max = opts.maxButtonNumber,
             item, buttons = self.find('.ui-paginator-button'),
             from, to, pos, i, idx = 'data-index',
@@ -207,10 +211,10 @@
                 if (i === index) item.addClass(currentPage);
             }
         } else if (rangeChanged) {
-            pos = buttons.first().index() - 1;
+            pos = buttons.first().index();
             buttons.remove();
             for (i = from; i < to; ++i) {
-                item = self.insert(i + 1, pos++).attr(idx, i).addClass(cls);
+                item = self.insertAfter(i + 1, pos++).attr(idx, i).addClass(cls);
                 if (i === index) item.addClass(currentPage);
             }
         } else {
