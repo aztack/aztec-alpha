@@ -94,7 +94,10 @@
         </div>
     </body>
     <script>
-        require(['ui/table', 'lang/arguments','lang/array','lang/string','lang/type'], function(table, args, array, str, type) {
+        require.config({
+            baseUrl: '../../../release/scripts/'
+        });
+        require(['ui/table', 'lang/arguments','lang/array','lang/string','lang/date'], function(table, args, array, str, date) {
             Table = table.Table;
             DataSource = table.DataSource;
 
@@ -111,12 +114,12 @@
                         i: index, text: text
                     }))
                 })
-                .appendTo('body');
+                .appendTo('body').css('width','50%');
 
-            //t2 = new Table();
-            //t2.setHeader(array.w('星期日,星期一,星期二,星期三,星期三,星期四,星期五,星期六',','))
-            //    .setData(date.calendar())
-            //    .appendTo('body').width('400px');
+            t2 = new Table();
+            t2.setHeader(array.w('星期日,星期一,星期二,星期三,星期四,星期五,星期六',','))
+                .setData(date.calendar())
+                .appendTo('body').width('400px');
         });
 
     </script>

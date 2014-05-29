@@ -1,46 +1,65 @@
 <html>
     <head>
         <title>SpinEdit</title>
-        <base href="../../release/requirejs/" />
-        <!--[if IE]><script type="text/javascript">
-            // Fix for IE ignoring relative base tags.
-            (function() {
-                var baseTag = document.getElementsByTagName('base')[0];
-                baseTag.href = baseTag.href;
-            })();
-        </script><![endif]-->
         <style>
             .ui-spinedit {
-                border: 1px solid #ccc;
                 background: #fff;
                 display: inline-block;
+                position: relative;
             }
             .ui-spinedit .button {
                 cursor: pointer;
                 list-style-type: none;
                 -webkit-user-select: none;
             }
+            .ui-spinedit input {
+                border: none;
+                outline: none;
+            }
             .ui-spinedit .buttons {
                 margin:0;
                 padding:0;
             }
-        </style>
-        <style ignore>
 
+            .ui-spinbutton {
+                display: inline-block;
+                width: 1em;
+            }
+            .ui-spinbutton .spin-button {
+                position: absolute;
+                display: block;
+                height: 12px;
+                width: 24px;
+                right: 0;
+            }
+            .ui-spinbutton .spin-button:hover {
+                background-color: #eee;
+            }
+            .ui-spinbutton .dec-button {
+                top: 0;
+                background: url(images/spinedit-arrow.gif) no-repeat center 4px;
+            }
+            .ui-spinbutton .inc-button {
+                bottom: 0;
+                background: url(images/spinedit-arrow.gif) no-repeat center -8px;
+            }
         </style>
-        <script src="requirejs.js"></script>
-        <link rel="stylesheet" href="aztec.css">
-        <link rel="stylesheet" href="ui/spinedit.css">
+        <link rel="stylesheet" href="../../../release/css/SpinEdit.css" />
+        <script src="../../../release/scripts/requirejs.js"></script>
     </head>
     <body>
         <div xtemplate="$root.ui.SpinEdit.SpinEdit,delete" class="ui-spinedit" sigil-class="SpinEdit" style="display:none">
-            <ul class="buttons">
-                <li class="button" sigil=".button">↑</li>
-                <li class="button">↓</li>
-            </ul>
         </div>
+
+        <span xtemplate="$root.ui.SpinEdit.SpinButton,delete" class="ui-spinbutton" sigil-class="SpinButton" style="display:none">
+            <a href="javascript:;" class="spin-button dec-button" sigil=".decrease"></a>
+            <a href="javascript:;" class="spin-button inc-button" sigil=".increase"></a>
+        </span>
     </body>
     <script>
+        require.config({
+            baseUrl: '../../../release/scripts/'
+        });
         require(['ui/spinEdit','ui/draggable'], function(spin, drag) {
             window.SpinEdit = spin.SpinEdit;
             function inspect() {

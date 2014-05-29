@@ -14,6 +14,7 @@
  *   $: jQuery
  * exports:
  * - SpinEdit
+ * - SpinButton
  * files:
  * - src/ui/SpinEdit/SpinEdit.js
  */
@@ -29,24 +30,71 @@
     //'use strict';
     exports = exports || {};
     _tpl
-        .set('$root.ui.SpinEdit.SpinEdit',"<div class=\"ui-spinedit\"><ul class=\"buttons\">\n<li class=\"button\">&uarr;</li>\n<li class=\"button\">&darr;</li>\n</ul></div>\n");
+        .set('$root.ui.SpinEdit.SpinEdit',"<div class=\"ui-spinedit\">\n        </div>\n")
+        .set('$root.ui.SpinEdit.SpinButton',"<span class=\"ui-spinbutton\"><a href=\"javascript:;\" class=\"spin-button dec-button\"></a><a href=\"javascript:;\" class=\"spin-button inc-button\"></a></span>\n");
         var tpl = _tpl.id$('$root.ui.SpinEdit'),
         TextField = _tf.TextField,
         varArg = _arguments.varArg;
     
+    /**
+     * Spin Button
+     */
+    var SpinButton = _type.create('$root.ui.SpinButton', jQuery, {
+        init: function(opts) {
+            var opts = SpinButton.options(opts || {});
+            this.base.call(this, tpl('SpinButton'));
+            SpinButton_initialize(this, opts);
+        }
+    }).options({
+        style: 'updown',
+        containerClassName: 'ui-spinbutton',
+        buttonClassName: 'spin-button'
+    }).events({
+        OnButtonClicked: 'ButtonClicked(event,delta).SpinButton'
+    }).statics({
+        Style: {
+            UpDown: 'updown',
+            MinusPlus: 'minusplus'
+        }
+    });
+    
+    function SpinButton_initialize(self, opts) {
+        self.delegate('.' + opts.buttonClassName, 'mouseup', function(e) {
+            var index = $(this).index(),
+                delta = index === 0 ? 1 : -1;
+            self.trigger(SpinButton.Events.OnButtonClicked, [delta]);
+            return false;
+        });
+    }
+    
+    /**
+     * Spin Edit
+     */
     var SpinEdit = _type.create('$root.ui.SpinEdit', jQuery, {
-        init: function(options) {
-            options = options || {};
-            this.base(options.container || SpinEdit.Template.DefaultTemplate);
+        init: function(opts) {
+            opts = SpinEdit.options(opts || {});
+            this.base(opts.container || SpinEdit.Template.DefaultTemplate);
             var sel = this.sigil('.button', true);
-            this.$attr('options', options);
+            this.$attr('options', opts);
             this.$attr('buttons', this.find(sel));
     
             var tf = new TextField();
             this.prepend(tf);
             this.$attr('textfield', tf);
-            SpinEdit_initialize(this, options);
+    
+            var sb = new SpinButton({
+                style: 'updown'
+            });
+            this.append(sb);
+            this.$attr('buttons', sb);
+            SpinEdit_initialize(this, opts);
         }
+    }).options({
+        onSetVal: null,
+        value: 0,
+        maxValue: 10,
+        container: null,
+        cycle: true
     }).events({
         OnChanged: 'ButtonClicked(event,text,index,delta).SpinEdit'
     }).statics({
@@ -56,8 +104,7 @@
     });
     
     function SpinEdit_initialize(self, opts) {
-        var tf = self.$get('textfield'),
-            sel = self.sigil('.button', true);
+        var tf = self.$get('textfield');
     
         if (typeof opts.onSetVal != 'function') {
             opts.onSetVal = _fn.return1st;
@@ -71,10 +118,8 @@
             throw new Error('options.maxValue must provide');
         }
     
-        self.delegate(sel, 'click', function(e) {
-            var index = self.buttons.index(e.target),
-                delta = index === 0 ? 1 : -1,
-                ret = SpinEdit_setVal(self, opts, delta, tf);
+        self.buttons.on(SpinButton.Events.OnButtonClicked, function(e, delta) {
+            ret = SpinEdit_setVal(self, opts, delta, tf);
             self.trigger(SpinEdit.Events.OnChanged, ret.concat([e.target, delta]));
         });
     
@@ -103,9 +148,13 @@
         
     ///sigils
     if (!SpinEdit.Sigils) SpinEdit.Sigils = {};
-    SpinEdit.Sigils[".button"] = ".button";
+
+    if (!SpinButton.Sigils) SpinButton.Sigils = {};
+    SpinButton.Sigils[".decrease"] = ".dec-button";
+    SpinButton.Sigils[".increase"] = ".inc-button";
 
     exports['SpinEdit'] = SpinEdit;
+    exports['SpinButton'] = SpinButton;
     exports.__doc__ = "SpinEdit";
     return exports;
 }));
