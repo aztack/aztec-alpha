@@ -61,13 +61,11 @@
             },
             covers: function(x) {
                 var b;
-                if (_type.isFinite(x)) {
-                    return x >= from && x <= to;
-                } else if (_type.isFunction(x.ctor) && x.ctor() === Range) {
+                if (x.ctor && _type.isFunction(x.ctor) && x.ctor() === Range) {
                     b = x.bounds();
                     return b[0] >= from && b[1] <= to;
                 } else {
-                    return false;
+                    return x >= from && x <= to;
                 }
             },
             equal: function(r) {
@@ -93,27 +91,55 @@
         };
     }
     
+    Range.BoundsType = ['[]', '[)', '(]', '()'];
     
     //exports
     /**
      * create
      * create a Range instance from given args
-     * @param  {Integer} from
-     * @param  {Integer} to
      * @return {Range}
      */
-    function create(from, to) {
-        checkRangeBounds(from, to);
+    function create() {
+        var len = arguments.length,
+            bounds, from, to, boundsCheck;
+        if (typeof arguments[0] == 'string') {
+            bounds = arguments[0];
+            from = arguments[1];
+            to = arguments[2];
+            boundsCheck = arguments[3];
+        } else if (typeof arguments[0] == 'number') {
+            bounds = '[]';
+            from = arguments[0];
+            to = arguments[1];
+            boundsCheck = arguments[2];
+        }
+        if (boundsCheck) checkRangeBounds(from, to);
         if (from > to) {
             from = [to, to = from][0];
         }
-        var cacheKey = String(from) + '~' + String(to),
+    
+        var upper = bounds[1] || ']',
+            lower = bounds[0] || '[';
+    
+        if (lower == '(') from += 1;
+        if (upper == ')') to -= 1;
+    
+        var cacheKey = lower + String(from) + ',' + String(to) + upper,
             r = rangeCache[cacheKey];
         if (typeof r == 'undefined') {
             r = new Range(from, to);
             rangeCache[cacheKey] = r;
         }
         return r;
+    }
+    
+    var reRangStr = /[\[(](-?\d+),(-?\d+)[)\]]/;
+    
+    function parse(s) {
+        if (!s) return null;
+        var m = s.match(reRangStr);
+        if (!m) throw new Error('Range format error!');
+        return create(m[0] + m[3], parseInt(m[1], 10), parseInt(m[2], 10));
     }
     
     exports['create'] = create;

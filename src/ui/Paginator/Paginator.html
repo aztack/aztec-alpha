@@ -29,26 +29,32 @@
                 border: none;
                 cursor: default;
             }
+            .ui-paginator .ellipsis {
+                border: none;
+            }
         </style>
         <link rel="stylesheet" href="../../../release/css/overlay.css" />
         <script src="../../../release/scripts/requirejs.js"></script>
     </head>
 
     <body>
-
+        <div id="p1" style="padding:1em"></div>
+        <div id="p2" style="padding:1em"></div>
         <script>
             require.config({
                 baseUrl: '../../../release/scripts/'
             });
-            require(['ui/paginator'], function(paginator) {
+            require(['ui/paginator','lang/intrusive','lang/enumerable'], function(paginator,intrusive, enumer) {
                 Paginator = paginator.Paginator;
+                window.enumer = enumer;
+                intrusive.$();
                 p = new Paginator({
                     total: 50,
                     pageIndex: 0,
                     perPage: 3,
                     maxButtonNumber: 10,
                     collapsedButton: '…',
-                    buttonLayout: '.|<<|<|>|>>|?/?',
+                    buttonLayout: Paginator.ButtonLayout.Default,
                     firstPageButton: '第一页',
                     lastPageButton: '最后一页',
                     alwaysTriggerPageChangedEvent: true,
@@ -57,7 +63,17 @@
                 }).on(Paginator.Events.OnPageChanged,function(e, index, prevIndex, text){
                     console.log(arguments);
                 })
-                p.appendTo('body');
+                p.appendTo('#p1');
+
+                p2 = new Paginator({
+                    total: 50,
+                    perPage: 4,
+                    pageIndex: 0,
+                    buttonLayout: Paginator.ButtonLayout.Layout1
+                }).on(Paginator.Events.OnPageChanged,function(e, index, prevIndex, text){
+                    console.log(index + 1);
+                })
+                p2.appendTo('#p2');
             });
         </script>
     </body>

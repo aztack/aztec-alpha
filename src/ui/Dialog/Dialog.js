@@ -21,8 +21,10 @@
         notice
     ]
 });
+//Features
+//[x] auto close, timeout
+//[x] drag bug
 
-///vars
 var varArg = _arguments.varArg,
     tpl = _tpl.id$('$root.ui.Dialog');
 
@@ -174,7 +176,7 @@ var Dialog = _type.create('$root.ui.dialog.Dialog', jQuery, {
     },
     Position: {
         Center: 'center',
-        GoldenRation: 'golden'
+        GoldenRatio: 'golden'
     },
     Parts: {
         IconError: $(tpl('icon')).addClass('error'),
@@ -294,20 +296,20 @@ function Dialog_getShowPosition(self, xpos, ypos) {
         h,
         dim = self.dimension(),
         Center = Dialog.Position.Center,
-        GoldenRation = Dialog.Position.GoldenRation,
+        GoldenRatio = Dialog.Position.GoldenRatio,
         parent = self.parent();
     if (typeof ypos == 'undefined') {
         ypos = Center;
     }
-    if (xpos == Center || xpos == GoldenRation) {
+    if (xpos == Center || xpos == GoldenRatio) {
         w = parent.width();
         x = w / 2 - dim.width / 2;
     }
-    if (ypos == Center || ypos == GoldenRation) {
+    if (ypos == Center || ypos == GoldenRatio) {
         h = parent.height();
         y = h / 2 - dim.height / 2;
     }
-    if (xpos == GoldenRation || ypos == GoldenRation) {
+    if (xpos == GoldenRatio || ypos == GoldenRatio) {
         y = y * 0.618;
     }
     return [x, y];
@@ -412,7 +414,7 @@ function alert() {
         alertSingleton = null;
     }
     alertSingleton = Alert.create.apply(null, arguments);
-    alertSingleton.showAt(Dialog.Position.GoldenRation).on(Dialog.Events.OnButtonClick, function() {
+    alertSingleton.showAt(Dialog.Position.GoldenRatio).on(Dialog.Events.OnButtonClick, function() {
         alertSingleton.close();
     }).setDraggable(false);
     return alertSingleton;
@@ -469,7 +471,7 @@ function notice(content, duration, opts) {
     opts.duration = duration;
     opts.content = content;
     n = new Notice(opts);
-    n.showAt(Dialog.Position.GoldenRation)
+    n.showAt(Dialog.Position.GoldenRatio)
         .appendTo('body');
     return notice;
 }

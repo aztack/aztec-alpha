@@ -1,7 +1,7 @@
 ({
-	description: 'Slider',
-	namespace: $root.ui.slider,
-	directory: 'ui/Slider',
+	description: 'Trackbar',
+	namespace: $root.ui.trackbar,
+	directory: 'ui/Trackbar',
 	imports: {
 		_type: $root.lang.type,
 		_arguments: $root.lang.arguments,
@@ -11,13 +11,13 @@
 		_drag: $root.ui.draggable,
 		$: jQuery
 	},
-	exports: [Slider]
+	exports: [Trackbar]
 });
 
 var varArg = _arguments.varArg,
-	tpl = _tpl.id$('$root.ui.slider');
+	tpl = _tpl.id$('$root.ui.trackbar');
 
-var Slider = _type.create('$root.ui.Slider', jQuery, {
+var Trackbar = _type.create('$root.ui.Trackbar', jQuery, {
 	init: function(opts) {
 		varArg(arguments, this)
 			.when('*', function(arg) {
@@ -27,11 +27,11 @@ var Slider = _type.create('$root.ui.Slider', jQuery, {
 				return [arg, opts];
 			})
 			.invoke(function(arg, opts) {
-				this.base(tpl('Slider'));
+				this.base(tpl('Trackbar'));
 				this.appendTo(arg);
 				this.$attr('options', opts);
 				this.$attr('handle', this.sigil('.handle'));
-				Slider_initialize(this, opts);
+				Trackbar_initialize(this, opts);
 			});
 	},
 	val: function(v) {
@@ -45,12 +45,12 @@ var Slider = _type.create('$root.ui.Slider', jQuery, {
 		return this;
 	}
 }).events({
-	OnChange: 'Change(event,value).Slider'
+	OnChange: 'Change(event,value).Trackbar'
 }).statics({
 
 });
 
-function Slider_initialize(self, opts) {
+function Trackbar_initialize(self, opts) {
 	var handle = self.handle,
 		p = self.parent(),
 		initTop = handle.css('top'),
@@ -72,7 +72,7 @@ function Slider_initialize(self, opts) {
 			//offset.left = p.offset().left;
 		},
 		onMouseMove: function() {
-			self.trigger(Slider.Events.OnChange, [self.val()]);
+			self.trigger(Trackbar.Events.OnChange, [self.val()]);
 			this.$dragged.offset(offset);
 		}
 	});

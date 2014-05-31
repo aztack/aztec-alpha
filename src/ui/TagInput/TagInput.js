@@ -24,11 +24,12 @@ var tpl = _tpl.id$('$root.ui.TagInput'),
     varArg = _arguments.varArg;
 
 var TagInput = _type.create('$root.ui.TagInput', jQuery, {
-    init: function(container, options) {
+    init: function(container, opts) {
+        this.$attr('options', TagInput.options(opts || {}));
         this.base(container || tagInputTemplate);
-        this.options = options;
         this.$attr('input', this.find('input'));
-        return TagInput_initialize(this);
+        TagInput_initialize(this, opts);
+        return this;
     },
     appendTags: function(tag) {
         var self = this,
@@ -81,17 +82,17 @@ var TagInput = _type.create('$root.ui.TagInput', jQuery, {
             });
         return result;
     }
-}).statics({
-    Values: {
-        InputChangeDelay: 400
-    }
+}).options({
+    inputChangeDelay: 400
 }).events({
     OnInputChange: 'InputChange(event,text).TagInput',
+    OnEnterKeyUp: 'EnterKeyUp(event).TagInput',
+    OnTabKeyUp: 'TabKeyUp(event).TagInput',
     OnItemAdd: 'ItemAdded(event,item).TagInput',
     OnItemRemove: 'ItemRemoved(event,item).TagInput'
 });
 
-function TagInput_initialize(self) {
+function TagInput_initialize(self, opts) {
     var input = self.input,
         prevNode = input[0].previousSibling;
     if (prevNode.nodeType === 3) {
@@ -108,6 +109,6 @@ function TagInput_initialize(self) {
         clearTimeout(h);
         h = setTimeout(function() {
             self.trigger(TagInput.Events.OnInputChange, [text]);
-        }, TagInput.Values.InputChangeDelay);
+        }, opts.inputChangeDelay);
     });
 }

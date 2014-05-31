@@ -54,6 +54,10 @@ if (varArgTypeMapping) {
         return typeof s == 'string' && s.match(rehtmltag) && s.length >= 3;
     };
 
+    vat.idOrClass = function(s) {
+        return s && s.length > 0 && (s.charAt(0) === '#' || s.charAt(0) === '.');
+    };
+
     vat.hexColorString = function(s) {
         return rhex2.test(s) || rhex1.test(s);
     };

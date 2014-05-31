@@ -5,6 +5,7 @@
  * namespace: $root.lang.array
  * imports:
  *   _type: $root.lang.type
+ *   _fn: $root.lang.fn
  * exports:
  * - w
  * - forEach
@@ -15,18 +16,19 @@
  * - compact
  * - flatten
  * - fill
+ * - fromRange
  * files:
  * - src/lang/array.js
  */
 
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
-        define('lang/array',['lang/type'], factory);
+        define('lang/array',['lang/type','lang/fn'], factory);
     } else {
         var exports = $root._createNS('$root.lang.array');
-        factory($root.lang.type,exports);
+        factory($root.lang.type,$root.lang.fn,exports);
     }
-}(this, function (_type,exports) {
+}(this, function (_type,_fn,exports) {
     //'use strict';
     exports = exports || {};
     
@@ -55,17 +57,17 @@
      * @return {Array}
      */
     var forEach = _forEach ? function(self, fn) {
-            _forEach.call(self, fn);
-        } : function(self, fn) {
-            var i = 0,
-                len = ary.len,
-                item;
-            for (; i < len; ++i) {
-                item = ary[i];
-                fn(item, i);
-            }
-            return ary;
-        };
+        _forEach.call(self, fn);
+    } : function(self, fn) {
+        var i = 0,
+            len = ary.len,
+            item;
+        for (; i < len; ++i) {
+            item = ary[i];
+            fn(item, i);
+        }
+        return ary;
+    };
     
     /**
      * indexOf
@@ -74,17 +76,17 @@
      * @return {Integer}
      */
     var indexOf = _indexOf ? function(self, obj) {
-            return _indexOf.call(self, obj);
-        } : function(self, obj) {
-            var i = 0,
-                len = self.length;
-            for (; i < len; ++i) {
-                if (self[i] == obj) {
-                    return i;
-                }
+        return _indexOf.call(self, obj);
+    } : function(self, obj) {
+        var i = 0,
+            len = self.length;
+        for (; i < len; ++i) {
+            if (self[i] == obj) {
+                return i;
             }
-            return -1;
-        };
+        }
+        return -1;
+    };
     
     /**
      * toArray
@@ -157,7 +159,7 @@
             len = self.length;
         for (; i < len; ++i) {
             if (_type.isEmpty(self[i])) continue;
-            ret.push(arg[i]);
+            ret.push(self[i]);
         }
         return ret;
     }
@@ -209,6 +211,24 @@
         return self;
     }
     
+    function fromRange(from, to) {
+        var ret = [],
+            i, a, b,
+            len = arguments.length;
+        if (len === 0) {
+            return ret;
+        } else if (len === 1) {
+            return [from];
+        } else if (len >= 2) {
+            a = Math.min(from, to),
+            b = Math.max(from, to);
+            for (i = a; i <= b; ++i) {
+                ret.push(i);
+            }
+        }
+        return ret;
+    }
+    
     exports['w'] = w;
     exports['forEach'] = forEach;
     exports['indexOf'] = indexOf;
@@ -218,6 +238,7 @@
     exports['compact'] = compact;
     exports['flatten'] = flatten;
     exports['fill'] = fill;
+    exports['fromRange'] = fromRange;
     exports.__doc__ = "Ruby String like string module";
     return exports;
 }));

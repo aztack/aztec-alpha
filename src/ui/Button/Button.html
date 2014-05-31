@@ -1,0 +1,28 @@
+<html>
+    <head>
+        <title>Slider</title>
+        <style>
+            .ui-button {
+            }
+        </style>
+        <link rel="stylesheet" href="../../../release/css/Button.css" />
+        <script src="../../../release/scripts/requirejs.js"></script>
+    </head>
+    <body>
+        <button xtemplate="$root.ui.button.Normal,delete" class="ui-button" sigil-class="Button" style="display:none">
+            <span class="ui-button-text" sigil=".text"></span>
+        </button>
+        <a xtemplate="$root.ui.button.Anchor,delete" class="ui-button-anchor" sigil-class="Button" style="display:none">
+            <span class="ui-button-text" sigil=".text"></span>
+        </a>
+    </body>
+    <script>
+        require.config({
+            baseUrl: '../../../release/scripts/'
+        });
+        require(['ui/button'], function(button) {
+            s = new button.Button('确定');
+        });
+
+    </script>
+</html>

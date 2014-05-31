@@ -18,8 +18,11 @@
         ScrollableMenu
     ]
 });
+//Features
+//[x] separator
+//[x] sub-menu
+//[x] smart locating 
 
-///vars
 var tpl = _tpl.id$('$root.ui.Menu'),
     menuTemplate = tpl('menu'),
     menuItemTemplate = tpl('item'),

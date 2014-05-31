@@ -8,7 +8,8 @@
         random,
         max,
         min,
-        confined
+        confined,
+        rand
     ]
 });
 
@@ -17,25 +18,6 @@ var rand$ = Math.random,
     floor$ = Math.floor,
     max$ = Math.max,
     min$ = Math.min;
-
-//helper
-
-
-//impl
-
-//exports
-function random(min, max) {
-    var argLen = arguments.length,
-        rn;
-    if (argLen === 2) {
-        return floor(rand$() * (max - min + 1)) + min;
-    } else if (argLen === 1) {
-        max = min;
-        return floor(rand$() * (max + 1));
-    } else {
-        return floor(rand$());
-    }
-}
 
 /**
  * max
@@ -111,4 +93,31 @@ function confined(self, mi, ma, cycle) {
             return min;
         } else return self;
     }
+}
+
+/**
+ * rand
+ * return a random integer between [from, to]
+ * @param  {int} from, lower bounds
+ * @param  {int} to, upper bounds
+ * @return {int} random integer
+ */
+function rand(from, to) {
+    var len = arguments.length,
+        ret, r = rand$(),
+        a, b;
+    if (len === 0) {
+        ret = r;
+    } else if (len === 1) {
+        a = 0;
+        b = floor$(arguments[0]);
+        ret = r* (b - a) + a;
+    } else if (len >= 2 && from == to) {
+        return from;
+    } else {
+        a = min$(from, to);
+        b = max$(from, to);
+        ret = r* (b - a) + a;
+    }
+    return Math.round(ret);
 }

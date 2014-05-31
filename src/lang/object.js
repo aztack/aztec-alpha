@@ -14,14 +14,15 @@
         tryget,
         tryset,
         pairs,
-        fromPairs
+        fromPairs,
+        fromKeyValuePairString
     ]
 });
 
 ///exports
 
 function mix(target, source) {
-    _enum.each(source, function(k, v, i) {
+    _enum.each(source, function(v, k, i) {
         target[k] = v;
     });
     return target;
@@ -34,14 +35,14 @@ function mix(target, source) {
  * @return {Array}
  */
 var keys = Object.keys || function(obj) {
-        var ret = [];
-        for (var i in obj) {
-            if (obj.hasOwnProperty(i)) {
-                ret.push(i);
-            }
+    var ret = [];
+    for (var i in obj) {
+        if (obj.hasOwnProperty(i)) {
+            ret.push(i);
         }
-        return ret;
-    };
+    }
+    return ret;
+};
 
 /**
  * values
@@ -51,9 +52,9 @@ var keys = Object.keys || function(obj) {
  */
 function values(obj) {
     var ret = [];
-    if (!_type.isEmpty(obj)) return ret;
+    if (_type.isEmpty(obj)) return ret;
     for (var i in obj) {
-        ret.push(obj[i]);
+        if (obj.hasOwnProperty(i)) ret.push(obj[i]);
     }
     return ret;
 }
@@ -70,7 +71,7 @@ function values(obj) {
  *     tryget({a:[{b:42}]},'a.0.b', -1) => 42
  */
 function tryget(o, path, v) {
-    if (_type.isEmpty(o) || path.indexOf('.') < 0) return v;
+    if (_type.isEmpty(o)) return v;
 
     var parts = path.split('.'),
         part, len = parts.length;
@@ -124,7 +125,8 @@ function pairs(obj) {
 }
 
 function fromPairs(pairs) {
-    var obj = {}, i = 0,
+    var obj = {},
+        i = 0,
         len = pairs.length,
         o;
     for (; i < len; ++i) {

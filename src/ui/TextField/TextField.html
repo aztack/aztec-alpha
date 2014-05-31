@@ -1,7 +1,6 @@
 <html>
     <head>
         <title>TextField</title>
-        <base href="../../release/requirejs/" />
         <style>
             .ui-textfield {
                 border: 1px solid gray;
@@ -11,7 +10,8 @@
             }
             .placeholder { color: #aaa; }
         </style>
-        <script src="requirejs.js"></script>
+        <link rel="stylesheet" href="../../../release/css/TextField.css" />
+        <script src="../../../release/scripts/requirejs.js"></script>
     </head>
 
     <body>
@@ -26,6 +26,9 @@
         <input id="tf" placeholder="test"/>
 
         <script>
+            require.config({
+                baseUrl: '../../../release/scripts/'
+            });
             require(['ui/textField'], function(textField) {
                 TextField = textField.TextField;
                 a = new TextField($('#tf'));

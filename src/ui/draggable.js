@@ -14,6 +14,9 @@
         Draggable
     ]
 });
+//Features
+//[x] drag frame
+//[x] drag manager, multiple elements drag
 
 var mouseMoveEvent = 'mousemove.draggable',
     mouseDownEvent = 'mousedown.draggable',

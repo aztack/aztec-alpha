@@ -8,6 +8,7 @@
         _enum: $root.lang.enumerable,
         _tpl: $root.browser.template,
         _arguments: $root.lang.arguments,
+        _list: $root.ui.List,
         $: jQuery
     },
     exports: [
@@ -17,10 +18,11 @@
 
 ///vars
 var varArg = _arguments.varArg,
-    tpl = _tpl.id$('$root.ui.Dialog');
+    tpl = _tpl.id$('$root.ui.Dialog'),
+    List = _list.List;
 
 
-var SimpleRating = _type.create('$root.ui.rating.SimpleRating', jQuery, {
+var SimpleRating = _type.create('$root.ui.rating.SimpleRating', List, {
     init: function() {
 
     }

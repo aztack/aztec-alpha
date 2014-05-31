@@ -58,6 +58,8 @@
       hideMenu: function() {
         this.menu.hide();
       }
+    }).options({
+      items: []
     }).statics({
       Template: {
         BoxTemplate: boxTemplate

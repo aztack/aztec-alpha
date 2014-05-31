@@ -13,6 +13,8 @@
 		create
 	]
 });
+//Features
+//[x] singleon
 
 var varArg = _arguments.varArg,
 	tpl = _tpl.id$('$root.ui.overlay'),
@@ -42,8 +44,8 @@ var Mask = _type.create('$root.ui.overlay.Mask', jQuery, {
 	}
 });
 
+var theMask = new Mask();
 Mask.create = function() {
-	var m = new Mask();
-	m.appendTo('body');
-	return m;
+	theMask.appendTo('body');
+	return theMask;
 };

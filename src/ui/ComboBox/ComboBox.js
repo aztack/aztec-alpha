@@ -15,6 +15,8 @@
 		ComboBox
 	]
 });
+//Features
+
 
 ///vars
 var Menu = _menu.Menu,
@@ -45,6 +47,8 @@ var ComboBox = _type.create('$root.ui.ComboBox', jQuery, {
 	hideMenu: function() {
 		this.menu.hide();
 	}
+}).options({
+	items: []
 }).statics({
 	Template: {
 		BoxTemplate: boxTemplate

@@ -50,7 +50,10 @@ module Aztec
                 @source = @source.sub CONFIG_PATTERN, ''
                 @xtemplate = nil
             else
-                @ast = ::RKelly::Parser.new.parse(@source) rescue nil
+                begin
+                    @ast = ::RKelly::Parser.new.parse(@source)
+                rescue Rkelly::SytaxError
+                end
                 throw "There are SytaxError in #{@path}!\n" if @ast.nil?
                 if drop_config_object
                     @ast.value.shift

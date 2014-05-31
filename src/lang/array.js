@@ -3,7 +3,8 @@
     version: '0.0.1',
     namespace: $root.lang.array,
     imports: {
-        _type: $root.lang.type
+        _type: $root.lang.type,
+        _fn: $root.lang.fn
     },
     exports: [
         w,
@@ -14,7 +15,8 @@
         strictEqual,
         compact,
         flatten,
-        fill
+        fill,
+        fromRange
     ]
 });
 
@@ -43,17 +45,17 @@ var w = function(self, sep) {
  * @return {Array}
  */
 var forEach = _forEach ? function(self, fn) {
-        _forEach.call(self, fn);
-    } : function(self, fn) {
-        var i = 0,
-            len = ary.len,
-            item;
-        for (; i < len; ++i) {
-            item = ary[i];
-            fn(item, i);
-        }
-        return ary;
-    };
+    _forEach.call(self, fn);
+} : function(self, fn) {
+    var i = 0,
+        len = ary.len,
+        item;
+    for (; i < len; ++i) {
+        item = ary[i];
+        fn(item, i);
+    }
+    return ary;
+};
 
 /**
  * indexOf
@@ -62,17 +64,17 @@ var forEach = _forEach ? function(self, fn) {
  * @return {Integer}
  */
 var indexOf = _indexOf ? function(self, obj) {
-        return _indexOf.call(self, obj);
-    } : function(self, obj) {
-        var i = 0,
-            len = self.length;
-        for (; i < len; ++i) {
-            if (self[i] == obj) {
-                return i;
-            }
+    return _indexOf.call(self, obj);
+} : function(self, obj) {
+    var i = 0,
+        len = self.length;
+    for (; i < len; ++i) {
+        if (self[i] == obj) {
+            return i;
         }
-        return -1;
-    };
+    }
+    return -1;
+};
 
 /**
  * toArray
@@ -145,7 +147,7 @@ function compact(self) {
         len = self.length;
     for (; i < len; ++i) {
         if (_type.isEmpty(self[i])) continue;
-        ret.push(arg[i]);
+        ret.push(self[i]);
     }
     return ret;
 }
@@ -195,4 +197,22 @@ function fill(self, v, start, end) {
         self[i] = v;
     }
     return self;
+}
+
+function fromRange(from, to) {
+    var ret = [],
+        i, a, b,
+        len = arguments.length;
+    if (len === 0) {
+        return ret;
+    } else if (len === 1) {
+        return [from];
+    } else if (len >= 2) {
+        a = Math.min(from, to),
+        b = Math.max(from, to);
+        for (i = a; i <= b; ++i) {
+            ret.push(i);
+        }
+    }
+    return ret;
 }

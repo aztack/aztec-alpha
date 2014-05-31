@@ -1,7 +1,6 @@
 <html>
     <head>
         <title>Tree</title>
-        <base href="../../release/requirejs/" />
         <style>
             .ui-tree {
                 overflow:auto;
@@ -20,7 +19,7 @@
             }
             .ui-tree li {
                 cursor: pointer;
-                background-image: url(ui/images/tree.png);
+                background-image: url(images/tree.png);
                 background-position: -292px -4px;
                 background-repeat: repeat-y;
             }
@@ -34,7 +33,7 @@
                 width: 20px;
                 height: 20px;
                 display: inline-block;
-                background-image: url(ui/images/tree.png);
+                background-image: url(images/tree.png);
                 cursor: pointer;
             }
             .ui-tree .theme {
@@ -72,10 +71,8 @@
                 display:none;
             }
         </style>
-        <script src="requirejs.js"></script>
-        <link rel="stylesheet" href="aztec.css">
-        <link rel="stylesheet" href="ui/table.css">
-        <link rel="stylesheet" href="ui/menu.css">
+        <link rel="stylesheet" href="../../../release/css/Tree.css" />
+        <script src="../../../release/scripts/requirejs.js"></script>
     </head>
     <body>
         <div id="tree" style="width:300px;height:400px;">
@@ -92,6 +89,9 @@
         </li>
         </script>
         <script>
+            require.config({
+                baseUrl: '../../../release/scripts/'
+            });
             require(['lang/array', 'ui/tree','ui/draggable','ui/menu'], function(array, tree, drag, menu) {
                 function inspect() {
                     console.log(arguments);

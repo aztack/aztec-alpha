@@ -269,6 +269,14 @@
     var parallelNoCallback = 'No callback provided!',
         parallelArgumentsError = 'parallel needs at least  3 parameters!';
     
+    /**
+     * parallel
+     * @return {[type]} [description]
+     * @remark
+     *  parallel([1,2,3],['a','b'],['A','B'],function(){console.log(arguments)},true);
+     *  =>  1 a A 0
+     *      2 b B 1
+     */
     function parallel() {
         if (arguments.length < 3) {
             throw new Error(parallelArgumentsError);
@@ -287,18 +295,19 @@
         }
     
         if (args.length === 2) {
-            up = upbounds(args[0], args[1]);
+            up = upbounds(args[0].length, args[1].length);
             for (; i < up; ++i) {
-                fn.call(null, a[i], b[i]);
+                fn.call(null, args[0][i], args[1][i], i);
             }
         } else {
             lengths = pluck(args, 'length');
-            up = upbounds(lengths);
+            up = upbounds.apply(null, lengths);
             for (; i < up; ++i) {
                 items = [];
-                for (; j < args.length; ++j) {
-                    items.push(args[i][j]);
+                for (j = 0; j < args.length; ++j) {
+                    items.push(args[j][i]);
                 }
+                items.push(i);
                 fn.apply(null, items);
             }
         }

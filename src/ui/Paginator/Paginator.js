@@ -6,6 +6,8 @@
         _type: $root.lang.type,
         _num: $root.lang.number,
         _str: $root.lang.string,
+        _ary: $root.lang.array,
+        _range: $root.lang.range,
         _tpl: $root.browser.template,
         _arguments: $root.lang.arguments,
         _list: $root.ui.list,
@@ -16,13 +18,16 @@
         create
     ]
 });
+//Features
+//[x] vertical paginator
+//
 
 var varArg = _arguments.varArg,
     List = _list.List;
 /**
  *
  */
-var Paginator = _type.create('$root.ui.paginator.Paginator', List, {
+var Paginator = _type.create('$root.ui.Paginator', List, {
     init: function() {
         varArg(arguments, this)
             .when(function() {
@@ -90,17 +95,25 @@ var Paginator = _type.create('$root.ui.paginator.Paginator', List, {
     index: 0,
     perPage: 10,
     total: 0,
-    maxButtonNumber: 10,
+    maxButtonNumber: 5,
     firstPageButton: '<<',
     lastPageButton: '>>',
     prevPageButton: '<',
     nextPageButton: '>',
+    ellipsis: '...',
     buttonLayout: '<<|<|.|>|>>|?/?',
     containerClass: 'ui-paginator',
     itemClass: 'ui-paginator-item',
     ratioFormat: '{page}/{totalPage}',
     onCreateButton: null,
     alwaysTriggerPageChangedEvent: false
+}).statics({
+    ButtonLayout: {
+        Default: '<<|<|.|>|>>|?/?',
+        Smart: '<|...|>',
+        Layout0: '<<|<|.|>|>>',
+        Layout1: '<|>|...'
+    }
 });
 
 function Paginator_initialize(self, opts) {
@@ -130,7 +143,7 @@ function Paginator_initialize(self, opts) {
         if (pageIndex != prevIndex) {
             self.setPageIndex(pageIndex);
         }
-        if(opts.alwaysTriggerPageChangedEvent || pageIndex != prevIndex) {
+        if (opts.alwaysTriggerPageChangedEvent || pageIndex != prevIndex) {
             self.trigger(Paginator.Events.OnPageChanged, [pageIndex, prevIndex, target.text()]);
         }
     });
@@ -150,8 +163,9 @@ function Paginator_makeButtons(self, opts) {
         totalPage = self.totalPage,
         layout = opts.buttonLayout.split('|'),
         btn, opt = {
-            itemClass: opts.itemClass.substr(1)
-        }, userCreatedButton;
+            itemClass: opts.itemClass
+        },
+        userCreatedButton;
 
     for (k = 0; k < layout.length; ++k) {
         btn = layout[k];
@@ -167,6 +181,8 @@ function Paginator_makeButtons(self, opts) {
             self.add(opts.lastPageButton, opt).addClass('last-page').data('action', 'last');
         } else if (btn == '?/?' || btn == 'ratio') {
             self.add(_str.format(opts.ratioFormat, self)).addClass('ratio');
+        } else if (btn == '...' || btn == 'ellipsis') {
+            Paginator_updateNumberedButton(self, opts, self.pageIndex, true);
         } else {
             if (typeof opts.onCreateButton == 'function') {
                 userCreatedButton = opts.onCreateButton.call(this, btn);
@@ -176,36 +192,59 @@ function Paginator_makeButtons(self, opts) {
     }
 }
 
-function Paginator_updateNumberedButton(self, opts, index) {
+function Paginator_updateNumberedButton(self, opts, index, withEllipsis) {
     var max = opts.maxButtonNumber,
+        mid, page = index + 1,
         item, buttons = self.find('.ui-paginator-button'),
         from, to, pos, i, idx = 'data-index',
-        currentPage = 'current-page'
-    cls = 'ui-paginator-button',
-    rangeChanged = false;
-    from = index - Math.floor(max / 2);
-    to = from + max - 1;
-    if (from < 0) {
-        from = 0;
-        to = max - 1;
-    } else if (to >= self.totalPage) {
-        to = self.totalPage;
-        from = to - max + 1;
-    }
-    rangeChanged = from != buttons.first().data('index') || to - 1 != buttons.last().data('index');
-    if (!buttons.length) {
-        for (i = from; i < to; ++i) {
-            item = self.add(i + 1).attr(idx, i).addClass(cls);
-            if (i === index) item.addClass(currentPage);
-        }
-    } else if (rangeChanged) {
-        pos = buttons.first().index();
-        buttons.remove();
-        for (i = from; i < to; ++i) {
-            item = self.insertAfter(i + 1, pos++).attr(idx, i).addClass(cls);
-            if (i === index) item.addClass(currentPage);
+        currentPage = 'current-page',
+        ellipsis = opts.ellipsis,
+        total = self.totalPage,
+        items, fmt, btncls = 'ui-paginator-button';
+
+
+    if (withEllipsis) {
+        if (total <= max) {
+            self.add(_ary.fromRange(1, max));
+        } else {
+            fmt = function(page, tag, itemCls) {
+                var cls = itemCls ? ' class="' + itemCls + ' ' + btncls + '"' : '';
+                return _str.format('<{0}{2} data-index="{3}">{1}</{0}>', tag, page, cls, page - 1);
+            };
+            if (_range.create('[)', 1, max).covers(page)) {
+                items = self.add(_ary.fromRange(1, max - 1), fmt);
+                $(items.get(index)).addClass(currentPage);
+                self.add(ellipsis).addClass('ellipsis');
+                self.add(total).attr('data-index', total - 1);
+            } else if (_range.create('[]', max, total - max + 1).covers(page)) {
+                mid = Math.floor(max / 2);
+                self.add(1).attr('data-index', 1);
+                self.add(ellipsis).addClass('ellipsis');
+                items = self.add(_ary.fromRange(index - mid, index + mid), fmt);
+                $(items.get(mid + 1)).addClass(currentPage);
+                self.add(ellipsis).addClass('ellipsis');
+                self.add(total).attr('data-index', total - 1);
+            } else if (_range.create('(]', total - max + 1, total).covers(page)) {
+                mid = Math.floor(max / 2);
+                self.add(1).attr('data-index', 1);
+                self.add(ellipsis).addClass('ellipsis');
+                items = self.add(_ary.fromRange(total - max + 1, total), fmt);
+                $(items.get(index - total + max)).addClass(currentPage);
+            }
         }
     } else {
-        $(buttons.get(index - from)).addClass(currentPage);
+        from = index - Math.floor(max / 2);
+        to = from + max - 1;
+        if (from < 0) {
+            from = 0;
+            to = max - 1;
+        } else if (to >= total) {
+            to = self.totalPage;
+            from = to - max + 1;
+        }
+        for (i = from; i < to; ++i) {
+            item = self.add(i + 1).attr(idx, i).addClass(btncls);
+            if (i === index) item.addClass(currentPage);
+        }
     }
 }

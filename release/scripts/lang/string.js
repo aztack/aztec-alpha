@@ -150,9 +150,13 @@ function quote(self, q) {
 }
 
 function toArray(self) {
-    return [self];
+    return self.split('');
 }
 
+/**
+ * format
+ * @return {String}
+ */
 var format = (function() {
     function postprocess(ret, a) {
         var align = parseInt(a.align),
@@ -202,6 +206,9 @@ var format = (function() {
     }
 
     return function(self, args) {
+        if(arguments.length > 2) {
+            args = Array.prototype.slice.call(arguments, 1);
+        }
         return self.replace(format.InterpolationPattern, function(all, m) {
             var a = p(m);
             ret = '' + tryget(args, a.index);
@@ -216,7 +223,8 @@ format.DefaultFieldSeperator = ',';
 format.InterpolationPattern = /\{(.*?)\}/g;
 
 function isHtmlFragment(self) {
-    return typeof self == 'string' && self.charAt(0) === '<' && self.charAt(self.length - 1) === '>' && self.length >= 3;
+    var s = String(self);
+    return s.charAt(0) === '<' && s.charAt(self.length - 1) === '>' && s.length >= 3;
 }
 
 var toHashRegexpCache = {
