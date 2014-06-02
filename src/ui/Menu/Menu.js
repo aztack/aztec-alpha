@@ -10,7 +10,8 @@
         _enum: $root.lang.enumerable,
         _list: $root.ui.list,
         _fn: $root.lang.fn,
-        $: jQuery
+        $: jquery,
+        jqe: jQueryExt
     },
     exports: [
         Menu,

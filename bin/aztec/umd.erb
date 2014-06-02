@@ -2,22 +2,36 @@
 <% if @notransform -%>
 <%=@original -%>
 <% else %>
-(function (root, factory) {
+<%
+    def ns_to_assign(e)
+        "#{e.gsub('.','_')} = require('#{e.gsub('$root.','').gsub('.','/')}')"
+    end
+%>
+(function(root, factory) {
+    <% @mods = @imports.values.clone %>
     if (typeof define === 'function' && define.amd) {
-        define('<%=@name_requirejs%>',[<% unless @imports_requirejs.empty?%><%=@imports_requirejs%><% end %>], factory);
+        define('<%=@name_requirejs%>', [<% unless @imports_requirejs.empty?%><%=@imports_requirejs%><% end %>], factory);
+    } else if (typeof module === 'object') {
+        <% if @mods.size > 0 -%>
+        var <%=ns_to_assign(@mods[0])%><%=@mods.size == 1 ? ';' : ','%>
+            <% @mm = @mods[1..-1];@mm.each_with_index do |e,i| -%>
+            <%=ns_to_assign(e)%><%= i == @mm.size-1 ? ';' : ','%>
+            <% end -%>
+        <% end -%>
+        module.exports = factory(<%=@mods.map{|e|e.gsub('.','_')}.push('exports, module, require').join(', ') rescue nil%>);
     } else {
         var exports = $root._createNS('<%=@name%>');
-        <% @mods = @imports.values.clone %>
-        factory(<%=@mods.push('exports').join(',')%>);
+        factory(<%=@mods.push('exports').join(', ')%>);
     }
-}(this, function (<%=@imports.keys.push('exports').join(',')%>) {
+}(this, function(<%=@imports.keys.push('exports').join(', ')%>) {
     <%=@usestrict%>
     exports = exports || {};
     <%=@xtemplate_requirejs%>
-    <%=@original%>
+<%=@original%>
     <%=@sigils%>
     <% if not @custom_return -%>
     <%=@exports%>
+    exports.VERSION = '<%=@ver%>';
     <% end -%>
     <%=@returnstatement%>
 }));

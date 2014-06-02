@@ -7,7 +7,8 @@
  *   _type: $root.lang.type
  *   _tpl: $root.browser.template
  *   _arguments: $root.lang.arguments
- *   $: jQuery
+ *   $: jquery
+ *   jqe: jQueryExt
  * exports:
  * - Mask
  * - create
@@ -15,20 +16,30 @@
  * - src/ui/Overlay/Overlay.js
  */
 
-(function (root, factory) {
+(function(root, factory) {
     if (typeof define === 'function' && define.amd) {
-        define('ui/overlay',['lang/type','browser/template','lang/arguments','jQuery'], factory);
+        define('ui/overlay', ['lang/type', 'browser/template', 'lang/arguments', 'jquery', 'jQueryExt'], factory);
+    } else if (typeof module === 'object') {
+        var $root_lang_type = require('lang/type'),
+            $root_browser_template = require('browser/template'),
+            $root_lang_arguments = require('lang/arguments'),
+            jquery = require('jquery'),
+            jQueryExt = require('jQueryExt');
+        module.exports = factory($root_lang_type, $root_browser_template, $root_lang_arguments, jquery, jQueryExt, exports, module, require);
     } else {
         var exports = $root._createNS('$root.ui.overlay');
-        factory($root.lang.type,$root.browser.template,$root.lang.arguments,jQuery,exports);
+        factory($root.lang.type, $root.browser.template, $root.lang.arguments, jquery, jQueryExt, exports);
     }
-}(this, function (_type,_tpl,_arguments,$,exports) {
+}(this, function(_type, _tpl, _arguments, $, jqe, exports) {
     //'use strict';
     exports = exports || {};
     _tpl
         .set('$root.ui.overlay.iframeMask',"<iframe src=\"about:blank\" unselectable=\"on\" tabindex=\"-1\" class=\"ui-overlay\"></iframe>\n")
         .set('$root.ui.overlay.mask',"<div class=\"ui-overlay\" unselectable=\"on\" tabindex=\"-1\"></div>\n");
-        var varArg = _arguments.varArg,
+    //Features
+    //[x] singleon
+    
+    var varArg = _arguments.varArg,
       tpl = _tpl.id$('$root.ui.overlay'),
       maskTemplate = tpl('mask');
     
@@ -56,10 +67,10 @@
       }
     });
     
+    var theMask = new Mask();
     Mask.create = function() {
-      var m = new Mask();
-      m.appendTo('body');
-      return m;
+      theMask.appendTo('body');
+      return theMask;
     };
         
     ///sigils
@@ -67,6 +78,7 @@
     exports['Mask'] = Mask;
 //     exports['create'] = create;
     exports.__doc__ = "Overlay";
+    exports.VERSION = '0.0.1';
     return exports;
 }));
 //end of $root.ui.overlay

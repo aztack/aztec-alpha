@@ -9,7 +9,8 @@
         _tpl: $root.browser.template,
         _arguments: $root.lang.arguments,
         _list: $root.ui.List,
-        $: jQuery
+        $: jquery,
+        jqe: jQueryExt
     },
     exports: [
         SimpleRating

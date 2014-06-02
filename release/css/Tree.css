@@ -15,7 +15,7 @@ color: black; text-decoration: none;
 background: none;
 }
 .ui-tree li {
-cursor: pointer; background-image: url(ui/images/tree.png); background-position: -292px -4px; background-repeat: repeat-y;
+cursor: pointer; background-image: url(images/tree.png); background-position: -292px -4px; background-repeat: repeat-y;
 }
 .ui-tree li ul {
 display: none;
@@ -24,7 +24,7 @@ display: none;
 display: inherit;
 }
 .ui-tree .icon {
-width: 20px; height: 20px; display: inline-block; background-image: url(ui/images/tree.png); cursor: pointer;
+width: 20px; height: 20px; display: inline-block; background-image: url(images/tree.png); cursor: pointer;
 }
 .ui-tree .theme {
 background-position: -260px -4px;

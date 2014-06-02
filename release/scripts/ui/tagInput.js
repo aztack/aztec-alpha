@@ -10,7 +10,7 @@
  *   _enum: $root.lang.enumerable
  *   _fn: $root.lang.fn
  *   _arguments: $root.lang.arguments
- *   $: jQuery
+ *   $: jquery
  * exports:
  * - Tag
  * - TagInput
@@ -18,31 +18,41 @@
  * - src/ui/TagInput/TagInput.js
  */
 
-(function (root, factory) {
+(function(root, factory) {
     if (typeof define === 'function' && define.amd) {
-        define('ui/tagInput',['lang/type','lang/string','browser/template','lang/enumerable','lang/fn','lang/arguments','jQuery'], factory);
+        define('ui/tagInput', ['lang/type', 'lang/string', 'browser/template', 'lang/enumerable', 'lang/fn', 'lang/arguments', 'jquery'], factory);
+    } else if (typeof module === 'object') {
+        var $root_lang_type = require('lang/type'),
+            $root_lang_string = require('lang/string'),
+            $root_browser_template = require('browser/template'),
+            $root_lang_enumerable = require('lang/enumerable'),
+            $root_lang_fn = require('lang/fn'),
+            $root_lang_arguments = require('lang/arguments'),
+            jquery = require('jquery');
+        module.exports = factory($root_lang_type, $root_lang_string, $root_browser_template, $root_lang_enumerable, $root_lang_fn, $root_lang_arguments, jquery, exports, module, require);
     } else {
         var exports = $root._createNS('$root.ui.tagInput');
-        factory($root.lang.type,$root.lang.string,$root.browser.template,$root.lang.enumerable,$root.lang.fn,$root.lang.arguments,jQuery,exports);
+        factory($root.lang.type, $root.lang.string, $root.browser.template, $root.lang.enumerable, $root.lang.fn, $root.lang.arguments, jquery, exports);
     }
-}(this, function (_type,_str,_tpl,_enum,_fn,_arguments,$,exports) {
+}(this, function(_type, _str, _tpl, _enum, _fn, _arguments, $, exports) {
     //'use strict';
     exports = exports || {};
     _tpl
         .set('$root.ui.TagInput.tag',"<div class=\"ui-taginput-tag\">\n<span class=\"ui-taginput-tagtext\"></span><a class=\"ui-taginput-button\" href=\"javascript:;\"></a>\n</div>\n")
         .set('$root.ui.TagInput.tags-and-input',"<div class=\"ui-taginput\">\n<div class=\"ui-taginput-tags\"></div>\n<input type=\"text\" value=\"\">\n</div>\n");
-        ///vars
+    ///vars
     var tpl = _tpl.id$('$root.ui.TagInput'),
         tagInputTemplate = tpl('tags-and-input'),
         tagTemplate = tpl('tag'),
         varArg = _arguments.varArg;
     
     var TagInput = _type.create('$root.ui.TagInput', jQuery, {
-        init: function(container, options) {
+        init: function(container, opts) {
+            this.$attr('options', TagInput.options(opts || {}));
             this.base(container || tagInputTemplate);
-            this.options = options;
             this.$attr('input', this.find('input'));
-            return TagInput_initialize(this);
+            TagInput_initialize(this, opts);
+            return this;
         },
         appendTags: function(tag) {
             var self = this,
@@ -95,17 +105,17 @@
                 });
             return result;
         }
-    }).statics({
-        Values: {
-            InputChangeDelay: 400
-        }
+    }).options({
+        inputChangeDelay: 400
     }).events({
         OnInputChange: 'InputChange(event,text).TagInput',
+        OnEnterKeyUp: 'EnterKeyUp(event).TagInput',
+        OnTabKeyUp: 'TabKeyUp(event).TagInput',
         OnItemAdd: 'ItemAdded(event,item).TagInput',
         OnItemRemove: 'ItemRemoved(event,item).TagInput'
     });
     
-    function TagInput_initialize(self) {
+    function TagInput_initialize(self, opts) {
         var input = self.input,
             prevNode = input[0].previousSibling;
         if (prevNode.nodeType === 3) {
@@ -122,7 +132,7 @@
             clearTimeout(h);
             h = setTimeout(function() {
                 self.trigger(TagInput.Events.OnInputChange, [text]);
-            }, TagInput.Values.InputChangeDelay);
+            }, opts.inputChangeDelay);
         });
     }
         
@@ -135,6 +145,7 @@
     //     exports['Tag'] = Tag;
     exports['TagInput'] = TagInput;
     exports.__doc__ = "TagInput";
+    exports.VERSION = '0.0.1';
     return exports;
 }));
 //end of $root.ui.tagInput

@@ -1,0 +1,48 @@
+<html>
+    <head>
+        <title>The Big Demo</title>
+        <link rel="stylesheet" href="release/css/Paginator.css" />
+        <link rel="stylesheet" href="release/css/Table.css" />
+
+        <script src="release/scripts/aztec.js"></script>
+        <script src="release/scripts/lang/json.js"></script>
+        <script src="release/scripts/lang/type.js"></script>
+        <script src="release/scripts/lang/fn.js"></script>
+        <script src="release/scripts/lang/number.js"></script>
+        <script src="release/scripts/lang/arguments.js"></script>
+        <script src="release/scripts/lang/range.js"></script>
+        <script src="release/scripts/lang/string.js"></script>
+        <script src="release/scripts/lang/date.js"></script>
+        <script src="release/scripts/lang/array.js"></script>
+        <script src="release/scripts/lang/object.js"></script>
+        <script src="release/scripts/lang/enumerable.js"></script>
+        <script src="release/scripts/lang/intrusive.js"></script>
+
+        <script src="release/scripts/jQuery.js"></script>
+        <script src="release/scripts/jQueryExt.js"></script>
+        <script src="release/scripts/browser/template.js"></script>
+        <script src="release/scripts/ui/list.js"></script>
+        <script src="release/scripts/ui/paginator.js"></script>
+        <script src="release/scripts/ui/table.js"></script>
+    </head>
+
+    <body>
+        <script>
+            $root._help();
+            Paginator = $root.ui.paginator.Paginator;
+            p = new Paginator({
+                total: 1000,
+                perPage: 10
+            }).on(Paginator.Events.OnPageChanged, function(e, index) {
+
+            });
+            p.appendTo('body');
+        </script>
+        <script type="text/x-aztec-widget">
+            <widget appendTo="body">
+                <ui:Table source="localhost" title="" fixhead="true" />
+                <ui:Paginator total="1000" perPage="10" pageIndex="2" />
+            </widget>
+        </script>
+    </body>
+</html>

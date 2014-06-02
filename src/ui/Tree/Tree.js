@@ -9,7 +9,8 @@
         _tpl: $root.browser.template,
         _arguments: $root.lang.arguments,
         _enum: $root.lang.enumerable,
-        $: jQuery
+        $: jquery,
+        jqe: jQueryExt
     },
     exports: [
         Tree

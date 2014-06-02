@@ -4,7 +4,7 @@
  * namespace: $root.browser.template
  * imports:
  *   _type: $root.lang.type
- *   $: jQuery
+ *   $: jquery
  * exports:
  * - collect
  * - set
@@ -14,18 +14,22 @@
  * - src/browser/template.js
  */
 
-(function (root, factory) {
+(function(root, factory) {
     if (typeof define === 'function' && define.amd) {
-        define('browser/template',['lang/type','jQuery'], factory);
+        define('browser/template', ['lang/type', 'jquery'], factory);
+    } else if (typeof module === 'object') {
+        var $root_lang_type = require('lang/type'),
+            jquery = require('jquery');
+        module.exports = factory($root_lang_type, jquery, exports, module, require);
     } else {
         var exports = $root._createNS('$root.browser.template');
-        factory($root.lang.type,jQuery,exports);
+        factory($root.lang.type, jquery, exports);
     }
-}(this, function (_type,$,exports) {
+}(this, function(_type, $, exports) {
     //'use strict';
     exports = exports || {};
     
-        //vars
+    //vars
     var templates = {},
         XTEMPLATE_ID_ATTR = 'xtemplate',
         XTEMPLATE_ID_ATTR_SEL = '[xtemplate]',
@@ -148,6 +152,7 @@
     exports['get'] = get;
     exports['id$'] = id$;
     exports.__doc__ = "Templating";
+    exports.VERSION = '0.0.1';
     return exports;
 }));
 //end of $root.browser.template

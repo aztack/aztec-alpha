@@ -10,7 +10,8 @@
         _fn: $root.lang.fn,
         _arguments: $root.lang.arguments,
         _template: $root.browser.template,
-        $: jQuery
+        $: jquery,
+        jqe: jQueryExt
     },
     exports: [
         Table,

@@ -10,27 +10,36 @@
  *   _date: $root.lang.date
  *   _tpl: $root.browser.template
  *   _table: $root.ui.table
- *   $: jQuery
+ *   $: jquery
  * exports:
  * - Calendar
  * files:
  * - src/ui/Calendar/Calendar.js
  */
 
-(function (root, factory) {
+(function(root, factory) {
     if (typeof define === 'function' && define.amd) {
-        define('ui/calendar',['lang/type','lang/string','lang/arguments','lang/date','browser/template','ui/table','jQuery'], factory);
+        define('ui/calendar', ['lang/type', 'lang/string', 'lang/arguments', 'lang/date', 'browser/template', 'ui/table', 'jquery'], factory);
+    } else if (typeof module === 'object') {
+        var $root_lang_type = require('lang/type'),
+            $root_lang_string = require('lang/string'),
+            $root_lang_arguments = require('lang/arguments'),
+            $root_lang_date = require('lang/date'),
+            $root_browser_template = require('browser/template'),
+            $root_ui_table = require('ui/table'),
+            jquery = require('jquery');
+        module.exports = factory($root_lang_type, $root_lang_string, $root_lang_arguments, $root_lang_date, $root_browser_template, $root_ui_table, jquery, exports, module, require);
     } else {
         var exports = $root._createNS('$root.ui.calendar');
-        factory($root.lang.type,$root.lang.string,$root.lang.arguments,$root.lang.date,$root.browser.template,$root.ui.table,jQuery,exports);
+        factory($root.lang.type, $root.lang.string, $root.lang.arguments, $root.lang.date, $root.browser.template, $root.ui.table, jquery, exports);
     }
-}(this, function (_type,_str,_arguments,_date,_tpl,_table,$,exports) {
+}(this, function(_type, _str, _arguments, _date, _tpl, _table, $, exports) {
     //'use strict';
     exports = exports || {};
     _tpl
         .set('$root.ui.Calendar.header',"<tr><th colspan=\"7\" style=\"text-align: center;\">\n<span class=\"ui-button ui-calendar-prev-month\" data-action=\"prev-month\"></span><span class=\"ui-calendar-title\" sigil=\".title\"></span><span class=\"ui-button ui-calendar-next-month\" data-action=\"next-month\"></span>\n</th></tr>\n")
         .set('$root.ui.Calendar.footer',"\n");
-        var varArg = _arguments.varArg,
+    var varArg = _arguments.varArg,
         tpl = _tpl.id$('$root.ui.Calendar'),
         Table = _table.Table;
     
@@ -99,6 +108,7 @@
 
     exports['Calendar'] = Calendar;
     exports.__doc__ = "Calendar";
+    exports.VERSION = '0.0.1';
     return exports;
 }));
 //end of $root.ui.calendar

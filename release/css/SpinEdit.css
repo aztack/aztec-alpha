@@ -1,10 +1,28 @@
 /* $root.ui.spinEdit */
 .ui-spinedit {
-border: 1px solid #ccc; background: #fff; display: inline-block;
+background: #fff; display: inline-block; position: relative;
 }
 .ui-spinedit .button {
 cursor: pointer; list-style-type: none; -webkit-user-select: none;
 }
+.ui-spinedit input {
+border: none; outline: none;
+}
 .ui-spinedit .buttons {
 margin: 0; padding: 0;
+}
+.ui-spinbutton {
+display: inline-block; width: 1em;
+}
+.ui-spinbutton .spin-button {
+position: absolute; display: block; height: 12px; width: 24px; right: 0;
+}
+.ui-spinbutton .spin-button:hover {
+background-color: #eee;
+}
+.ui-spinbutton .dec-button {
+top: 0; background: url(images/spinedit-arrow.gif) no-repeat center 4px;
+}
+.ui-spinbutton .inc-button {
+bottom: 0; background: url(images/spinedit-arrow.gif) no-repeat center -8px;
 }

@@ -20,18 +20,23 @@
  * - src/lang/object.js
  */
 
-(function (root, factory) {
+(function(root, factory) {
     if (typeof define === 'function' && define.amd) {
-        define('lang/object',['lang/type','lang/string','lang/enumerable'], factory);
+        define('lang/object', ['lang/type', 'lang/string', 'lang/enumerable'], factory);
+    } else if (typeof module === 'object') {
+        var $root_lang_type = require('lang/type'),
+            $root_lang_string = require('lang/string'),
+            $root_lang_enumerable = require('lang/enumerable');
+        module.exports = factory($root_lang_type, $root_lang_string, $root_lang_enumerable, exports, module, require);
     } else {
         var exports = $root._createNS('$root.lang.object');
-        factory($root.lang.type,$root.lang.string,$root.lang.enumerable,exports);
+        factory($root.lang.type, $root.lang.string, $root.lang.enumerable, exports);
     }
-}(this, function (_type,_str,_enum,exports) {
+}(this, function(_type, _str, _enum, exports) {
     //'use strict';
     exports = exports || {};
     
-        ///exports
+    ///exports
     
     function mix(target, source) {
         _enum.each(source, function(v, k, i) {
@@ -165,6 +170,7 @@
     exports['fromPairs'] = fromPairs;
     exports['fromKeyValuePairString'] = fromKeyValuePairString;
     exports.__doc__ = "Object utils";
+    exports.VERSION = '0.0.1';
     return exports;
 }));
 //end of $root.lang.object

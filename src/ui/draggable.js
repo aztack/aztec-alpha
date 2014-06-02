@@ -5,7 +5,8 @@
         _type: $root.lang.type,
         _fn: $root.lang.fn,
         _arguments: $root.lang.arguments,
-        $: jQuery
+        $: jquery,
+        jqe: jQueryExt
     },
     exports: [
         draggable,

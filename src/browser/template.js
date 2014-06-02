@@ -3,7 +3,7 @@
     namespace: $root.browser.template,
     imports: {
         _type: $root.lang.type,
-        $: jQuery
+        $: jquery
     },
     exports: [
         collect,

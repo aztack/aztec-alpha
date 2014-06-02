@@ -21,18 +21,22 @@
  * - src/lang/enumerable.js
  */
 
-(function (root, factory) {
+(function(root, factory) {
     if (typeof define === 'function' && define.amd) {
-        define('lang/enumerable',['lang/type','lang/array'], factory);
+        define('lang/enumerable', ['lang/type', 'lang/array'], factory);
+    } else if (typeof module === 'object') {
+        var $root_lang_type = require('lang/type'),
+            $root_lang_array = require('lang/array');
+        module.exports = factory($root_lang_type, $root_lang_array, exports, module, require);
     } else {
         var exports = $root._createNS('$root.lang.enumerable');
-        factory($root.lang.type,$root.lang.array,exports);
+        factory($root.lang.type, $root.lang.array, exports);
     }
-}(this, function (_type,_ary,exports) {
+}(this, function(_type, _ary, exports) {
     //'use strict';
     exports = exports || {};
     
-        var _slice = Array.prototype.slice;
+    var _slice = Array.prototype.slice;
     
     ///helper
     
@@ -324,6 +328,7 @@
     exports['pluck'] = pluck;
     exports['parallel'] = parallel;
     exports.__doc__ = "Enumerable Interface";
+    exports.VERSION = '0.0.1';
     return exports;
 }));
 //end of $root.lang.enumerable

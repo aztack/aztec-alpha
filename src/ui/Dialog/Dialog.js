@@ -11,7 +11,8 @@
         _arguments: $root.lang.arguments,
         _drag: $root.ui.draggable,
         _overlay: $root.ui.overlay,
-        $: jQuery
+        $: jquery,
+        jqe: jQueryExt
     },
     exports: [
         Dialog,

@@ -28,18 +28,24 @@
  * - src/lang/date.js
  */
 
-(function (root, factory) {
+(function(root, factory) {
     if (typeof define === 'function' && define.amd) {
-        define('lang/date',['lang/type','lang/fn','lang/arguments','lang/string'], factory);
+        define('lang/date', ['lang/type', 'lang/fn', 'lang/arguments', 'lang/string'], factory);
+    } else if (typeof module === 'object') {
+        var $root_lang_type = require('lang/type'),
+            $root_lang_fn = require('lang/fn'),
+            $root_lang_arguments = require('lang/arguments'),
+            $root_lang_string = require('lang/string');
+        module.exports = factory($root_lang_type, $root_lang_fn, $root_lang_arguments, $root_lang_string, exports, module, require);
     } else {
         var exports = $root._createNS('$root.lang.date');
-        factory($root.lang.type,$root.lang.fn,$root.lang.arguments,$root.lang.string,exports);
+        factory($root.lang.type, $root.lang.fn, $root.lang.arguments, $root.lang.string, exports);
     }
-}(this, function (_type,_fn,_arguments,_str,exports) {
+}(this, function(_type, _fn, _arguments, _str, exports) {
     //'use strict';
     exports = exports || {};
     
-        var varArg = _arguments.varArg;
+    var varArg = _arguments.varArg;
     
     //vars
     var secondsOfMinute = 60,
@@ -90,7 +96,7 @@
     
     function format(self, sep) {
         sep = sep || '-';
-        return _str.format("{year}{sep}{month}{sep}{date}", {
+        return _str.format("{year}{sep}{month,2,0}{sep}{date,2,0}", {
             sep: sep,
             year: self.getFullYear(),
             month: self.getMonth() + 1,
@@ -466,6 +472,7 @@
     exports['DateTime'] = DateTime;
     exports['TimeSpan'] = TimeSpan;
     exports.__doc__ = "Date Utils";
+    exports.VERSION = '0.0.1';
     return exports;
 }));
 //end of $root.lang.date

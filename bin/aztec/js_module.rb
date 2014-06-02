@@ -114,6 +114,8 @@ module Aztec
         def prepare_context
             ctx = Erubis::Context.new
             ctx[:notransform] = @config.notransform
+            ctx[:config] = @config
+            ctx[:ver] = @config.ver
             ctx[:name] = name
             ctx[:name_requirejs] = Utils.namespace_to_file_path(name)
             imports = @config.imports
@@ -140,7 +142,7 @@ module Aztec
                 
                 requires = imports.map{|k,v| "#{k} = require('#{v}')"}.join(",")
                 ctx[:requires] = "var #{requires};"
-                ctx[:imports_requirejs] = imports.size == 0 ? '' : imports.values.map{|e|"'#{Utils.namespace_to_file_path(e)}'"}.join(',')
+                ctx[:imports_requirejs] = imports.size == 0 ? '' : imports.values.map{|e|"'#{Utils.namespace_to_file_path(e)}'"}.join(', ')
             else
                 ctx[:imports] = ctx[:imports_amd] = ctx[:imports_requirejs] = {}
                 ctx[:requires] = ''

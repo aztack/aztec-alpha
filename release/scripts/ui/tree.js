@@ -10,26 +10,37 @@
  *   _tpl: $root.browser.template
  *   _arguments: $root.lang.arguments
  *   _enum: $root.lang.enumerable
- *   $: jQuery
+ *   $: jquery
+ *   jqe: jQueryExt
  * exports:
  * - Tree
  * files:
  * - src/ui/Tree/Tree.js
  */
 
-(function (root, factory) {
+(function(root, factory) {
     if (typeof define === 'function' && define.amd) {
-        define('ui/tree',['lang/type','lang/string','lang/fn','browser/template','lang/arguments','lang/enumerable','jQuery'], factory);
+        define('ui/tree', ['lang/type', 'lang/string', 'lang/fn', 'browser/template', 'lang/arguments', 'lang/enumerable', 'jquery', 'jQueryExt'], factory);
+    } else if (typeof module === 'object') {
+        var $root_lang_type = require('lang/type'),
+            $root_lang_string = require('lang/string'),
+            $root_lang_fn = require('lang/fn'),
+            $root_browser_template = require('browser/template'),
+            $root_lang_arguments = require('lang/arguments'),
+            $root_lang_enumerable = require('lang/enumerable'),
+            jquery = require('jquery'),
+            jQueryExt = require('jQueryExt');
+        module.exports = factory($root_lang_type, $root_lang_string, $root_lang_fn, $root_browser_template, $root_lang_arguments, $root_lang_enumerable, jquery, jQueryExt, exports, module, require);
     } else {
         var exports = $root._createNS('$root.ui.tree');
-        factory($root.lang.type,$root.lang.string,$root.lang.fn,$root.browser.template,$root.lang.arguments,$root.lang.enumerable,jQuery,exports);
+        factory($root.lang.type, $root.lang.string, $root.lang.fn, $root.browser.template, $root.lang.arguments, $root.lang.enumerable, jquery, jQueryExt, exports);
     }
-}(this, function (_type,_str,_fn,_tpl,_arguments,_enum,$,exports) {
+}(this, function(_type, _str, _fn, _tpl, _arguments, _enum, $, jqe, exports) {
     //'use strict';
     exports = exports || {};
     _tpl
         .set('$root.ui.Tree.node',"<li>\n<i class=\"icon expander\" sigil=\".expander\"></i><a class=\"anchor\" href=\"javascript:;\"><i class=\"icon checkbox\" sigil=\".checkbox\"></i><i class=\"icon theme\" sigil=\".icon\"></i><span class=\"text\" sigil=\".text\"></span></a>\n</li>\n");
-        var tpl = _tpl.id$('$root.ui.Tree'),
+    var tpl = _tpl.id$('$root.ui.Tree'),
         varArg = _arguments.varArg,
         toArray = _arguments.toArray;
     
@@ -255,6 +266,7 @@
 
     exports['Tree'] = Tree;
     exports.__doc__ = "Tree";
+    exports.VERSION = '0.0.1';
     return exports;
 }));
 //end of $root.ui.tree

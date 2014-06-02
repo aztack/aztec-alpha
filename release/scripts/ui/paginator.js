@@ -12,7 +12,8 @@
  *   _tpl: $root.browser.template
  *   _arguments: $root.lang.arguments
  *   _list: $root.ui.list
- *   $: jQuery
+ *   $: jquery
+ *   jqe: jQueryExt
  * exports:
  * - Paginator
  * - create
@@ -20,18 +21,30 @@
  * - src/ui/Paginator/Paginator.js
  */
 
-(function (root, factory) {
+(function(root, factory) {
     if (typeof define === 'function' && define.amd) {
-        define('ui/paginator',['lang/type','lang/number','lang/string','lang/array','lang/range','browser/template','lang/arguments','ui/list','jQuery'], factory);
+        define('ui/paginator', ['lang/type', 'lang/number', 'lang/string', 'lang/array', 'lang/range', 'browser/template', 'lang/arguments', 'ui/list', 'jquery', 'jQueryExt'], factory);
+    } else if (typeof module === 'object') {
+        var $root_lang_type = require('lang/type'),
+            $root_lang_number = require('lang/number'),
+            $root_lang_string = require('lang/string'),
+            $root_lang_array = require('lang/array'),
+            $root_lang_range = require('lang/range'),
+            $root_browser_template = require('browser/template'),
+            $root_lang_arguments = require('lang/arguments'),
+            $root_ui_list = require('ui/list'),
+            jquery = require('jquery'),
+            jQueryExt = require('jQueryExt');
+        module.exports = factory($root_lang_type, $root_lang_number, $root_lang_string, $root_lang_array, $root_lang_range, $root_browser_template, $root_lang_arguments, $root_ui_list, jquery, jQueryExt, exports, module, require);
     } else {
         var exports = $root._createNS('$root.ui.paginator');
-        factory($root.lang.type,$root.lang.number,$root.lang.string,$root.lang.array,$root.lang.range,$root.browser.template,$root.lang.arguments,$root.ui.list,jQuery,exports);
+        factory($root.lang.type, $root.lang.number, $root.lang.string, $root.lang.array, $root.lang.range, $root.browser.template, $root.lang.arguments, $root.ui.list, jquery, jQueryExt, exports);
     }
-}(this, function (_type,_num,_str,_ary,_range,_tpl,_arguments,_list,$,exports) {
+}(this, function(_type, _num, _str, _ary, _range, _tpl, _arguments, _list, $, jqe, exports) {
     //'use strict';
     exports = exports || {};
     
-        //Features
+    //Features
     //[x] vertical paginator
     //
     
@@ -187,7 +200,7 @@
             } else if (btn == '<' || btn == 'prev') {
                 self.add(opts.prevPageButton, opt).data('action', 'prev').addClass('prev-page');
             } else if (btn == '.') {
-                Paginator_updateNumberedButton(self, opts, self.pageIndex);
+                Paginator_makeNumberedButton(self, opts, self.pageIndex);
             } else if (btn == '>' || btn == 'next') {
                 self.add(opts.nextPageButton, opt).data('action', 'next').addClass('next-page');
             } else if (btn == '>>' || btn == 'last') {
@@ -195,7 +208,7 @@
             } else if (btn == '?/?' || btn == 'ratio') {
                 self.add(_str.format(opts.ratioFormat, self)).addClass('ratio');
             } else if (btn == '...' || btn == 'ellipsis') {
-                Paginator_updateNumberedButton(self, opts, self.pageIndex, true);
+                Paginator_makeNumberedButton(self, opts, self.pageIndex, true);
             } else {
                 if (typeof opts.onCreateButton == 'function') {
                     userCreatedButton = opts.onCreateButton.call(this, btn);
@@ -205,7 +218,7 @@
         }
     }
     
-    function Paginator_updateNumberedButton(self, opts, index, withEllipsis) {
+    function Paginator_makeNumberedButton(self, opts, index, withEllipsis) {
         var max = opts.maxButtonNumber,
             mid, page = index + 1,
             item, buttons = self.find('.ui-paginator-button'),
@@ -227,20 +240,24 @@
                 if (_range.create('[)', 1, max).covers(page)) {
                     items = self.add(_ary.fromRange(1, max - 1), fmt);
                     $(items.get(index)).addClass(currentPage);
+                    
                     self.add(ellipsis).addClass('ellipsis');
                     self.add(total).attr('data-index', total - 1);
                 } else if (_range.create('[]', max, total - max + 1).covers(page)) {
                     mid = Math.floor(max / 2);
                     self.add(1).attr('data-index', 1);
                     self.add(ellipsis).addClass('ellipsis');
+                    
                     items = self.add(_ary.fromRange(index - mid, index + mid), fmt);
                     $(items.get(mid + 1)).addClass(currentPage);
+                    
                     self.add(ellipsis).addClass('ellipsis');
                     self.add(total).attr('data-index', total - 1);
                 } else if (_range.create('(]', total - max + 1, total).covers(page)) {
                     mid = Math.floor(max / 2);
                     self.add(1).attr('data-index', 1);
                     self.add(ellipsis).addClass('ellipsis');
+                    
                     items = self.add(_ary.fromRange(total - max + 1, total), fmt);
                     $(items.get(index - total + max)).addClass(currentPage);
                 }
@@ -252,10 +269,10 @@
                 from = 0;
                 to = max - 1;
             } else if (to >= total) {
-                to = self.totalPage;
+                to = self.totalPage - 1;
                 from = to - max + 1;
             }
-            for (i = from; i < to; ++i) {
+            for (i = from; i <= to; ++i) {
                 item = self.add(i + 1).attr(idx, i).addClass(btncls);
                 if (i === index) item.addClass(currentPage);
             }
@@ -267,6 +284,7 @@
     exports['Paginator'] = Paginator;
 //     exports['create'] = create;
     exports.__doc__ = "Paginator";
+    exports.VERSION = '0.0.1';
     return exports;
 }));
 //end of $root.ui.paginator

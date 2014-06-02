@@ -1,13 +1,30 @@
-({
-    description: 'jQuery Sigil Extension',
-    namespace: jQueryExt,
-    imports: {
-        _type: $root.lang.type,
-        _object: $root.lang.object
-    },
-    priority: 1
-});
+/**
+ * ---
+ * description: jQuery Sigil Extension
+ * namespace: jQueryExt
+ * imports:
+ *   _type: $root.lang.type
+ *   _object: $root.lang.object
+ * priority: 1
+ * files:
+ * - src/jquery.ext.js
+ */
 
+(function(root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        define('jQueryExt', ['lang/type', 'lang/object'], factory);
+    } else if (typeof module === 'object') {
+        var $root_lang_type = require('lang/type'),
+            $root_lang_object = require('lang/object');
+        module.exports = factory($root_lang_type, $root_lang_object, exports, module, require);
+    } else {
+        var exports = $root._createNS('jQueryExt');
+        factory($root.lang.type, $root.lang.object, exports);
+    }
+}(this, function(_type, _object, exports) {
+    //'use strict';
+    exports = exports || {};
+    
 jQuery.typename = function() {
     return 'jQuery';
 };
@@ -147,3 +164,10 @@ if (typeof jQuery !== 'undefined') {
         return _remove.apply(this, arguments);
     };
 } //we have jQuery
+    
+    
+    exports.__doc__ = "jQuery Sigil Extension";
+    exports.VERSION = '0.0.1';
+    return exports;
+}));
+//end of jQueryExt

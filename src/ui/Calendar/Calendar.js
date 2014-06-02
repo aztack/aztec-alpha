@@ -9,7 +9,7 @@
         _date: $root.lang.date,
         _tpl: $root.browser.template,
         _table: $root.ui.table,
-        $: jQuery
+        $: jquery
     },
     exports: [
         Calendar

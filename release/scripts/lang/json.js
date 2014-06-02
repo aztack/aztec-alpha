@@ -10,18 +10,20 @@
  * - src/lang/json.js
  */
 
-(function (root, factory) {
+(function(root, factory) {
     if (typeof define === 'function' && define.amd) {
-        define('lang/json',[], factory);
+        define('lang/json', [], factory);
+    } else if (typeof module === 'object') {
+        module.exports = factory(exports, module, require);
     } else {
         var exports = $root._createNS('$root.lang.json');
         factory(exports);
     }
-}(this, function (exports) {
+}(this, function(exports) {
     //'use strict';
     exports = exports || {};
     
-        if (typeof JSON != 'undefined' && typeof JSON.parse == 'function' && typeof JSON.stringify == 'function') {
+    if (typeof JSON != 'undefined' && typeof JSON.parse == 'function' && typeof JSON.stringify == 'function') {
         exports.parse = JSON.parse;
         exports.stringify = JSON.stringify;
     } else {
@@ -343,6 +345,7 @@
     exports['parse'] = parse;
     exports['stringify'] = stringify;
     exports.__doc__ = "JSON";
+    exports.VERSION = '0.0.1';
     return exports;
 }));
 //end of $root.lang.json

@@ -1,0 +1,22 @@
+/* $root.ui.paginator */
+.ui-paginator {
+margin: 0; padding: 0;
+}
+.ui-paginator-item {
+border: 1px solid #ccc; display: inline-block; cursor: pointer; margin: 0 2px 0 2px; padding: 0 4px 0 4px; text-align: center; -webkit-user-select: none;
+}
+.ui-paginator-button {
+border: 1px solid #ccc; display: inline-block; cursor: pointer; margin: 0 2px 0 2px; padding: 0 4px 0 4px; text-align: center; -webkit-user-select: none;
+}
+.ui-paginator-button:hover {
+background: #ccc;
+}
+.ui-paginator .current-page {
+color: #fff; background-color: #2095F0;
+}
+.ui-paginator .ratio {
+border: none; cursor: default;
+}
+.ui-paginator .ellipsis {
+border: none;
+}

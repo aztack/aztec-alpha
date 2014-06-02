@@ -15,6 +15,9 @@
 });
 var _slice = Array.prototype.slice;
 
+/**
+ * extends prototype of a
+ */
 function _intrude_proto(proto, methods) {
     if (!proto) return;
     var k, f;
@@ -48,9 +51,11 @@ function _intrude_proto(proto, methods) {
     }
 }
 
+/**
+ * extends class (function)
+ */
 function _intrude_clazz(clz, statics) {
     var k;
-    if(clz === Array) debugger;
     if (typeof Object.defineProperty == 'function') {
         for (k in statics) {
             if (!statics.hasOwnProperty(k)) continue;

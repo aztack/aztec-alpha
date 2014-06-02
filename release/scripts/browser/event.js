@@ -14,18 +14,22 @@
  * - src/browser/event.emitter.js
  */
 
-(function (root, factory) {
+(function(root, factory) {
     if (typeof define === 'function' && define.amd) {
-        define('browser/event',['lang/type','lang/fn'], factory);
+        define('browser/event', ['lang/type', 'lang/fn'], factory);
+    } else if (typeof module === 'object') {
+        var $root_lang_type = require('lang/type'),
+            $root_lang_fn = require('lang/fn');
+        module.exports = factory($root_lang_type, $root_lang_fn, exports, module, require);
     } else {
         var exports = $root._createNS('$root.browser.event');
-        factory($root.lang.type,$root.lang.fn,exports);
+        factory($root.lang.type, $root.lang.fn, exports);
     }
-}(this, function (_type,_fn,exports) {
+}(this, function(_type, _fn, exports) {
     //'use strict';
     exports = exports || {};
     
-        ///exports
+    ///exports
     
     /**
      * pauseEvent
@@ -169,6 +173,7 @@
     exports['stopEvent'] = stopEvent;
     exports['EventEmitter'] = EventEmitter;
     exports.__doc__ = "Event Utils";
+    exports.VERSION = '0.0.1';
     return exports;
 }));
 //end of $root.browser.event

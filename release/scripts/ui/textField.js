@@ -7,7 +7,8 @@
  *   _type: $root.lang.type
  *   _tpl: $root.browser.template
  *   _arguments: $root.lang.arguments
- *   $: jQuery
+ *   $: jquery
+ *   jqe: jQueryExt
  * exports:
  * - TextField
  * - placeholderPollyfill
@@ -15,19 +16,26 @@
  * - src/ui/TextField/TextField.js
  */
 
-(function (root, factory) {
+(function(root, factory) {
     if (typeof define === 'function' && define.amd) {
-        define('ui/textField',['lang/type','browser/template','lang/arguments','jQuery'], factory);
+        define('ui/textField', ['lang/type', 'browser/template', 'lang/arguments', 'jquery', 'jQueryExt'], factory);
+    } else if (typeof module === 'object') {
+        var $root_lang_type = require('lang/type'),
+            $root_browser_template = require('browser/template'),
+            $root_lang_arguments = require('lang/arguments'),
+            jquery = require('jquery'),
+            jQueryExt = require('jQueryExt');
+        module.exports = factory($root_lang_type, $root_browser_template, $root_lang_arguments, jquery, jQueryExt, exports, module, require);
     } else {
         var exports = $root._createNS('$root.ui.textField');
-        factory($root.lang.type,$root.browser.template,$root.lang.arguments,jQuery,exports);
+        factory($root.lang.type, $root.browser.template, $root.lang.arguments, jquery, jQueryExt, exports);
     }
-}(this, function (_type,_tpl,_arguments,$,exports) {
+}(this, function(_type, _tpl, _arguments, $, jqe, exports) {
     //'use strict';
     exports = exports || {};
     _tpl
         .set('$root.ui.TextField.textfield',"<input type=\"text\" class=\"ui-textfield\" _placeholder=\"placeholder\">\n");
-        ///vars
+    ///vars
     var tpl = _tpl.id$('$root.ui.TextField'),
       textfieldTemplate = tpl('textfield'),
       varArg = _arguments.varArg;
@@ -169,6 +177,7 @@
     exports['TextField'] = TextField;
     exports['placeholderPollyfill'] = placeholderPollyfill;
     exports.__doc__ = "TextField";
+    exports.VERSION = '0.0.1';
     return exports;
 }));
 //end of $root.ui.textField

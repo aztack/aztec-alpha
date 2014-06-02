@@ -10,7 +10,8 @@
         _arguments: $root.lang.arguments,
         _tpl: $root.browser.template,
         _tf: $root.ui.textField,
-        $: jQuery
+        $: jquery,
+        jqe: jQueryExt
     },
     exports: [
         SpinEdit,

@@ -11,7 +11,8 @@
  *   _enum: $root.lang.enumerable
  *   _list: $root.ui.list
  *   _fn: $root.lang.fn
- *   $: jQuery
+ *   $: jquery
+ *   jqe: jQueryExt
  * exports:
  * - Menu
  * - MenuItem
@@ -20,20 +21,35 @@
  * - src/ui/Menu/Menu.js
  */
 
-(function (root, factory) {
+(function(root, factory) {
     if (typeof define === 'function' && define.amd) {
-        define('ui/menu',['lang/type','lang/string','lang/arguments','browser/template','lang/enumerable','ui/list','lang/fn','jQuery'], factory);
+        define('ui/menu', ['lang/type', 'lang/string', 'lang/arguments', 'browser/template', 'lang/enumerable', 'ui/list', 'lang/fn', 'jquery', 'jQueryExt'], factory);
+    } else if (typeof module === 'object') {
+        var $root_lang_type = require('lang/type'),
+            $root_lang_string = require('lang/string'),
+            $root_lang_arguments = require('lang/arguments'),
+            $root_browser_template = require('browser/template'),
+            $root_lang_enumerable = require('lang/enumerable'),
+            $root_ui_list = require('ui/list'),
+            $root_lang_fn = require('lang/fn'),
+            jquery = require('jquery'),
+            jQueryExt = require('jQueryExt');
+        module.exports = factory($root_lang_type, $root_lang_string, $root_lang_arguments, $root_browser_template, $root_lang_enumerable, $root_ui_list, $root_lang_fn, jquery, jQueryExt, exports, module, require);
     } else {
         var exports = $root._createNS('$root.ui.menu');
-        factory($root.lang.type,$root.lang.string,$root.lang.arguments,$root.browser.template,$root.lang.enumerable,$root.ui.list,$root.lang.fn,jQuery,exports);
+        factory($root.lang.type, $root.lang.string, $root.lang.arguments, $root.browser.template, $root.lang.enumerable, $root.ui.list, $root.lang.fn, jquery, jQueryExt, exports);
     }
-}(this, function (_type,_str,_arguments,_tpl,_enum,_list,_fn,$,exports) {
+}(this, function(_type, _str, _arguments, _tpl, _enum, _list, _fn, $, jqe, exports) {
     //'use strict';
     exports = exports || {};
     _tpl
         .set('$root.ui.Menu.menu',"<ul class=\"ui-menu\"></ul>\n")
         .set('$root.ui.Menu.item',"<li class=\"ui-menu-item unselectable\"><span class=\"ui-menu-item-text\"><a href=\"javascript:;\"></a></span></li>\n");
-        ///vars
+    //Features
+    //[x] separator
+    //[x] sub-menu
+    //[x] smart locating 
+    
     var tpl = _tpl.id$('$root.ui.Menu'),
         menuTemplate = tpl('menu'),
         menuItemTemplate = tpl('item'),
@@ -188,6 +204,7 @@
     exports['MenuItem'] = MenuItem;
     exports['ScrollableMenu'] = ScrollableMenu;
     exports.__doc__ = "Menu";
+    exports.VERSION = '0.0.1';
     return exports;
 }));
 //end of $root.ui.menu

@@ -9,7 +9,8 @@
 		_enum: $root.lang.enumerable,
 		_str: $root.lang.string,
 		_drag: $root.ui.draggable,
-		$: jQuery
+		$: jquery,
+		jqe: jQueryExt
 	},
 	exports: [Trackbar]
 });

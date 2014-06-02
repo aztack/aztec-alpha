@@ -11,7 +11,8 @@
  *   _fn: $root.lang.fn
  *   _arguments: $root.lang.arguments
  *   _template: $root.browser.template
- *   $: jQuery
+ *   $: jquery
+ *   jqe: jQueryExt
  *   _tpl: $root.browser.template
  * exports:
  * - Table
@@ -20,20 +21,32 @@
  * - src/ui/Table/Table.js
  */
 
-(function (root, factory) {
+(function(root, factory) {
     if (typeof define === 'function' && define.amd) {
-        define('ui/table',['lang/type','lang/string','lang/object','lang/enumerable','lang/fn','lang/arguments','browser/template','jQuery','browser/template'], factory);
+        define('ui/table', ['lang/type', 'lang/string', 'lang/object', 'lang/enumerable', 'lang/fn', 'lang/arguments', 'browser/template', 'jquery', 'jQueryExt', 'browser/template'], factory);
+    } else if (typeof module === 'object') {
+        var $root_lang_type = require('lang/type'),
+            $root_lang_string = require('lang/string'),
+            $root_lang_object = require('lang/object'),
+            $root_lang_enumerable = require('lang/enumerable'),
+            $root_lang_fn = require('lang/fn'),
+            $root_lang_arguments = require('lang/arguments'),
+            $root_browser_template = require('browser/template'),
+            jquery = require('jquery'),
+            jQueryExt = require('jQueryExt'),
+            $root_browser_template = require('browser/template');
+        module.exports = factory($root_lang_type, $root_lang_string, $root_lang_object, $root_lang_enumerable, $root_lang_fn, $root_lang_arguments, $root_browser_template, jquery, jQueryExt, $root_browser_template, exports, module, require);
     } else {
         var exports = $root._createNS('$root.ui.table');
-        factory($root.lang.type,$root.lang.string,$root.lang.object,$root.lang.enumerable,$root.lang.fn,$root.lang.arguments,$root.browser.template,jQuery,$root.browser.template,exports);
+        factory($root.lang.type, $root.lang.string, $root.lang.object, $root.lang.enumerable, $root.lang.fn, $root.lang.arguments, $root.browser.template, jquery, jQueryExt, $root.browser.template, exports);
     }
-}(this, function (_type,_str,_object,_enum,_fn,_arguments,_template,$,_tpl,exports) {
+}(this, function(_type, _str, _object, _enum, _fn, _arguments, _template, $, jqe, _tpl, exports) {
     //'use strict';
     exports = exports || {};
     _tpl
         .set('$root.ui.Table.table',"<table class=\"ui-table\">\n<thead class=\"ui-thead\"></thead>\n<tbody class=\"ui-tbody-data\"></tbody>\n<tbody class=\"ui-tbody-loading\"><tr><td></td></tr></tbody>\n<tbody class=\"ui-tbody-nodata\"><tr><td>No Data</td></tr></tbody>\n<tfoot class=\"ui-tfoot\"><tr><td></td></tr></tfoot>\n</table>\n")
         .set('$root.ui.Table.fixHeadTable',"<div class=\"ui-table ui-table-fixhead\">\n<div class=\"head\"><table><thead class=\"ui-thead\"></thead></table></div>\n<div class=\"body\" style=\"overflow-y:auto\">\n<div class=\"ui-tbody-loading\"></div>\n<div class=\"ui-tbody-nodata\">No Data</div>\n<table><tbody class=\"ui-tbody-data\"></tbody></table>\n</div>\n<div class=\"ui-tfoot\"></div>\n</div>\n");
-        var varArg = _arguments.varArg,
+    var varArg = _arguments.varArg,
         tpl = _template.id$('$root.ui.Table');
     
     var DataSource = _type.create('$root.ui.DataSource', Array, {
@@ -472,6 +485,7 @@
     exports['Table'] = Table;
     exports['DataSource'] = DataSource;
     exports.__doc__ = "Table";
+    exports.VERSION = '0.0.1';
     return exports;
 }));
 //end of $root.ui.table

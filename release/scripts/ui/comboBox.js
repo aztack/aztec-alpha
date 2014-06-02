@@ -10,26 +10,40 @@
  *   _arguments: $root.lang.arguments
  *   _menu: $root.ui.menu
  *   _textfield: $root.ui.textField
- *   $: jQuery
+ *   $: jquery
+ *   jqe: jQueryExt
  * exports:
  * - ComboBox
  * files:
  * - src/ui/ComboBox/ComboBox.js
  */
 
-(function (root, factory) {
+(function(root, factory) {
     if (typeof define === 'function' && define.amd) {
-        define('ui/comboBox',['lang/type','lang/fn','browser/template','lang/arguments','ui/menu','ui/textField','jQuery'], factory);
+        define('ui/comboBox', ['lang/type', 'lang/fn', 'browser/template', 'lang/arguments', 'ui/menu', 'ui/textField', 'jquery', 'jQueryExt'], factory);
+    } else if (typeof module === 'object') {
+        var $root_lang_type = require('lang/type'),
+            $root_lang_fn = require('lang/fn'),
+            $root_browser_template = require('browser/template'),
+            $root_lang_arguments = require('lang/arguments'),
+            $root_ui_menu = require('ui/menu'),
+            $root_ui_textField = require('ui/textField'),
+            jquery = require('jquery'),
+            jQueryExt = require('jQueryExt');
+        module.exports = factory($root_lang_type, $root_lang_fn, $root_browser_template, $root_lang_arguments, $root_ui_menu, $root_ui_textField, jquery, jQueryExt, exports, module, require);
     } else {
         var exports = $root._createNS('$root.ui.comboBox');
-        factory($root.lang.type,$root.lang.fn,$root.browser.template,$root.lang.arguments,$root.ui.menu,$root.ui.textField,jQuery,exports);
+        factory($root.lang.type, $root.lang.fn, $root.browser.template, $root.lang.arguments, $root.ui.menu, $root.ui.textField, jquery, jQueryExt, exports);
     }
-}(this, function (_type,_fn,_tpl,_arguments,_menu,_textfield,$,exports) {
+}(this, function(_type, _fn, _tpl, _arguments, _menu, _textfield, $, jqe, exports) {
     //'use strict';
     exports = exports || {};
     _tpl
         .set('$root.ui.ComboBox.box',"<div class=\"ui-combobox\">\n        \n    </div>\n");
-        ///vars
+    //Features
+    
+    
+    ///vars
     var Menu = _menu.Menu,
       TextField = _textfield.TextField,
       varArg = _arguments.varArg,
@@ -91,6 +105,7 @@
 
     exports['ComboBox'] = ComboBox;
     exports.__doc__ = "ComboBox";
+    exports.VERSION = '0.0.1';
     return exports;
 }));
 //end of $root.ui.comboBox

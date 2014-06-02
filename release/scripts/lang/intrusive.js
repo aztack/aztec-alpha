@@ -17,19 +17,31 @@
  * - src/lang/intrusive.js
  */
 
-(function (root, factory) {
+(function(root, factory) {
     if (typeof define === 'function' && define.amd) {
-        define('lang/intrusive',['lang/string','lang/array','lang/object','lang/date','lang/number','lang/enumerable','lang/fn'], factory);
+        define('lang/intrusive', ['lang/string', 'lang/array', 'lang/object', 'lang/date', 'lang/number', 'lang/enumerable', 'lang/fn'], factory);
+    } else if (typeof module === 'object') {
+        var $root_lang_string = require('lang/string'),
+            $root_lang_array = require('lang/array'),
+            $root_lang_object = require('lang/object'),
+            $root_lang_date = require('lang/date'),
+            $root_lang_number = require('lang/number'),
+            $root_lang_enumerable = require('lang/enumerable'),
+            $root_lang_fn = require('lang/fn');
+        module.exports = factory($root_lang_string, $root_lang_array, $root_lang_object, $root_lang_date, $root_lang_number, $root_lang_enumerable, $root_lang_fn, exports, module, require);
     } else {
         var exports = $root._createNS('$root.lang.intrusive');
-        factory($root.lang.string,$root.lang.array,$root.lang.object,$root.lang.date,$root.lang.number,$root.lang.enumerable,$root.lang.fn,exports);
+        factory($root.lang.string, $root.lang.array, $root.lang.object, $root.lang.date, $root.lang.number, $root.lang.enumerable, $root.lang.fn, exports);
     }
-}(this, function (_str,_array,_object,_date,_num,_enum,_fn,exports) {
+}(this, function(_str, _array, _object, _date, _num, _enum, _fn, exports) {
     //'use strict';
     exports = exports || {};
     
-        var _slice = Array.prototype.slice;
+    var _slice = Array.prototype.slice;
     
+    /**
+     * extends prototype of a
+     */
     function _intrude_proto(proto, methods) {
         if (!proto) return;
         var k, f;
@@ -63,9 +75,11 @@
         }
     }
     
+    /**
+     * extends class (function)
+     */
     function _intrude_clazz(clz, statics) {
         var k;
-        if(clz === Array) debugger;
         if (typeof Object.defineProperty == 'function') {
             for (k in statics) {
                 if (!statics.hasOwnProperty(k)) continue;
@@ -230,6 +244,7 @@
     
     exports['$'] = $;
     exports.__doc__ = "Extend JavaScript builtins intrusively";
+    exports.VERSION = '0.0.1';
     return exports;
 }));
 //end of $root.lang.intrusive

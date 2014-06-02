@@ -30,18 +30,21 @@
  * - src/lang/string.js
  */
 
-(function (root, factory) {
+(function(root, factory) {
     if (typeof define === 'function' && define.amd) {
-        define('lang/string',['lang/type'], factory);
+        define('lang/string', ['lang/type'], factory);
+    } else if (typeof module === 'object') {
+        var $root_lang_type = require('lang/type');
+        module.exports = factory($root_lang_type, exports, module, require);
     } else {
         var exports = $root._createNS('$root.lang.string');
-        factory($root.lang.type,exports);
+        factory($root.lang.type, exports);
     }
-}(this, function (_type,exports) {
+}(this, function(_type, exports) {
     //'use strict';
     exports = exports || {};
     
-    // /exports
+// /exports
 
 /**
  * toInt convert string s into integer. if it's not a string call it's toString
@@ -275,6 +278,7 @@ function toHash(self, pairSeparator, keyValueSeparator) {
     exports['isHtmlFragment'] = isHtmlFragment;
     exports['toHash'] = toHash;
     exports.__doc__ = "String Utils";
+    exports.VERSION = '0.0.1';
     return exports;
 }));
 //end of $root.lang.string

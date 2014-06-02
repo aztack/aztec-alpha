@@ -10,7 +10,8 @@
 		_list: $root.ui.list,
 		_tpl: $root.browser.template,
 		_arguments: $root.lang.arguments,
-		$: jQuery
+		$: jquery,
+		jqe: jQueryExt
 	},
 	returns: Tab
 });

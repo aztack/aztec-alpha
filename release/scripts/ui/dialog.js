@@ -12,7 +12,8 @@
  *   _arguments: $root.lang.arguments
  *   _drag: $root.ui.draggable
  *   _overlay: $root.ui.overlay
- *   $: jQuery
+ *   $: jquery
+ *   jqe: jQueryExt
  * exports:
  * - Dialog
  * - Alert
@@ -23,14 +24,26 @@
  * - src/ui/Dialog/Dialog.js
  */
 
-(function (root, factory) {
+(function(root, factory) {
     if (typeof define === 'function' && define.amd) {
-        define('ui/dialog',['lang/type','lang/array','lang/fn','lang/enumerable','browser/template','lang/arguments','ui/draggable','ui/overlay','jQuery'], factory);
+        define('ui/dialog', ['lang/type', 'lang/array', 'lang/fn', 'lang/enumerable', 'browser/template', 'lang/arguments', 'ui/draggable', 'ui/overlay', 'jquery', 'jQueryExt'], factory);
+    } else if (typeof module === 'object') {
+        var $root_lang_type = require('lang/type'),
+            $root_lang_array = require('lang/array'),
+            $root_lang_fn = require('lang/fn'),
+            $root_lang_enumerable = require('lang/enumerable'),
+            $root_browser_template = require('browser/template'),
+            $root_lang_arguments = require('lang/arguments'),
+            $root_ui_draggable = require('ui/draggable'),
+            $root_ui_overlay = require('ui/overlay'),
+            jquery = require('jquery'),
+            jQueryExt = require('jQueryExt');
+        module.exports = factory($root_lang_type, $root_lang_array, $root_lang_fn, $root_lang_enumerable, $root_browser_template, $root_lang_arguments, $root_ui_draggable, $root_ui_overlay, jquery, jQueryExt, exports, module, require);
     } else {
         var exports = $root._createNS('$root.ui.dialog');
-        factory($root.lang.type,$root.lang.array,$root.lang.fn,$root.lang.enumerable,$root.browser.template,$root.lang.arguments,$root.ui.draggable,$root.ui.overlay,jQuery,exports);
+        factory($root.lang.type, $root.lang.array, $root.lang.fn, $root.lang.enumerable, $root.browser.template, $root.lang.arguments, $root.ui.draggable, $root.ui.overlay, jquery, jQueryExt, exports);
     }
-}(this, function (_type,_array,_fn,_enum,_tpl,_arguments,_drag,_overlay,$,exports) {
+}(this, function(_type, _array, _fn, _enum, _tpl, _arguments, _drag, _overlay, $, jqe, exports) {
     //'use strict';
     exports = exports || {};
     _tpl
@@ -38,7 +51,10 @@
         .set('$root.ui.Dialog.button',"<button data-action=\"ok\" class=\"ui-dialog-button\"></button>\n")
         .set('$root.ui.Dialog.titleButton',"<a class=\"ui-dialog-close-button\" sigil-calss=\"Dialog\">&times;</a>\n")
         .set('$root.ui.Dialog.icon',"<span class=\"ui-dialog-icon\"></span>\n");
-        ///vars
+    //Features
+    //[x] auto close, timeout
+    //[x] drag bug
+    
     var varArg = _arguments.varArg,
         tpl = _tpl.id$('$root.ui.Dialog');
     
@@ -190,7 +206,7 @@
         },
         Position: {
             Center: 'center',
-            GoldenRation: 'golden'
+            GoldenRatio: 'golden'
         },
         Parts: {
             IconError: $(tpl('icon')).addClass('error'),
@@ -310,20 +326,20 @@
             h,
             dim = self.dimension(),
             Center = Dialog.Position.Center,
-            GoldenRation = Dialog.Position.GoldenRation,
+            GoldenRatio = Dialog.Position.GoldenRatio,
             parent = self.parent();
         if (typeof ypos == 'undefined') {
             ypos = Center;
         }
-        if (xpos == Center || xpos == GoldenRation) {
+        if (xpos == Center || xpos == GoldenRatio) {
             w = parent.width();
             x = w / 2 - dim.width / 2;
         }
-        if (ypos == Center || ypos == GoldenRation) {
+        if (ypos == Center || ypos == GoldenRatio) {
             h = parent.height();
             y = h / 2 - dim.height / 2;
         }
-        if (xpos == GoldenRation || ypos == GoldenRation) {
+        if (xpos == GoldenRatio || ypos == GoldenRatio) {
             y = y * 0.618;
         }
         return [x, y];
@@ -428,7 +444,7 @@
             alertSingleton = null;
         }
         alertSingleton = Alert.create.apply(null, arguments);
-        alertSingleton.showAt(Dialog.Position.GoldenRation).on(Dialog.Events.OnButtonClick, function() {
+        alertSingleton.showAt(Dialog.Position.GoldenRatio).on(Dialog.Events.OnButtonClick, function() {
             alertSingleton.close();
         }).setDraggable(false);
         return alertSingleton;
@@ -485,7 +501,7 @@
         opts.duration = duration;
         opts.content = content;
         n = new Notice(opts);
-        n.showAt(Dialog.Position.GoldenRation)
+        n.showAt(Dialog.Position.GoldenRatio)
             .appendTo('body');
         return notice;
     }
@@ -506,6 +522,7 @@
     exports['Notice'] = Notice;
     exports['notice'] = notice;
     exports.__doc__ = "Dialog";
+    exports.VERSION = '0.0.1';
     return exports;
 }));
 //end of $root.ui.dialog

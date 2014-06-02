@@ -16,7 +16,7 @@
                 -webkit-user-select: none;
             }
             .ui-paginator-button {
-                width: 1em;
+                
             }
             .ui-paginator-button:hover {
                 background: #ccc;
@@ -44,9 +44,10 @@
             require.config({
                 baseUrl: '../../../release/scripts/'
             });
-            require(['ui/paginator','lang/intrusive','lang/enumerable'], function(paginator,intrusive, enumer) {
+            require(['ui/paginator','lang/intrusive','lang/enumerable','lang/date'], function(paginator,intrusive, enumer, date) {
                 Paginator = paginator.Paginator;
                 window.enumer = enumer;
+                window.date = date;
                 intrusive.$();
                 p = new Paginator({
                     total: 50,

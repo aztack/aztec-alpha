@@ -9,7 +9,8 @@
 		_arguments: $root.lang.arguments,
 		_menu: $root.ui.menu,
 		_textfield: $root.ui.textField,
-		$: jQuery
+		$: jquery,
+		jqe: jQueryExt
 	},
 	exports: [
 		ComboBox

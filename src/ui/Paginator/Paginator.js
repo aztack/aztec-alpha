@@ -11,7 +11,8 @@
         _tpl: $root.browser.template,
         _arguments: $root.lang.arguments,
         _list: $root.ui.list,
-        $: jQuery
+        $: jquery,
+        jqe: jQueryExt
     },
     exports: [
         Paginator,
@@ -174,7 +175,7 @@ function Paginator_makeButtons(self, opts) {
         } else if (btn == '<' || btn == 'prev') {
             self.add(opts.prevPageButton, opt).data('action', 'prev').addClass('prev-page');
         } else if (btn == '.') {
-            Paginator_updateNumberedButton(self, opts, self.pageIndex);
+            Paginator_makeNumberedButton(self, opts, self.pageIndex);
         } else if (btn == '>' || btn == 'next') {
             self.add(opts.nextPageButton, opt).data('action', 'next').addClass('next-page');
         } else if (btn == '>>' || btn == 'last') {
@@ -182,7 +183,7 @@ function Paginator_makeButtons(self, opts) {
         } else if (btn == '?/?' || btn == 'ratio') {
             self.add(_str.format(opts.ratioFormat, self)).addClass('ratio');
         } else if (btn == '...' || btn == 'ellipsis') {
-            Paginator_updateNumberedButton(self, opts, self.pageIndex, true);
+            Paginator_makeNumberedButton(self, opts, self.pageIndex, true);
         } else {
             if (typeof opts.onCreateButton == 'function') {
                 userCreatedButton = opts.onCreateButton.call(this, btn);
@@ -192,7 +193,7 @@ function Paginator_makeButtons(self, opts) {
     }
 }
 
-function Paginator_updateNumberedButton(self, opts, index, withEllipsis) {
+function Paginator_makeNumberedButton(self, opts, index, withEllipsis) {
     var max = opts.maxButtonNumber,
         mid, page = index + 1,
         item, buttons = self.find('.ui-paginator-button'),
@@ -214,20 +215,24 @@ function Paginator_updateNumberedButton(self, opts, index, withEllipsis) {
             if (_range.create('[)', 1, max).covers(page)) {
                 items = self.add(_ary.fromRange(1, max - 1), fmt);
                 $(items.get(index)).addClass(currentPage);
+                
                 self.add(ellipsis).addClass('ellipsis');
                 self.add(total).attr('data-index', total - 1);
             } else if (_range.create('[]', max, total - max + 1).covers(page)) {
                 mid = Math.floor(max / 2);
                 self.add(1).attr('data-index', 1);
                 self.add(ellipsis).addClass('ellipsis');
+                
                 items = self.add(_ary.fromRange(index - mid, index + mid), fmt);
                 $(items.get(mid + 1)).addClass(currentPage);
+                
                 self.add(ellipsis).addClass('ellipsis');
                 self.add(total).attr('data-index', total - 1);
             } else if (_range.create('(]', total - max + 1, total).covers(page)) {
                 mid = Math.floor(max / 2);
                 self.add(1).attr('data-index', 1);
                 self.add(ellipsis).addClass('ellipsis');
+                
                 items = self.add(_ary.fromRange(total - max + 1, total), fmt);
                 $(items.get(index - total + max)).addClass(currentPage);
             }
@@ -239,10 +244,10 @@ function Paginator_updateNumberedButton(self, opts, index, withEllipsis) {
             from = 0;
             to = max - 1;
         } else if (to >= total) {
-            to = self.totalPage;
+            to = self.totalPage - 1;
             from = to - max + 1;
         }
-        for (i = from; i < to; ++i) {
+        for (i = from; i <= to; ++i) {
             item = self.add(i + 1).attr(idx, i).addClass(btncls);
             if (i === index) item.addClass(currentPage);
         }

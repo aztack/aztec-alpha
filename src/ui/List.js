@@ -6,7 +6,8 @@
 		_fn: $root.lang.fn,
 		_str: $root.lang.string,
 		_arguments: $root.lang.arguments,
-		$: jQuery
+		$: jquery,
+		jqe: jQueryExt
 	},
 	exports: [
 		List

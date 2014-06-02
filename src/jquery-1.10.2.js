@@ -2,6 +2,7 @@
 	description: 'jQuery',
 	namespace: jQuery,
 	returns: jQuery,
+	notransform: true,
 	priority: 0
 });
 /*!
@@ -9891,7 +9892,3 @@
 	}
 
 })(window);
-
-define('jQuery', function() {
-	return jQuery;
-});

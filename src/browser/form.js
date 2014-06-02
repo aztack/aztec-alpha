@@ -6,7 +6,7 @@
 		_argument: $root.lang.arguments,
 		_str: $root.lang.string,
 		_ary: $root.lang.array,
-		$: jQuery
+		$: jquery
 	},
 	exports: [
 		Form,

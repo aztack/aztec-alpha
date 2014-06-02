@@ -1,6 +1,6 @@
 /**
  * ---
- * description: Ruby String like string module
+ * description: Array Utils
  * version: 0.0.1
  * namespace: $root.lang.array
  * imports:
@@ -21,18 +21,22 @@
  * - src/lang/array.js
  */
 
-(function (root, factory) {
+(function(root, factory) {
     if (typeof define === 'function' && define.amd) {
-        define('lang/array',['lang/type','lang/fn'], factory);
+        define('lang/array', ['lang/type', 'lang/fn'], factory);
+    } else if (typeof module === 'object') {
+        var $root_lang_type = require('lang/type'),
+            $root_lang_fn = require('lang/fn');
+        module.exports = factory($root_lang_type, $root_lang_fn, exports, module, require);
     } else {
         var exports = $root._createNS('$root.lang.array');
-        factory($root.lang.type,$root.lang.fn,exports);
+        factory($root.lang.type, $root.lang.fn, exports);
     }
-}(this, function (_type,_fn,exports) {
+}(this, function(_type, _fn, exports) {
     //'use strict';
     exports = exports || {};
     
-        ///imports
+    ///imports
     var _forEach = Array.prototype.forEach,
         _slice = Array.prototype.slice,
         _indexOf = Array.prototype.indexOf;
@@ -239,7 +243,8 @@
     exports['flatten'] = flatten;
     exports['fill'] = fill;
     exports['fromRange'] = fromRange;
-    exports.__doc__ = "Ruby String like string module";
+    exports.__doc__ = "Array Utils";
+    exports.VERSION = '0.0.1';
     return exports;
 }));
 //end of $root.lang.array

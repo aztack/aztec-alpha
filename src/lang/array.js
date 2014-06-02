@@ -1,5 +1,5 @@
 ({
-    description: "Ruby String like string module",
+    description: "Array Utils",
     version: '0.0.1',
     namespace: $root.lang.array,
     imports: {

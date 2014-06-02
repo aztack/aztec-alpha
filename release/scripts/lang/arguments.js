@@ -15,18 +15,22 @@
  * - src/lang/arguments.ext.js
  */
 
-(function (root, factory) {
+(function(root, factory) {
     if (typeof define === 'function' && define.amd) {
-        define('lang/arguments',['lang/fn','lang/type'], factory);
+        define('lang/arguments', ['lang/fn', 'lang/type'], factory);
+    } else if (typeof module === 'object') {
+        var $root_lang_fn = require('lang/fn'),
+            $root_lang_type = require('lang/type');
+        module.exports = factory($root_lang_fn, $root_lang_type, exports, module, require);
     } else {
         var exports = $root._createNS('$root.lang.arguments');
-        factory($root.lang.fn,$root.lang.type,exports);
+        factory($root.lang.fn, $root.lang.type, exports);
     }
-}(this, function (_fn,_type,exports) {
+}(this, function(_fn, _type, exports) {
     //'use strict';
     exports = exports || {};
     
-        ///vars
+    ///vars
     var _slice = Array.prototype.slice,
         varArgTypeMapping = {
             "string": "string",
@@ -329,6 +333,7 @@
     exports['varArg'] = varArg;
     exports['registerPlugin'] = registerPlugin;
     exports.__doc__ = "Arguments Utils";
+    exports.VERSION = '0.0.1';
     return exports;
 }));
 //end of $root.lang.arguments

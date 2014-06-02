@@ -65,6 +65,10 @@ module Aztec
             not @config['deprecated'].nil?
         end
 
+        def ver
+            @config['version'] || '0.0.1'
+        end
+
         private
         def merge(key, config, merege_method, default)
             a = @config[key] || default.dup

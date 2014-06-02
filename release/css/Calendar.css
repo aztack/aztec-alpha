@@ -24,8 +24,8 @@ display: inline-block; height: 1em; width: 2em;
 display: inline-block; height: 1em; width: 2em;
 }
 .ui-calendar-prev-month {
-background: url(ui/images/calendar-prev.png) center center no-repeat; float: left;
+background: url(images/calendar-prev.png) center center no-repeat; float: left;
 }
 .ui-calendar-next-month {
-background: url(ui/images/calendar-next.png) center center no-repeat; float: right;
+background: url(images/calendar-next.png) center center no-repeat; float: right;
 }

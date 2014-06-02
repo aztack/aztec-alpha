@@ -9,7 +9,7 @@
         _enum: $root.lang.enumerable,
         _fn: $root.lang.fn,
         _arguments: $root.lang.arguments,
-        $: jQuery
+        $: jquery
     },
     exports: [
         Tag,

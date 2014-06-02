@@ -14,18 +14,21 @@
  * - src/lang/number.js
  */
 
-(function (root, factory) {
+(function(root, factory) {
     if (typeof define === 'function' && define.amd) {
-        define('lang/number',['lang/type'], factory);
+        define('lang/number', ['lang/type'], factory);
+    } else if (typeof module === 'object') {
+        var $root_lang_type = require('lang/type');
+        module.exports = factory($root_lang_type, exports, module, require);
     } else {
         var exports = $root._createNS('$root.lang.number');
-        factory($root.lang.type,exports);
+        factory($root.lang.type, exports);
     }
-}(this, function (_type,exports) {
+}(this, function(_type, exports) {
     //'use strict';
     exports = exports || {};
     
-        //vars
+    //vars
     var rand$ = Math.random,
         floor$ = Math.floor,
         max$ = Math.max,
@@ -140,6 +143,7 @@
     exports['confined'] = confined;
     exports['rand'] = rand;
     exports.__doc__ = "Number Utils";
+    exports.VERSION = '0.0.1';
     return exports;
 }));
 //end of $root.lang.number

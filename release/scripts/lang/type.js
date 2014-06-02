@@ -45,18 +45,20 @@
  * imports: {}
  */
 
-(function (root, factory) {
+(function(root, factory) {
     if (typeof define === 'function' && define.amd) {
-        define('lang/type',[], factory);
+        define('lang/type', [], factory);
+    } else if (typeof module === 'object') {
+        module.exports = factory(exports, module, require);
     } else {
         var exports = $root._createNS('$root.lang.type');
         factory(exports);
     }
-}(this, function (exports) {
+}(this, function(exports) {
     //'use strict';
     exports = exports || {};
     
-        var _toString = Object.prototype.toString,
+    var _toString = Object.prototype.toString,
         _hasOwn = Object.prototype.hasOwnProperty,
         _getPrototypeOf = Object.getPrototypeOf,
         _primitives = {
@@ -1163,6 +1165,7 @@
     exports['create'] = create;
     exports['onCreate'] = onCreate;
     exports.__doc__ = "JavaScript Type System Supplement";
+    exports.VERSION = '0.0.1';
     return exports;
 }));
 //end of $root.lang.type

@@ -6,7 +6,8 @@
  *   _type: $root.lang.type
  *   _fn: $root.lang.fn
  *   _arguments: $root.lang.arguments
- *   $: jQuery
+ *   $: jquery
+ *   jqe: jQueryExt
  * exports:
  * - draggable
  * - undraggable
@@ -16,18 +17,29 @@
  * - src/ui/draggable.js
  */
 
-(function (root, factory) {
+(function(root, factory) {
     if (typeof define === 'function' && define.amd) {
-        define('ui/draggable',['lang/type','lang/fn','lang/arguments','jQuery'], factory);
+        define('ui/draggable', ['lang/type', 'lang/fn', 'lang/arguments', 'jquery', 'jQueryExt'], factory);
+    } else if (typeof module === 'object') {
+        var $root_lang_type = require('lang/type'),
+            $root_lang_fn = require('lang/fn'),
+            $root_lang_arguments = require('lang/arguments'),
+            jquery = require('jquery'),
+            jQueryExt = require('jQueryExt');
+        module.exports = factory($root_lang_type, $root_lang_fn, $root_lang_arguments, jquery, jQueryExt, exports, module, require);
     } else {
         var exports = $root._createNS('$root.ui.draggable');
-        factory($root.lang.type,$root.lang.fn,$root.lang.arguments,jQuery,exports);
+        factory($root.lang.type, $root.lang.fn, $root.lang.arguments, jquery, jQueryExt, exports);
     }
-}(this, function (_type,_fn,_arguments,$,exports) {
+}(this, function(_type, _fn, _arguments, $, jqe, exports) {
     //'use strict';
     exports = exports || {};
     
-        var mouseMoveEvent = 'mousemove.draggable',
+    //Features
+    //[x] drag frame
+    //[x] drag manager, multiple elements drag
+    
+    var mouseMoveEvent = 'mousemove.draggable',
         mouseDownEvent = 'mousedown.draggable',
         mouseUpEvent = 'mouseup.draggable',
         keyupEvent = 'keyup.draggable',
@@ -230,6 +242,7 @@
     exports['isDraggable'] = isDraggable;
     exports['Draggable'] = Draggable;
     exports.__doc__ = "Draggable";
+    exports.VERSION = '0.0.1';
     return exports;
 }));
 //end of $root.ui.draggable

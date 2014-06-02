@@ -78,7 +78,7 @@ function daysOfMonth(y, m) {
 
 function format(self, sep) {
     sep = sep || '-';
-    return _str.format("{year}{sep}{month}{sep}{date}", {
+    return _str.format("{year}{sep}{month,2,0}{sep}{date,2,0}", {
         sep: sep,
         year: self.getFullYear(),
         month: self.getMonth() + 1,

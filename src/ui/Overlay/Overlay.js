@@ -6,7 +6,8 @@
 		_type: $root.lang.type,
 		_tpl: $root.browser.template,
 		_arguments: $root.lang.arguments,
-		$: jQuery
+		$: jquery,
+		jqe: jQueryExt
 	},
 	exports: [
 		Mask,

@@ -36,18 +36,22 @@
  * - src/lang/fn.js
  */
 
-(function (root, factory) {
+(function(root, factory) {
     if (typeof define === 'function' && define.amd) {
-        define('lang/fn',['lang/type','lang/object'], factory);
+        define('lang/fn', ['lang/type', 'lang/object'], factory);
+    } else if (typeof module === 'object') {
+        var $root_lang_type = require('lang/type'),
+            $root_lang_object = require('lang/object');
+        module.exports = factory($root_lang_type, $root_lang_object, exports, module, require);
     } else {
         var exports = $root._createNS('$root.lang.fn');
-        factory($root.lang.type,$root.lang.object,exports);
+        factory($root.lang.type, $root.lang.object, exports);
     }
-}(this, function (_type,_obj,exports) {
+}(this, function(_type, _obj, exports) {
     //'use strict';
     exports = exports || {};
     
-        ///exports
+    ///exports
     
     var isFunction = _type.isFunction,
         _slice = Array.prototype.slice,
@@ -424,6 +428,7 @@
     exports['wrap'] = wrap;
     exports['compose'] = compose;
     exports.__doc__ = "Function";
+    exports.VERSION = '0.0.1';
     return exports;
 }));
 //end of $root.lang.fn
