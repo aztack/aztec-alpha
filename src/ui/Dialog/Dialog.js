@@ -61,9 +61,9 @@ var Dialog = _type.create('$root.ui.dialog.Dialog', jQuery, {
         this.base.apply(this, arguments);
         return this;
     },
-    hide: function(){
+    hide: function() {
         //prevent call mask.hide when dialog is already hidden
-        if(!this.is(':visible')) return this;
+        if (!this.is(':visible')) return this;
         if (this.options.mask) _overlay.Mask.getInstance().hide();
         this.base.apply(this, arguments);
         return this;
@@ -256,17 +256,17 @@ var Dialog = _type.create('$root.ui.dialog.Dialog', jQuery, {
     close: 'hide'
 }).options({
     // #Creating Options of Dialog#
-    okButtonText: 'OK',         
+    okButtonText: 'OK',
     cancelButtonText: 'Cancel', //default Cancel button text
-    buttons: ['OK', 'Cancel'],  //default buttons
-    draggable: true,            //whether dialog is draggble
-    closeButton: true,          //whether dialog has close button
-    autoReposition: true,       //whether reposition when window resized
-    mask: true,                 //whether mask screen when dialog show up
-    closeWhenLostFocus: true,   //whether close dialog when lost focus(click outside dialog)
-    content: '',                //content of dialog, can be text or html
-    title: '',                  //title of dialog
-    position: 'golden'          //default position when show
+    buttons: ['OK', 'Cancel'], //default buttons
+    draggable: true, //whether dialog is draggble
+    closeButton: true, //whether dialog has close button
+    autoReposition: true, //whether reposition when window resized
+    mask: true, //whether mask screen when dialog show up
+    closeWhenLostFocus: true, //whether close dialog when lost focus(click outside dialog)
+    content: '', //content of dialog, can be text or html
+    title: '', //title of dialog
+    position: 'golden' //default position when show
 }).statics({
     // #Dialog.Template#
     Template: {
@@ -369,7 +369,7 @@ function Dialog_initialize(self, opts) {
     });
 
     if ( !! opts.mask) {
-        _overlay.Mask.getInstance().show().appendTo('body').click(function() {
+        _overlay.Mask.getInstance().show().click(function() {
             self.close();
         }).before(self);
     }

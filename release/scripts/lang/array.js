@@ -1,7 +1,8 @@
 /**
- * Array Utils
- * -----------
- * Dependencies: lang/type,lang/fn
+ * #Array Utils#
+ * ===========
+ * - Dependencies: `lang/type`,`lang/fn`
+ * - Version: 0.0.1
  */
 
 (function(root, factory) {
@@ -29,7 +30,7 @@
      * @param  {String} str [string]
      * @param  {String} sep  [separator]
      * @return {Array} array
-     * 
+     *
      * ```javascript
      * array.w('a b c d') //=> ['a','b','c','d']
      * array.w('a,b,c,d',',') //=> ['a','b','c','d']
@@ -60,17 +61,17 @@
      * ```
      */
     var forEach = _forEach ? function(self, fn) {
-        _forEach.call(self, fn);
-    } : function(self, fn) {
-        var i = 0,
-            len = ary.len,
-            item;
-        for (; i < len; ++i) {
-            item = ary[i];
-            fn.call(item, i, self);
-        }
-        return ary;
-    };
+            _forEach.call(self, fn);
+        } : function(self, fn) {
+            var i = 0,
+                len = self.len,
+                item;
+            for (; i < len; ++i) {
+                item = self[i];
+                fn.call(item, i, self);
+            }
+            return self;
+        };
     
     /**
      * ##array.indexOf(ary)##
@@ -88,17 +89,17 @@
      * ```
      */
     var indexOf = _indexOf ? function(self, obj) {
-        return _indexOf.call(self, obj);
-    } : function(self, obj) {
-        var i = 0,
-            len = self.length;
-        for (; i < len; ++i) {
-            if (self[i] === obj) {
-                return i;
+            return _indexOf.call(self, obj);
+        } : function(self, obj) {
+            var i = 0,
+                len = self.length;
+            for (; i < len; ++i) {
+                if (self[i] === obj) {
+                    return i;
+                }
             }
-        }
-        return -1;
-    };
+            return -1;
+        };
     
     /**
      * ##array.toArray(arraylike)##

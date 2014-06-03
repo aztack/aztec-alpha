@@ -1,7 +1,8 @@
 /**
- * Overlay
- * -------
- * Dependencies: lang/type,browser/template,lang/arguments,jquery,jQueryExt
+ * #Overlay#
+ * =======
+ * - Dependencies: `lang/type`,`browser/template`,`lang/arguments`,`jquery`,`jQueryExt`
+ * - Version: 0.0.1
  */
 
 (function(root, factory) {

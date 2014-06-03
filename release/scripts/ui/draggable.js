@@ -1,7 +1,8 @@
 /**
- * Draggable
- * ---------
- * Dependencies: $root.lang.type,$root.lang.fn,$root.lang.arguments,jquery,jQueryExt
+ * #Draggable#
+ * =========
+ * - Dependencies: `lang/type`,`lang/fn`,`lang/arguments`,`jquery`,`jQueryExt`
+ * - Version: 0.0.1
  */
 
 (function(root, factory) {
@@ -19,7 +20,7 @@
         factory($root.lang.type, $root.lang.fn, $root.lang.arguments, jquery, jQueryExt, exports);
     }
 }(this, function(_type, _fn, _arguments, $, jqe, exports) {
-    //'use strict';
+    'use strict';
     exports = exports || {};
     
     //Features
@@ -36,22 +37,23 @@
     var varArg = _arguments.varArg;
     
     /**
-     * Draggable
+     * #Draggable#
      * provide basic drag functionality
      * @param  {jQuery} $handle, dragging handle
      * @param  {jQuery} $dragged, dragged element
      * @param  {Draggable.CreateOptions} opts
      * @return {Draggable}
-     * @remark
-     *     A Draggable has a `handle` with which user click and drag the `dragged`.
-     *     After user release mouse key, the Draggable only responsed to `mousedown`
+     * ```
+     * A Draggable has a `handle` with which user click and drag the `dragged`.
+     * After user release mouse key, the Draggable only responsed to `mousedown`
+     * ```
      */
     var Draggable = _type.create('$root.ui.Draggable', {
         init: function(handle, dragged, opts) {
             var self = this;
             this.$ = $(handle);
             this.$dragged = $(dragged);
-            this.$attr('options',opts || {});
+            this.$attr('options', opts || {});
             this.$offsetParent = this.$dragged.offsetParent();
             this.$.on(mouseDownEvent, function(e) {
                 Draggable_onMouseDown(self, e);
@@ -61,11 +63,21 @@
             }
             this.$.data(draggableDataKey, this);
         },
+        /**
+         * ##Draggable\#disable()##
+         * Disable dragging
+         * @return {Draggable}
+         */
         disable: function() {
             this.$.off(mouseDownEvent);
             //this.finalize();
             return this;
         },
+        /**
+         * ##Draggable\#enable()##
+         * Enable dragging
+         * @return {Draggable}
+         */
         enable: function() {
             var self = this;
             this.$.on(mouseDownEvent, function(e) {
@@ -106,33 +118,33 @@
             $parent = self.$offsetParent,
             elePos = $ele.offset(); //position relative to document
     
-        mouseDownPosition.x = e.clientX - elePos.left;
-        mouseDownPosition.y = e.clientY - elePos.top;
+        mouseDownPosition.x = e.pageX - elePos.left;
+        mouseDownPosition.y = e.pageY - elePos.top;
     
         _fn.call(self.options.onMouseDown, $ele, e, mouseDownPosition);
     
         var dx = $parent.scrollLeft(),
             dy = $parent.scrollTop(),
-            p = $parent;
+            p = $parent,
+            offset = {};
         if (_type.isFunction(onMoveFn)) {
             $parent.on(mouseMoveEvent, function(e) {
-                offset = {
-                    left: e.clientX - mouseDownPosition.x + dx,
-                    top: e.clientY - mouseDownPosition.y + dy
-                };
+                offset.left = e.pageX - mouseDownPosition.x;
+                offset.top = e.pageY - mouseDownPosition.y;
+                console.log(e.pageX, e.pageY);
     
-                //call restriction function on `offset`
+                //Call restriction function on `offset`
                 _fn.call(restriction, self, offset, e, mouseDownPosition);
     
-                //call on mouse move callback function
-                //in callback we can set offset of dragged element
+                //Call on mouse move callback function.
+                //In callback we can restrict offset of dragged element
                 //or do some intresting stuff
                 onMoveFn.call(self, e, offset, mouseDownPosition);
             });
-            if ($parent[0] === document.documentElement) p = $(window);
+            if ($parent[0] === document.documentElement) p = $('body');
             p.on(scrollEvent, function() {
-                dx = p.scrollLeft();
-                dy = p.scrollTop();
+                offset.left -= p.scrollX;
+                offset.top -= p.scrollY;
             });
         }
     
@@ -173,11 +185,11 @@
     };
     
     /**
-     * draggable
-     * helper function to make a positioned element draggable
-     * @param  {String|jQueryObject} handle, dragging handle
-     * @param  {String|jQueryObject} dragged, element being dragged
-     * @param  {Draggable.CreateOptions} opts
+     * #draggable.draggable(...)#
+     * helper function to make a element draggable
+     * @param  {Selector|jQueryObject} handle, dragging handle
+     * @param  {Selector|jQueryObject} dragged, element being dragged
+     * @param  {Object} opts
      * @return {Draggable}
      */
     function draggable(handle, dragged, opts) {
@@ -210,6 +222,12 @@
             .invokeNew(Draggable);
     }
     
+    /**
+     * #draggable.undraggable(handle)#
+     * helper function to make a element undraggable
+     * @param  {Selector|jQueryObject} handle
+     * @return {[type]}        [description]
+     */
     function undraggable(handle) {
         var h = $(handle),
             draggable = h.data(draggableDataKey);
@@ -218,6 +236,12 @@
         h.data(draggableDataKey, null);
     }
     
+    /**
+     * #draggable.isDraggable(handle)#
+     * return true if handle is draggable
+     * @param  {Selector|jQueryObject} handle
+     * @return {Draggable}
+     */
     function isDraggable(handle) {
         var h = $(handle),
             draggable = h.data(draggableDataKey);
