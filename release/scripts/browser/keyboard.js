@@ -1,13 +1,7 @@
 /**
- * ---
- * description: Keyboard
- * namespace: $root.browser.keyboard
- * imports:
- *   _type: $root.lang.type
- *   _str: $root.lang.string
- * exports: []
- * files:
- * - src/browser/keyboard.js
+ * Keyboard
+ * --------
+ * Dependencies: $root.lang.type,$root.lang.string
  */
 
 (function(root, factory) {

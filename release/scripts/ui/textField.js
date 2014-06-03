@@ -1,19 +1,7 @@
 /**
- * ---
- * description: TextField
- * namespace: $root.ui.textField
- * directory: ui/TextField
- * imports:
- *   _type: $root.lang.type
- *   _tpl: $root.browser.template
- *   _arguments: $root.lang.arguments
- *   $: jquery
- *   jqe: jQueryExt
- * exports:
- * - TextField
- * - placeholderPollyfill
- * files:
- * - src/ui/TextField/TextField.js
+ * TextField
+ * ---------
+ * Dependencies: $root.lang.type,$root.browser.template,$root.lang.arguments,jquery,jQueryExt
  */
 
 (function(root, factory) {

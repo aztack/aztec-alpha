@@ -1,24 +1,7 @@
 /**
- * ---
- * description: Menu
- * namespace: $root.ui.menu
- * directory: ui/Menu
- * imports:
- *   _type: $root.lang.type
- *   _str: $root.lang.string
- *   _arguments: $root.lang.arguments
- *   _tpl: $root.browser.template
- *   _enum: $root.lang.enumerable
- *   _list: $root.ui.list
- *   _fn: $root.lang.fn
- *   $: jquery
- *   jqe: jQueryExt
- * exports:
- * - Menu
- * - MenuItem
- * - ScrollableMenu
- * files:
- * - src/ui/Menu/Menu.js
+ * Menu
+ * ----
+ * Dependencies: $root.lang.type,$root.lang.string,$root.lang.arguments,$root.browser.template,$root.lang.enumerable,$root.ui.list,$root.lang.fn,jquery,jQueryExt
  */
 
 (function(root, factory) {

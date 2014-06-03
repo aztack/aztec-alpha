@@ -1,21 +1,7 @@
 /**
- * ---
- * description: Tree
- * namespace: $root.ui.tree
- * directory: ui/Tree
- * imports:
- *   _type: $root.lang.type
- *   _str: $root.lang.string
- *   _fn: $root.lang.fn
- *   _tpl: $root.browser.template
- *   _arguments: $root.lang.arguments
- *   _enum: $root.lang.enumerable
- *   $: jquery
- *   jqe: jQueryExt
- * exports:
- * - Tree
- * files:
- * - src/ui/Tree/Tree.js
+ * Tree
+ * ----
+ * Dependencies: $root.lang.type,$root.lang.string,$root.lang.fn,$root.browser.template,$root.lang.arguments,$root.lang.enumerable,jquery,jQueryExt
  */
 
 (function(root, factory) {

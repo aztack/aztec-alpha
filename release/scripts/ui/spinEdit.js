@@ -1,23 +1,7 @@
 /**
- * ---
- * description: SpinEdit
- * namespace: $root.ui.spinEdit
- * directory: ui/SpinEdit
- * imports:
- *   _type: $root.lang.type
- *   _str: $root.lang.string
- *   _number: $root.lang.number
- *   _fn: $root.lang.fn
- *   _arguments: $root.lang.arguments
- *   _tpl: $root.browser.template
- *   _tf: $root.ui.textField
- *   $: jquery
- *   jqe: jQueryExt
- * exports:
- * - SpinEdit
- * - SpinButton
- * files:
- * - src/ui/SpinEdit/SpinEdit.js
+ * SpinEdit
+ * --------
+ * Dependencies: $root.lang.type,$root.lang.string,$root.lang.number,$root.lang.fn,$root.lang.arguments,$root.browser.template,$root.ui.textField,jquery,jQueryExt
  */
 
 (function(root, factory) {

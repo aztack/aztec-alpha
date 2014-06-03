@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>array.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="doc-style.css" />
+  <script src="doc-filelist.js"></script>
+  <script>
+    var relativeDir = "", thisFile = "array.js", defaultSidebar = true;
+  </script>
+  <script src="doc-script.js"></script>
+</head>
+<body>
+  <div id="sidebar_wrapper">
+    <div id="sidebar_switch">
+      <span class="tree">Files</span>
+      <span class="headings">Headings</span>
+    </div>
+    <div id="tree"></div>
+    <div id="headings">
+      <div class="heading h2">
+        <a href="#array%20utils">Array Utils</a>
+      </div>
+      <div class="heading h2">
+        <a href="#array.w(str)">array.w(str)</a>
+      </div>
+      <div class="heading h2">
+        <a href="#array.foreach(ary)">array.forEach(ary)</a>
+      </div>
+      <div class="heading h2">
+        <a href="#array.indexof(ary)">array.indexOf(ary)</a>
+      </div>
+      <div class="heading h2">
+        <a href="#array.toarray(arraylike)">array.toArray(arraylike)</a>
+      </div>
+      <div class="heading h2">
+        <a href="#array.equal(a1%2Ca2)">array.equal(a1,a2)</a>
+      </div>
+      <div class="heading h2">
+        <a href="#array.strictequal(a1%2Ca2)">array.strictEqual(a1,a2)</a>
+      </div>
+      <div class="heading h2">
+        <a href="#array.compact(ary)">array.compact(ary)</a>
+      </div>
+      <div class="heading h2">
+        <a href="#array.flattern(ary)">array.flattern(ary)</a>
+      </div>
+      <div class="heading h2">
+        <a href="#array.fill(ary%2C%20value%2C%20start%2C%20end)">array.fill(ary, value, start, end)</a>
+      </div>
+      <div class="heading h2">
+        <a href="#array.fromrange(from%2Cto)">array.fromRange(from,to)</a>
+      </div>
+    </div>
+  </div>
+  <div id="sidebar-toggle"></div>
+  <div id="container"><div class="background highlight"></div>
+<table cellpadding="0" cellspacing="0">
+  <tbody>
+      <tr>
+        <td class="docs"><div class="dox">
+  <div class="summary">
+<div class="pilwrap" id="array%20utils">
+  <h2>
+    <a href="#array%20utils" name="array%20utils" class="pilcrow">&#182;</a>
+    Array Utils
+  </h2>
+</div>
+
+
+<p>Dependencies: lang/type,lang/fn</p>
+  </div>
+  <div class="body">
+  </div>
+</div>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">root</span><span class="p">,</span> <span class="nx">factory</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">define</span> <span class="o">===</span> <span class="s1">&#39;function&#39;</span> <span class="o">&amp;&amp;</span> <span class="nx">define</span><span class="p">.</span><span class="nx">amd</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">define</span><span class="p">(</span><span class="s1">&#39;lang/array&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;lang/type&#39;</span><span class="p">,</span> <span class="s1">&#39;lang/fn&#39;</span><span class="p">],</span> <span class="nx">factory</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">module</span> <span class="o">===</span> <span class="s1">&#39;object&#39;</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">$root_lang_type</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;lang/type&#39;</span><span class="p">),</span>
+            <span class="nx">$root_lang_fn</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;lang/fn&#39;</span><span class="p">);</span>
+        <span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">(</span><span class="nx">$root_lang_type</span><span class="p">,</span> <span class="nx">$root_lang_fn</span><span class="p">,</span> <span class="nx">exports</span><span class="p">,</span> <span class="nx">module</span><span class="p">,</span> <span class="nx">require</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">exports</span> <span class="o">=</span> <span class="nx">$root</span><span class="p">.</span><span class="nx">_createNS</span><span class="p">(</span><span class="s1">&#39;$root.lang.array&#39;</span><span class="p">);</span>
+        <span class="nx">factory</span><span class="p">(</span><span class="nx">$root</span><span class="p">.</span><span class="nx">lang</span><span class="p">.</span><span class="nx">type</span><span class="p">,</span> <span class="nx">$root</span><span class="p">.</span><span class="nx">lang</span><span class="p">.</span><span class="nx">fn</span><span class="p">,</span> <span class="nx">exports</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}(</span><span class="k">this</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">_type</span><span class="p">,</span> <span class="nx">_fn</span><span class="p">,</span> <span class="nx">exports</span><span class="p">)</span> <span class="p">{</span>
+    <span class="s1">&#39;use strict&#39;</span><span class="p">;</span>
+    <span class="nx">exports</span> <span class="o">=</span> <span class="nx">exports</span> <span class="o">||</span> <span class="p">{};</span>
+    
+    <span class="kd">var</span> <span class="nx">_forEach</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">forEach</span><span class="p">,</span>
+        <span class="nx">_slice</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">slice</span><span class="p">,</span>
+        <span class="nx">_indexOf</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">;</span>
+    
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs"><div class="dox">
+  <div class="summary">
+<div class="pilwrap" id="array.w(str)">
+  <h2>
+    <a href="#array.w(str)" name="array.w(str)" class="pilcrow">&#182;</a>
+    array.w(str)
+  </h2>
+</div>
+
+
+<p>split given string with space</p>
+  </div>
+  <div class="body">
+  </div>
+  <div class="details">
+    <div class="dox_tag_title">Params</div>
+    <div class="dox_tag_detail">
+      <span class="dox_tag_name"></span>
+      <span>{String} str [string]</span>
+    </div>
+    <div class="dox_tag_detail">
+      <span class="dox_tag_name"></span>
+      <span>{String} sep  [separator]</span>
+    </div>
+    <div class="dox_tag_title">Returns</div>
+    <div class="dox_tag_detail">
+      <span class="dox_tag_name"></span>
+      <span class="dox_type">Array</span>
+      <span>array
+
+
+<div class="highlight"><pre><code><span class="nx">array</span><span class="p">.</span><span class="nx">w</span><span class="p">(</span><span class="s1">&#39;a b c d&#39;</span><span class="p">)</span> <span class="c1">//=&gt; [&#39;a&#39;,&#39;b&#39;,&#39;c&#39;,&#39;d&#39;]</span>
+<span class="nx">array</span><span class="p">.</span><span class="nx">w</span><span class="p">(</span><span class="s1">&#39;a,b,c,d&#39;</span><span class="p">,</span><span class="s1">&#39;,&#39;</span><span class="p">)</span> <span class="c1">//=&gt; [&#39;a&#39;,&#39;b&#39;,&#39;c&#39;,&#39;d&#39;]</span>
+</code></pre></div>
+
+</span>
+    </div>
+  </div>
+</div>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+    <span class="kd">var</span> <span class="nx">w</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span> <span class="nx">sep</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">self</span> <span class="o">||</span> <span class="nx">self</span><span class="p">.</span><span class="nx">length</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="p">[];</span>
+        <span class="p">}</span>
+        <span class="kd">var</span> <span class="nx">s</span> <span class="o">=</span> <span class="nx">self</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">self</span> <span class="o">!==</span> <span class="s1">&#39;string&#39;</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">s</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span> <span class="o">+</span> <span class="nx">self</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="nx">s</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="nx">sep</span> <span class="o">||</span> <span class="sr">/[\s\n\t]+/</span><span class="p">);</span>
+    <span class="p">};</span>
+    
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs"><div class="dox">
+  <div class="summary">
+<div class="pilwrap" id="array.foreach(ary)">
+  <h2>
+    <a href="#array.foreach(ary)" name="array.foreach(ary)" class="pilcrow">&#182;</a>
+    array.forEach(ary)
+  </h2>
+</div>
+
+
+<p>iterate over given array</p>
+  </div>
+  <div class="body">
+  </div>
+  <div class="details">
+    <div class="dox_tag_title">Params</div>
+    <div class="dox_tag_detail">
+      <span class="dox_tag_name"></span>
+      <span>{Array}   self</span>
+    </div>
+    <div class="dox_tag_detail">
+      <span class="dox_tag_name"></span>
+      <span>{Function} fn</span>
+    </div>
+    <div class="dox_tag_title">Returns</div>
+    <div class="dox_tag_detail">
+      <span class="dox_tag_name"></span>
+      <span class="dox_type">Undefined</span>
+      <span>undefined
+
+
+<div class="highlight"><pre><code><span class="nx">array</span><span class="p">.</span><span class="nx">forEach</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span><span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">index</span><span class="p">,</span> <span class="nx">ary</span><span class="p">){</span>
+    <span class="c1">//...</span>
+<span class="p">});</span>
+</code></pre></div>
+
+</span>
+    </div>
+  </div>
+</div>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+    <span class="kd">var</span> <span class="nx">forEach</span> <span class="o">=</span> <span class="nx">_forEach</span> <span class="o">?</span> <span class="kd">function</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span> <span class="nx">fn</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">_forEach</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span> <span class="nx">fn</span><span class="p">);</span>
+    <span class="p">}</span> <span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span> <span class="nx">fn</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="nx">len</span> <span class="o">=</span> <span class="nx">ary</span><span class="p">.</span><span class="nx">len</span><span class="p">,</span>
+            <span class="nx">item</span><span class="p">;</span>
+        <span class="k">for</span> <span class="p">(;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">len</span><span class="p">;</span> <span class="o">++</span><span class="nx">i</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">item</span> <span class="o">=</span> <span class="nx">ary</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+            <span class="nx">fn</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">item</span><span class="p">,</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">self</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="nx">ary</span><span class="p">;</span>
+    <span class="p">};</span>
+    
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs"><div class="dox">
+  <div class="summary">
+<div class="pilwrap" id="array.indexof(ary)">
+  <h2>
+    <a href="#array.indexof(ary)" name="array.indexof(ary)" class="pilcrow">&#182;</a>
+    array.indexOf(ary)
+  </h2>
+</div>
+
+
+<p>find index of given parameter</p>
+  </div>
+  <div class="body">
+  </div>
+  <div class="details">
+    <div class="dox_tag_title">Params</div>
+    <div class="dox_tag_detail">
+      <span class="dox_tag_name"></span>
+      <span>{Array} [ary array to be search]</span>
+    </div>
+    <div class="dox_tag_detail">
+      <span class="dox_tag_name"></span>
+      <span>{Any} obj</span>
+    </div>
+    <div class="dox_tag_title">Returns</div>
+    <div class="dox_tag_detail">
+      <span class="dox_tag_name"></span>
+      <span class="dox_type">Integer</span>
+      <span>index
+
+
+<div class="highlight"><pre><code><span class="kd">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="p">{},</span> <span class="nx">b</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="nx">c</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="nx">a</span><span class="p">,</span><span class="nx">b</span><span class="p">];</span>
+<span class="nx">array</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">c</span><span class="p">,</span> <span class="nx">a</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="mi">1</span>
+<span class="nx">array</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">c</span><span class="p">,</span> <span class="nx">b</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="mi">2</span>
+<span class="nx">array</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">c</span><span class="p">,</span> <span class="p">{})</span> <span class="o">=&gt;</span> <span class="o">-</span><span class="mi">1</span>
+<span class="nx">array</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">c</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="mi">2</span>
+</code></pre></div>
+
+</span>
+    </div>
+  </div>
+</div>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+    <span class="kd">var</span> <span class="nx">indexOf</span> <span class="o">=</span> <span class="nx">_indexOf</span> <span class="o">?</span> <span class="kd">function</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span> <span class="nx">obj</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">_indexOf</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span> <span class="nx">obj</span><span class="p">);</span>
+    <span class="p">}</span> <span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span> <span class="nx">obj</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="nx">len</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+        <span class="k">for</span> <span class="p">(;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">len</span><span class="p">;</span> <span class="o">++</span><span class="nx">i</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">self</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">===</span> <span class="nx">obj</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="nx">i</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+    <span class="p">};</span>
+    
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs"><div class="dox">
+  <div class="summary">
+<div class="pilwrap" id="array.toarray(arraylike)">
+  <h2>
+    <a href="#array.toarray(arraylike)" name="array.toarray(arraylike)" class="pilcrow">&#182;</a>
+    array.toArray(arraylike)
+  </h2>
+</div>
+
+
+<p>convert array like object into an array</p>
+  </div>
+  <div class="body">
+  </div>
+  <div class="details">
+    <div class="dox_tag_title">Params</div>
+    <div class="dox_tag_detail">
+      <span class="dox_tag_name"></span>
+      <span>{Any} arrayLike</span>
+    </div>
+    <div class="dox_tag_detail">
+      <span class="dox_tag_name"></span>
+      <span>{int} start, where to start slice, included</span>
+    </div>
+    <div class="dox_tag_detail">
+      <span class="dox_tag_name"></span>
+      <span>{int} end, where to end slice, not included</span>
+    </div>
+    <div class="dox_tag_title">Returns</div>
+    <div class="dox_tag_detail">
+      <span class="dox_tag_name"></span>
+      <span class="dox_type">Array</span>
+      <span>array
+
+
+<div class="highlight"><pre><code> <span class="kd">function</span> <span class="nx">f</span><span class="p">(){</span>
+     <span class="k">return</span> <span class="nx">array</span><span class="p">.</span><span class="nx">toArray</span><span class="p">(</span><span class="nx">arguments</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+ <span class="p">}</span>
+ <span class="nx">f</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span> <span class="c1">//=&gt; [2]</span>
+</code></pre></div>
+
+</span>
+    </div>
+  </div>
+</div>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+    <span class="kd">function</span> <span class="nx">toArray</span><span class="p">(</span><span class="nx">arrayLike</span><span class="p">,</span> <span class="nx">start</span><span class="p">,</span> <span class="nx">end</span><span class="p">)</span> <span class="p">{</span>
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-6" id="section-6">&#182;</a>
+</div>
+<p>if arrayLike has a number value length property
+then it can be sliced</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+        <span class="k">return</span> <span class="nx">_type</span><span class="p">.</span><span class="nx">isNumber</span><span class="p">(</span><span class="nx">arrayLike</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span> <span class="o">?</span> <span class="nx">_slice</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">arrayLike</span><span class="p">,</span> <span class="nx">start</span><span class="p">,</span> <span class="nx">end</span><span class="p">)</span> <span class="o">:</span> <span class="p">[];</span>
+    <span class="p">}</span>
+    
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs"><div class="dox">
+  <div class="summary">
+<div class="pilwrap" id="array.equal(a1%2Ca2)">
+  <h2>
+    <a href="#array.equal(a1%2Ca2)" name="array.equal(a1%2Ca2)" class="pilcrow">&#182;</a>
+    array.equal(a1,a2)
+  </h2>
+</div>
+
+
+<p>return true if elements in two array loosely equal(==)</p>
+  </div>
+  <div class="body">
+  </div>
+  <div class="details">
+    <div class="dox_tag_title">Params</div>
+    <div class="dox_tag_detail">
+      <span class="dox_tag_name"></span>
+      <span>{Array} a</span>
+    </div>
+    <div class="dox_tag_detail">
+      <span class="dox_tag_name"></span>
+      <span>{Array} b</span>
+    </div>
+    <div class="dox_tag_title">Returns</div>
+    <div class="dox_tag_detail">
+      <span class="dox_tag_name"></span>
+      <span class="dox_type">Boolean</span>
+      <span>whether a equals b
+
+
+<div class="highlight"><pre><code><span class="kd">var</span> <span class="nx">x</span> <span class="o">=</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="nx">a</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="nx">x</span><span class="p">]],</span> <span class="nx">b</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,[</span><span class="mi">3</span><span class="p">,</span><span class="s1">&#39;a&#39;</span><span class="p">]],</span> <span class="nx">c</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,[</span><span class="mi">3</span><span class="p">,</span><span class="nx">x</span><span class="p">]];</span>
+<span class="nx">array</span><span class="p">.</span><span class="nx">strictEqual</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span><span class="nx">b</span><span class="p">)</span> <span class="c1">//=&gt; true</span>
+<span class="nx">array</span><span class="p">.</span><span class="nx">strictEqual</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span><span class="nx">c</span><span class="p">)</span> <span class="c1">//=&gt; true</span>
+</code></pre></div>
+
+</span>
+    </div>
+  </div>
+</div>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+    <span class="kd">function</span> <span class="nx">equal</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span> <span class="nx">b</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="nx">len</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">len</span> <span class="o">!==</span> <span class="nx">b</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span> <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+        <span class="k">for</span> <span class="p">(;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">len</span><span class="p">;</span> <span class="o">++</span><span class="nx">i</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">self</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">==</span> <span class="nx">b</span><span class="p">[</span><span class="nx">i</span><span class="p">])</span> <span class="p">{</span>
+                <span class="k">continue</span><span class="p">;</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">_type</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">self</span><span class="p">[</span><span class="nx">i</span><span class="p">])</span> <span class="o">&amp;&amp;</span> <span class="nx">_type</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">b</span><span class="p">[</span><span class="nx">i</span><span class="p">]))</span> <span class="p">{</span>
+                <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">equal</span><span class="p">(</span><span class="nx">self</span><span class="p">[</span><span class="nx">i</span><span class="p">],</span> <span class="nx">b</span><span class="p">[</span><span class="nx">i</span><span class="p">]))</span> <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+    <span class="p">}</span>
+    
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs"><div class="dox">
+  <div class="summary">
+<div class="pilwrap" id="array.strictequal(a1%2Ca2)">
+  <h2>
+    <a href="#array.strictequal(a1%2Ca2)" name="array.strictequal(a1%2Ca2)" class="pilcrow">&#182;</a>
+    array.strictEqual(a1,a2)
+  </h2>
+</div>
+
+
+<p>return true if elements in two array strictly equal(===)</p>
+  </div>
+  <div class="body">
+  </div>
+  <div class="details">
+    <div class="dox_tag_title">Params</div>
+    <div class="dox_tag_detail">
+      <span class="dox_tag_name"></span>
+      <span>{Array} a</span>
+    </div>
+    <div class="dox_tag_detail">
+      <span class="dox_tag_name"></span>
+      <span>{Array} b</span>
+    </div>
+    <div class="dox_tag_title">Returns</div>
+    <div class="dox_tag_detail">
+      <span class="dox_tag_name"></span>
+      <span class="dox_type">Boolean</span>
+      <span>whether a strictly equals b
+
+
+<div class="highlight"><pre><code><span class="kd">var</span> <span class="nx">x</span> <span class="o">=</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="nx">a</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="nx">x</span><span class="p">]],</span> <span class="nx">b</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,[</span><span class="mi">3</span><span class="p">,</span><span class="s1">&#39;a&#39;</span><span class="p">]],</span> <span class="nx">c</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,[</span><span class="mi">3</span><span class="p">,</span><span class="nx">x</span><span class="p">]];</span>
+<span class="nx">array</span><span class="p">.</span><span class="nx">strictEqual</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span><span class="nx">b</span><span class="p">)</span> <span class="c1">//=&gt; false</span>
+<span class="nx">array</span><span class="p">.</span><span class="nx">strictEqual</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span><span class="nx">c</span><span class="p">)</span> <span class="c1">//=&gt; true</span>
+</code></pre></div>
+
+</span>
+    </div>
+  </div>
+</div>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+    <span class="kd">function</span> <span class="nx">strictEqual</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span> <span class="nx">b</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="nx">len</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">len</span> <span class="o">!==</span> <span class="nx">b</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span> <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+        <span class="k">for</span> <span class="p">(;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">len</span><span class="p">;</span> <span class="o">++</span><span class="nx">i</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">self</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">===</span> <span class="nx">b</span><span class="p">[</span><span class="nx">i</span><span class="p">])</span> <span class="p">{</span>
+                <span class="k">continue</span><span class="p">;</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">_type</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">self</span><span class="p">[</span><span class="nx">i</span><span class="p">])</span> <span class="o">&amp;&amp;</span> <span class="nx">_type</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">b</span><span class="p">[</span><span class="nx">i</span><span class="p">]))</span> <span class="p">{</span>
+                <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">strictEqual</span><span class="p">(</span><span class="nx">self</span><span class="p">[</span><span class="nx">i</span><span class="p">],</span> <span class="nx">b</span><span class="p">[</span><span class="nx">i</span><span class="p">]))</span> <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+    <span class="p">}</span>
+    
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs"><div class="dox">
+  <div class="summary">
+<div class="pilwrap" id="array.compact(ary)">
+  <h2>
+    <a href="#array.compact(ary)" name="array.compact(ary)" class="pilcrow">&#182;</a>
+    array.compact(ary)
+  </h2>
+</div>
+
+
+<p>remove empty item(undefined,null, zero length array/object/string) from an array</p>
+  </div>
+  <div class="body">
+  </div>
+  <div class="details">
+    <div class="dox_tag_title">Params</div>
+    <div class="dox_tag_detail">
+      <span class="dox_tag_name"></span>
+      <span>{Array} ary</span>
+    </div>
+    <div class="dox_tag_title">Returns</div>
+    <div class="dox_tag_detail">
+      <span class="dox_tag_name"></span>
+      <span class="dox_type">Array</span>
+      <span>array
+
+
+<div class="highlight"><pre><code><span class="nx">array</span><span class="p">.</span><span class="nx">compact</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="kc">undefined</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span> <span class="c1">//=&gt; [0,1]</span>
+</code></pre></div>
+
+</span>
+    </div>
+  </div>
+</div>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+    <span class="kd">function</span> <span class="nx">compact</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">ret</span> <span class="o">=</span> <span class="p">[];</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">_type</span><span class="p">.</span><span class="nx">isArrayLike</span><span class="p">(</span><span class="nx">self</span><span class="p">))</span> <span class="k">return</span> <span class="nx">ret</span><span class="p">;</span>
+        <span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="nx">len</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+        <span class="k">for</span> <span class="p">(;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">len</span><span class="p">;</span> <span class="o">++</span><span class="nx">i</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">_type</span><span class="p">.</span><span class="nx">isEmpty</span><span class="p">(</span><span class="nx">self</span><span class="p">[</span><span class="nx">i</span><span class="p">]))</span> <span class="k">continue</span><span class="p">;</span>
+            <span class="nx">ret</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">self</span><span class="p">[</span><span class="nx">i</span><span class="p">]);</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="nx">ret</span><span class="p">;</span>
+    <span class="p">}</span>
+    
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs"><div class="dox">
+  <div class="summary">
+<div class="pilwrap" id="array.flattern(ary)">
+  <h2>
+    <a href="#array.flattern(ary)" name="array.flattern(ary)" class="pilcrow">&#182;</a>
+    array.flattern(ary)
+  </h2>
+</div>
+
+
+<p>flatten given array into a one-dimension array</p>
+  </div>
+  <div class="body">
+  </div>
+  <div class="details">
+    <div class="dox_tag_title">Params</div>
+    <div class="dox_tag_detail">
+      <span class="dox_tag_name"></span>
+      <span>{Array} ary</span>
+    </div>
+    <div class="dox_tag_title">Returns</div>
+    <div class="dox_tag_detail">
+      <span class="dox_tag_name"></span>
+      <span class="dox_type">Array</span>
+      <span>flattened array
+
+
+<div class="highlight"><pre><code><span class="nx">array</span><span class="p">.</span><span class="nx">flatten</span><span class="p">([</span><span class="mi">1</span><span class="p">,[</span><span class="mi">2</span><span class="p">,[</span><span class="mi">3</span><span class="p">]],</span><span class="mi">4</span><span class="p">])</span> <span class="c1">//=&gt; [1,2,3,4]</span>
+</code></pre></div>
+
+</span>
+    </div>
+  </div>
+</div>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+    <span class="kd">function</span> <span class="nx">flatten</span><span class="p">(</span><span class="nx">self</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">_type</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">self</span><span class="p">))</span> <span class="k">return</span> <span class="p">[</span><span class="nx">self</span><span class="p">];</span>
+        <span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="nx">obj</span><span class="p">,</span>
+            <span class="nx">len</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">length</span><span class="p">,</span>
+            <span class="nx">r</span><span class="p">,</span> <span class="nx">ret</span> <span class="o">=</span> <span class="p">[];</span>
+        <span class="k">for</span> <span class="p">(;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">len</span><span class="p">;</span> <span class="o">++</span><span class="nx">i</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">obj</span> <span class="o">=</span> <span class="nx">self</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">_type</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">obj</span><span class="p">))</span> <span class="p">{</span>
+                <span class="nx">r</span> <span class="o">=</span> <span class="nx">flatten</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
+                <span class="nx">ret</span> <span class="o">=</span> <span class="nx">ret</span><span class="p">.</span><span class="nx">concat</span><span class="p">(</span><span class="nx">r</span><span class="p">);</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="nx">ret</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="nx">ret</span><span class="p">;</span>
+    <span class="p">}</span>
+    
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs"><div class="dox">
+  <div class="summary">
+<div class="pilwrap" id="array.fill(ary%2C%20value%2C%20start%2C%20end)">
+  <h2>
+    <a href="#array.fill(ary%2C%20value%2C%20start%2C%20end)" name="array.fill(ary%2C%20value%2C%20start%2C%20end)" class="pilcrow">&#182;</a>
+    array.fill(ary, value, start, end)
+  </h2>
+</div>
+
+
+<p>fill given array from start to end with given v</p>
+  </div>
+  <div class="body">
+  </div>
+  <div class="details">
+    <div class="dox_tag_title">Params</div>
+    <div class="dox_tag_detail">
+      <span class="dox_tag_name"></span>
+      <span>{String} self</span>
+    </div>
+    <div class="dox_tag_detail">
+      <span class="dox_tag_name"></span>
+      <span>{Any} v</span>
+    </div>
+    <div class="dox_tag_detail">
+      <span class="dox_tag_name"></span>
+      <span>{Integer} start</span>
+    </div>
+    <div class="dox_tag_detail">
+      <span class="dox_tag_name"></span>
+      <span>{Integer} end</span>
+    </div>
+    <div class="dox_tag_title">Returns</div>
+    <div class="dox_tag_detail">
+      <span class="dox_tag_name"></span>
+      <span class="dox_type">Array</span>
+      <span>array</span>
+    </div>
+    <div class="dox_tag_title">See</div>
+    <div class="dox_tag_detail">
+      <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/fill
+
+">https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/fill
+
+</a>
+    </div>
+  </div>
+</div>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+    <span class="kd">function</span> <span class="nx">fill</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span> <span class="nx">v</span><span class="p">,</span> <span class="nx">start</span><span class="p">,</span> <span class="nx">end</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">len</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">length</span><span class="p">,</span>
+            <span class="nx">start_i</span> <span class="o">=</span> <span class="nx">start</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">?</span> <span class="mi">0</span> <span class="o">:</span> <span class="o">+</span><span class="nx">start</span><span class="p">,</span>
+            <span class="nx">end_i</span> <span class="o">=</span> <span class="nx">len</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">end</span> <span class="o">!=</span> <span class="s1">&#39;undefined&#39;</span><span class="p">)</span> <span class="nx">end_i</span> <span class="o">=</span> <span class="o">+</span><span class="nx">end</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">start_i</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">start_i</span> <span class="o">+=</span> <span class="nx">len</span><span class="p">;</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">start_i</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="nx">start_i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">start_i</span> <span class="o">&gt;</span> <span class="nx">len</span><span class="p">)</span> <span class="nx">start_i</span> <span class="o">=</span> <span class="nx">len</span><span class="p">;</span>
+        <span class="p">}</span>
+    
+        <span class="k">if</span> <span class="p">(</span><span class="nx">end_i</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">end_i</span> <span class="o">+=</span> <span class="nx">len</span><span class="p">;</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">end_i</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="nx">end_i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">end_i</span> <span class="o">&gt;</span> <span class="nx">len</span><span class="p">)</span> <span class="nx">end_i</span> <span class="o">=</span> <span class="nx">len</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="nx">start_i</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">end_i</span><span class="p">;</span> <span class="o">++</span><span class="nx">i</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">self</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">=</span> <span class="nx">v</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="nx">self</span><span class="p">;</span>
+    <span class="p">}</span>
+    
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs"><div class="dox">
+  <div class="summary">
+<div class="pilwrap" id="array.fromrange(from%2Cto)">
+  <h2>
+    <a href="#array.fromrange(from%2Cto)" name="array.fromrange(from%2Cto)" class="pilcrow">&#182;</a>
+    array.fromRange(from,to)
+  </h2>
+</div>
+
+
+<p>create an array from given range</p>
+  </div>
+  <div class="body">
+  </div>
+  <div class="details">
+    <div class="dox_tag_title">Params</div>
+    <div class="dox_tag_detail">
+      <span class="dox_tag_name"></span>
+      <span>{Integer} from, lower bounds</span>
+    </div>
+    <div class="dox_tag_detail">
+      <span class="dox_tag_name"></span>
+      <span>{Integer} to, upper bounds</span>
+    </div>
+    <div class="dox_tag_title">Returns</div>
+    <div class="dox_tag_detail">
+      <span class="dox_tag_name"></span>
+      <span class="dox_type">Array</span>
+      <span>array [from, to]
+
+
+<div class="highlight"><pre><code><span class="nx">array</span><span class="p">.</span><span class="nx">fromRange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span> <span class="c1">//=&gt; [1,2,3,4,5]</span>
+</code></pre></div>
+
+</span>
+    </div>
+  </div>
+</div>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+    <span class="kd">function</span> <span class="nx">fromRange</span><span class="p">(</span><span class="nx">from</span><span class="p">,</span> <span class="nx">to</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">ret</span> <span class="o">=</span> <span class="p">[],</span>
+            <span class="nx">i</span><span class="p">,</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">,</span>
+            <span class="nx">len</span> <span class="o">=</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">len</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">ret</span><span class="p">;</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">len</span> <span class="o">===</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="p">[</span><span class="nx">from</span><span class="p">];</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">len</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">a</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">min</span><span class="p">(</span><span class="nx">from</span><span class="p">,</span> <span class="nx">to</span><span class="p">),</span>
+            <span class="nx">b</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">max</span><span class="p">(</span><span class="nx">from</span><span class="p">,</span> <span class="nx">to</span><span class="p">);</span>
+            <span class="k">for</span> <span class="p">(</span><span class="nx">i</span> <span class="o">=</span> <span class="nx">a</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;=</span> <span class="nx">b</span><span class="p">;</span> <span class="o">++</span><span class="nx">i</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nx">ret</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">i</span><span class="p">);</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="nx">ret</span><span class="p">;</span>
+    <span class="p">}</span>
+    
+    <span class="nx">exports</span><span class="p">[</span><span class="s1">&#39;w&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">w</span><span class="p">;</span>
+    <span class="nx">exports</span><span class="p">[</span><span class="s1">&#39;forEach&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">forEach</span><span class="p">;</span>
+    <span class="nx">exports</span><span class="p">[</span><span class="s1">&#39;indexOf&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">indexOf</span><span class="p">;</span>
+    <span class="nx">exports</span><span class="p">[</span><span class="s1">&#39;toArray&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">toArray</span><span class="p">;</span>
+    <span class="nx">exports</span><span class="p">[</span><span class="s1">&#39;equal&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">equal</span><span class="p">;</span>
+    <span class="nx">exports</span><span class="p">[</span><span class="s1">&#39;strictEqual&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">strictEqual</span><span class="p">;</span>
+    <span class="nx">exports</span><span class="p">[</span><span class="s1">&#39;compact&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">compact</span><span class="p">;</span>
+    <span class="nx">exports</span><span class="p">[</span><span class="s1">&#39;flatten&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">flatten</span><span class="p">;</span>
+    <span class="nx">exports</span><span class="p">[</span><span class="s1">&#39;fill&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">fill</span><span class="p">;</span>
+    <span class="nx">exports</span><span class="p">[</span><span class="s1">&#39;fromRange&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">fromRange</span><span class="p">;</span>
+    <span class="nx">exports</span><span class="p">.</span><span class="nx">__doc__</span> <span class="o">=</span> <span class="s2">&quot;Array Utils&quot;</span><span class="p">;</span>
+    <span class="nx">exports</span><span class="p">.</span><span class="nx">VERSION</span> <span class="o">=</span> <span class="s1">&#39;0.0.1&#39;</span><span class="p">;</span>
+    <span class="k">return</span> <span class="nx">exports</span><span class="p">;</span>
+<span class="p">}));</span>
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-13" id="section-13">&#182;</a>
+</div>
+<p>end of $root.lang.array</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+</pre></div>
+        </td>
+      </tr>
+  </tbody>
+</table>
+  </div>
+</body>
+</html>

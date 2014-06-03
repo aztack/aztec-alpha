@@ -1,13 +1,7 @@
 /**
- * ---
- * description: jQuery Sigil Extension
- * namespace: jQueryExt
- * imports:
- *   _type: $root.lang.type
- *   _object: $root.lang.object
- * priority: 1
- * files:
- * - src/jquery.ext.js
+ * jQuery Sigil Extension
+ * ----------------------
+ * Dependencies: lang/type,lang/object
  */
 
 (function(root, factory) {
@@ -22,7 +16,7 @@
         factory($root.lang.type, $root.lang.object, exports);
     }
 }(this, function(_type, _object, exports) {
-    //'use strict';
+    'use strict';
     exports = exports || {};
     
 jQuery.typename = function() {
@@ -104,7 +98,7 @@ if (typeof jQuery !== 'undefined') {
         return dim;
     };
 
-    function extractCreateOptions(ele, prefix) {
+    var extractCreateOptions = function(ele, prefix) {
         var optionsFromAttributes = {},
             attrs = ele.attributes,
             name, path, attrNode;
@@ -117,7 +111,7 @@ if (typeof jQuery !== 'undefined') {
             path = name.replace(prefix + '-', '').replace('-', '.');
             _object.tryset(optionsFromAttributes, path, attrNode.value);
         }
-    }
+    };
 
     /**
      * create $root.ui.* class instance from attributed dom element
@@ -148,20 +142,26 @@ if (typeof jQuery !== 'undefined') {
      */
     var _hide = jQuery.fn.hide;
     jQuery.fn.hide = function() {
-        this.trigger('hide');
-        return _hide.apply(this, arguments);
+        this.trigger('beforehide');
+        _hide.apply(this, arguments);
+        this.trigger('afterhide');
+        return this;
     };
 
     var _show = jQuery.fn.show;
     jQuery.fn.show = function() {
-        this.trigger('show');
-        return _show.apply(this, arguments);
+        this.trigger('beforeshow');
+        _show.apply(this, arguments);
+        this.trigger('afterremove');
+        return this;
     };
 
     var _remove = jQuery.fn.remove;
     jQuery.fn.remove = function() {
-        this.trigger('remove');
-        return _remove.apply(this, arguments);
+        this.trigger('beforeremove');
+        _remove.apply(this, arguments);
+        this.trigger('afterremove');
+        return this;
     };
 } //we have jQuery
     

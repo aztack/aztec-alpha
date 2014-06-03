@@ -1,17 +1,7 @@
 /**
- * ---
- * description: Templating
- * namespace: $root.browser.template
- * imports:
- *   _type: $root.lang.type
- *   $: jquery
- * exports:
- * - collect
- * - set
- * - get
- * - id$
- * files:
- * - src/browser/template.js
+ * Templating
+ * ----------
+ * Dependencies: $root.lang.type,jquery
  */
 
 (function(root, factory) {

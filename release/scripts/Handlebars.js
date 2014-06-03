@@ -1,14 +1,7 @@
 /**
- * ---
- * description: Handlebars
- * namespace: Handlebars
- * notransform: true
- * priority: 0
- * files:
- * - src/handlebars-v1.2.0.js
- * - src/handlebars.ext.js
- * imports: {}
- * exports: []
+ * Handlebars
+ * ----------
+ * Dependencies:
  */
 
 

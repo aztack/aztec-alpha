@@ -1,18 +1,7 @@
 /**
- * ---
- * description: List
- * namespace: $root.ui.list
- * imports:
- *   _type: $root.lang.type
- *   _fn: $root.lang.fn
- *   _str: $root.lang.string
- *   _arguments: $root.lang.arguments
- *   $: jquery
- *   jqe: jQueryExt
- * exports:
- * - List
- * files:
- * - src/ui/List.js
+ * List
+ * ----
+ * Dependencies: $root.lang.type,$root.lang.fn,$root.lang.string,$root.lang.arguments,jquery,jQueryExt
  */
 
 (function(root, factory) {

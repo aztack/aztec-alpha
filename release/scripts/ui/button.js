@@ -1,23 +1,7 @@
 /**
- * ---
- * description: Button
- * version: 0.1
- * namespace: $root.ui.button
- * directory: ui/Button
- * imports:
- *   _type: $root.lang.type
- *   _arguments: $root.lang.arguments
- *   _number: $root.lang.number
- *   _enum: $root.lang.enumerable
- *   _str: $root.lang.string
- *   _drag: $root.ui.draggable
- *   $: jquery
- *   jqe: jQueryExt
- *   _tpl: $root.browser.template
- * exports:
- * - Button
- * files:
- * - src/ui/Button/Button.js
+ * Button
+ * ------
+ * Dependencies: $root.lang.type,$root.lang.arguments,$root.lang.number,$root.lang.enumerable,$root.lang.string,$root.ui.draggable,jquery,jQueryExt,$root.browser.template
  */
 
 (function(root, factory) {

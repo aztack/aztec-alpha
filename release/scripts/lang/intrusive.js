@@ -1,20 +1,7 @@
 /**
- * ---
- * description: Extend JavaScript builtins intrusively
- * version: 0.0.1
- * namespace: $root.lang.intrusive
- * imports:
- *   _str: $root.lang.string
- *   _array: $root.lang.array
- *   _object: $root.lang.object
- *   _date: $root.lang.date
- *   _num: $root.lang.number
- *   _enum: $root.lang.enumerable
- *   _fn: $root.lang.fn
- * exports:
- * - $
- * files:
- * - src/lang/intrusive.js
+ * Extend JavaScript builtins intrusively
+ * --------------------------------------
+ * Dependencies: $root.lang.string,$root.lang.array,$root.lang.object,$root.lang.date,$root.lang.number,$root.lang.enumerable,$root.lang.fn
  */
 
 (function(root, factory) {

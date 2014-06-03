@@ -1,20 +1,7 @@
 /**
- * ---
- * description: Calendar
- * namespace: $root.ui.calendar
- * directory: ui/Calendar
- * imports:
- *   _type: $root.lang.type
- *   _str: $root.lang.string
- *   _arguments: $root.lang.arguments
- *   _date: $root.lang.date
- *   _tpl: $root.browser.template
- *   _table: $root.ui.table
- *   $: jquery
- * exports:
- * - Calendar
- * files:
- * - src/ui/Calendar/Calendar.js
+ * Calendar
+ * --------
+ * Dependencies: $root.lang.type,$root.lang.string,$root.lang.arguments,$root.lang.date,$root.browser.template,$root.ui.table,jquery
  */
 
 (function(root, factory) {

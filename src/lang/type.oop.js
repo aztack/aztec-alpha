@@ -255,6 +255,9 @@ function instance$set(keyPath, value, notifyObservers) {
     }
     var observers = metaData.observers;
     attrs = metaData.attrs;
+    if(typeof value == 'function') {
+        value = value(tryget(attrs, keyPath));
+    }
     tryset(attrs, keyPath, value);
     if (!!notifyObservers && observers) {
         for (var name in observers) {
@@ -358,7 +361,7 @@ function instance$unobserve(keyPath, name) {
     return instance$observe_internal.call(this, keyPath, name, null);
 }
 
-function instance$dispose() {
+function instance$dispose(returnCount) {
     var typename = this.$getClass().typename(),
         objSpace, id;
 
@@ -367,8 +370,9 @@ function instance$dispose() {
     objSpace = $ObjectSpace[typename];
     objSpace[id] = null;
     delete objSpace[id];
+    objSpace.count -= 1;
 
-    return this;
+    return returnCount === true ? objSpace.count : this;
 }
 
 function instance$opt(key, defaultValue) {

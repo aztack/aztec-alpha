@@ -1,24 +1,7 @@
 /**
- * ---
- * description: Table
- * namespace: $root.ui.table
- * directory: ui/Table
- * imports:
- *   _type: $root.lang.type
- *   _str: $root.lang.string
- *   _object: $root.lang.object
- *   _enum: $root.lang.enumerable
- *   _fn: $root.lang.fn
- *   _arguments: $root.lang.arguments
- *   _template: $root.browser.template
- *   $: jquery
- *   jqe: jQueryExt
- *   _tpl: $root.browser.template
- * exports:
- * - Table
- * - DataSource
- * files:
- * - src/ui/Table/Table.js
+ * Table
+ * -----
+ * Dependencies: $root.lang.type,$root.lang.string,$root.lang.object,$root.lang.enumerable,$root.lang.fn,$root.lang.arguments,$root.browser.template,jquery,jQueryExt,$root.browser.template
  */
 
 (function(root, factory) {

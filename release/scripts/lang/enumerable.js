@@ -1,24 +1,7 @@
 /**
- * ---
- * description: Enumerable Interface
- * version: 0.0.1
- * namespace: $root.lang.enumerable
- * imports:
- *   _type: $root.lang.type
- *   _ary: $root.lang.array
- * exports:
- * - each
- * - inject
- * - all
- * - some
- * - find
- * - findAll
- * - map
- * - compact
- * - pluck
- * - parallel
- * files:
- * - src/lang/enumerable.js
+ * Enumerable Interface
+ * --------------------
+ * Dependencies: lang/type,lang/array
  */
 
 (function(root, factory) {
@@ -33,12 +16,10 @@
         factory($root.lang.type, $root.lang.array, exports);
     }
 }(this, function(_type, _ary, exports) {
-    //'use strict';
+    'use strict';
     exports = exports || {};
     
     var _slice = Array.prototype.slice;
-    
-    ///helper
     
     function _array_each(ary, fn, thisValue, stopWhenFnReturnFalse) {
         var i = 0,
@@ -70,12 +51,27 @@
         return obj;
     }
     
-    /// exports
-    
     /**
-     * each
+     * ##enum.each(obj)##
      * iterate over an array or object
+     * @param  {Array|Object}   obj
+     * @param  {Function} fn
+     * @param  {Any}   thisValue
+     * @param  {Boolean}   stop when fn return false
      * @return {object} return array or object being iterated
+     *
+     * ```javascript
+     * var week = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+     * enum.each(week,function(xxxday, key, index, ary){
+     *     // key === index
+     *     //...
+     * })
+     * enum.each({name:'mike',age:28},function(value, key, index, mike){
+     *     // key is 'name','age' while index is 0, 1
+     *     // mike is the object being iterated
+     *     //...
+     * },null, true);
+     * ```
      */
     function each(obj) {
         return _type.isArrayLike(obj) ? _array_each.apply(null, arguments) : _object_each.apply(null, arguments);
@@ -83,11 +79,19 @@
     
     
     /**
-     * Inject
+     * ##enum.inject(obj, init, fn)##
      * @param  {Any} obj
-     * @param  {Any} init
+     * @param  {Any} init, initial value
      * @param  {Function} fn
      * @return {Any}
+     *
+     * ```javascript
+     * enum.inject([1,2,3,4,5,6,7,8,9,10],0,function(sum, item){
+     *     sum += item;
+     *     return sum;
+     * });
+     * => 55
+     * ```
      */
     function inject(obj, init, fn) {
         if (_type.isEmpty(obj)) return init;
@@ -98,54 +102,54 @@
     }
     
     /**
-     * some
-     * return true if one or more item in objs pass fn test(fn return true)
-     * @param  {Array}   objs
+     * ##enum.some(obj,fn)##
+     * return true if one or more item in obj pass fn test(fn return true)
+     * @param  {Array}   obj
      * @param  {Function} fn
      * @return {Boolean}
      */
-    function some(objs, fn) {
+    function some(obj, fn) {
         var ret = false;
-        each(objs, function(v, k, i) {
-            if (fn.call(objs, v, k, i) === true) {
+        each(obj, function(v, k, i) {
+            if (fn.call(obj, v, k, i) === true) {
                 ret = true;
                 return false;
             }
-        }, objs, true);
+        }, obj, true);
         return ret;
     }
     
     /**
-     * all
-     * return true if all objs pass fn test(fn return true)
-     * @param  {Array}   objs [description]
+     * ##enum.all(obj,fn)##
+     * return true if all obj pass fn test(fn return true)
+     * @param  {Array}   obj [description]
      * @param  {Function} fn   [description]
      * @return {Boolean}
      */
-    function all(objs, fn) {
+    function all(obj, fn) {
         var ret = true;
-        each(objs, function(v, k, i) {
-            if (fn.call(objs, v, k, i) === false) {
+        each(obj, function(v, k, i) {
+            if (fn.call(obj, v, k, i) === false) {
                 ret = false;
                 return false;
             }
-        }, objs, true);
+        }, obj, true);
         return ret;
     }
     
     /**
-     * find
+     * ##enum.find(obj,fn,returnValueOnly)##
      * return first which pass fn test(fn return true)
-     * @param  {Array}   objs
+     * @param  {Array}   obj
      * @param  {Function} fn
-     * @param  {Boolean} returnValueOnly
-     * @return {Object}
+     * @param  {Boolean} return value only
+     * @return {Object} {key,value,index}|value
      */
-    function find(objs, fn, returnValueOnly) {
+    function find(obj, fn, returnValueOnly) {
         returnValueOnly = typeof returnValueOnly == 'undefined' ? true : false;
         var ret = returnValueOnly ? null : {};
-        each(objs, function(v, k, i) {
-            if (fn.call(objs, v, k, i) === true) {
+        each(obj, function(v, k, i) {
+            if (fn.call(obj, v, k, i) === true) {
                 if (returnValueOnly) {
                     ret = v;
                 } else {
@@ -155,23 +159,23 @@
                 }
                 return false;
             }
-        }, objs, true);
+        }, obj, true);
         return ret;
     }
     
     /**
-     * findAll
+     * ##enum.findAll(obj,fn,returnValueOnly)##
      * return array of item which pass fn test(fn return true)
-     * @param  {Array}   objs
+     * @param  {Array}   obj
      * @param  {Function} fn
-     * @param  {Boolean} returnValueOnly
-     * @return {Array}
+     * @param  {Boolean} return value only
+     * @return {Array} {key,value,index}|value
      */
-    function findAll(objs, fn, returnValueOnly) {
+    function findAll(obj, fn, returnValueOnly) {
         returnValueOnly = typeof returnValueOnly == 'undefined' ? true : false;
         var ret = [];
-        each(objs, function(v, k, i) {
-            if (fn.call(objs, v, k, i) === true) {
+        each(obj, function(v, k, i) {
+            if (fn.call(obj, v, k, i) === true) {
                 if (returnValueOnly) {
                     ret.push(v);
                 } else {
@@ -182,27 +186,27 @@
                     });
                 }
             }
-        }, objs, true);
+        }, obj, true);
         return ret;
     }
     
     /**
-     * map
-     * @param  {Array|Object}   objs
+     * ##enum.map(obj,fn,context)##
+     * @param  {Array|Object}   obj
      * @param  {Function} fn
      * @param  {Any}   context
      * @return {Array|Object}
      */
-    function map(objs, fn, context) {
+    function map(obj, fn, context) {
         var ret;
-        if (_type.isArrayLike(objs)) {
+        if (_type.isArrayLike(obj)) {
             ret = [];
-            _array_each(objs, function(v, k, i) {
+            _array_each(obj, function(v, k, i) {
                 ret.push(fn.call(context, v, k, i));
             });
         } else {
             ret = [];
-            _object_each(objs, function(v, k, i) {
+            _object_each(obj, function(v, k, i) {
                 ret[i] = fn.call(context, v, k, i);
             });
         }
@@ -210,12 +214,13 @@
     }
     
     /**
-     * pluck
-     * @param  {Object|Array} objs
+     * ##enum.pluck(obj,key,doNotReturn)##
+     * @param  {Array|Object} obj
      * @param  {String} key
-     * @return {[type]}
+     * @param  {Boolean} do not return anything,
+     * @return {Object|Undefined} object|undefined
      */
-    function pluck(objs, key, doNotReturn) {
+    function pluck(obj, key, doNotReturn) {
         var f;
         if (typeof doNotReturn == 'undefined') {
             doNotReturn = false;
@@ -231,38 +236,39 @@
             };
         }
         if (doNotReturn) {
-            if (_type.isArrayLike(objs)) {
-                _array_each(objs, function(v, k, i) {
+            if (_type.isArrayLike(obj)) {
+                _array_each(obj, function(v, k, i) {
                     f.call(null, v, k, i);
                 });
             } else {
-                ret = {};
-                _object_each(objs, function(v, k, i) {
+                _object_each(obj, function(v, k, i) {
                     f.call(null, v, k, i);
                 });
             }
         } else {
-            return map(objs, f);
+            return map(obj, f);
         }
     }
     
     
     /**
-     * compact
-     * @param  {Array|Object} objs
-     * @return {Array}
+     * ##enum.compact(obj)##
+     * remove null/undfined item in array or object.
+     * different from `array.compact` which also remove empty string and empty array recursively
+     * @param  {Array|Object} obj
+     * @return {Array|Object} array|object
      */
-    function compact(objs) {
+    function compact(obj) {
         var ret;
-        if (_type.isArrayLike(objs)) {
+        if (_type.isArrayLike(obj)) {
             ret = [];
-            _array_each(objs, function(v, k, i) {
+            _array_each(obj, function(v, k, i) {
                 if (v === null || typeof v == 'undefined') return;
                 ret.push(v);
             });
         } else {
             ret = {};
-            _object_each(objs, function(v, k, i) {
+            _object_each(obj, function(v, k, i) {
                 if (v === null || typeof v == 'undefined') return;
                 ret[k] = v;
             });
@@ -270,38 +276,47 @@
         return ret;
     }
     
-    var parallelNoCallback = 'No callback provided!',
-        parallelArgumentsError = 'parallel needs at least  3 parameters!';
-    
     /**
-     * parallel
-     * @return {[type]} [description]
-     * @remark
+     * ##enum.parallel(ary1,ary2[,...,short])###
+     * iterate 2 or more array at the same time
+     * @param {Array} ary1
+     * @param {Array} ary2
+     * @param {Boolean} short, if true use shortest array length as iteration upper bounds
+     * @return {Undefined} undefined
+     *
+     * ```javascript
      *  parallel([1,2,3],['a','b'],['A','B'],function(){console.log(arguments)},true);
      *  =>  1 a A 0
      *      2 b B 1
+     * ```
      */
     function parallel() {
-        if (arguments.length < 3) {
-            throw new Error(parallelArgumentsError);
+        var len = arguments.length;
+        if (len === 0) {
+            return;
+        } else if (len == 1) {
+            return arguments[0];
         }
         var args = _slice.call(arguments),
             upbounds = Math.max,
             up, lengths, i = 0,
-            j, fn, items;
+            j, fn, items, ret;
         if (args[args.length - 1] === true) {
             upbounds = Math.min;
             args.pop();
         }
-        fn = args.pop();
-        if (!fn) {
-            throw new Error(parallelNoCallback);
+        if (typeof args[args.length - 1] == 'function') {
+            fn = args.pop();
+            ret = [];
         }
-    
         if (args.length === 2) {
             up = upbounds(args[0].length, args[1].length);
             for (; i < up; ++i) {
-                fn.call(null, args[0][i], args[1][i], i);
+                if (fn) {
+                    fn.call(null, args[0][i], args[1][i], i);
+                } else {
+                    ret.push([args[0][i], args[1][i]]);
+                }
             }
         } else {
             lengths = pluck(args, 'length');
@@ -312,7 +327,11 @@
                     items.push(args[j][i]);
                 }
                 items.push(i);
-                fn.apply(null, items);
+                if(fn) {
+                    fn.apply(null, items);
+                } else {
+                    ret.push(items);
+                }
             }
         }
     }

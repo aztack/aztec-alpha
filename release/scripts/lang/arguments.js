@@ -1,18 +1,7 @@
 /**
- * ---
- * description: Arguments Utils
- * namespace: $root.lang.arguments
- * imports:
- *   _fn: $root.lang.fn
- *   _type: $root.lang.type
- * exports:
- * - toArray
- * - asArray
- * - varArg
- * - registerPlugin
- * files:
- * - src/lang/arguments.js
- * - src/lang/arguments.ext.js
+ * Arguments Utils
+ * ---------------
+ * Dependencies: $root.lang.fn,$root.lang.type
  */
 
 (function(root, factory) {

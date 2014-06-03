@@ -1,15 +1,7 @@
 /**
- * ---
- * description: jQuery
- * namespace: jQuery
- * returns: jQuery
- * notransform: true
- * priority: 0
- * files:
- * - src/jquery-1.10.2.js
- * - src/jquery.mousewheel.js
- * imports: {}
- * exports: []
+ * jQuery
+ * ------
+ * Dependencies:
  */
 
 

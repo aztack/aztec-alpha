@@ -1,17 +1,7 @@
 /**
- * ---
- * description: Number Utils
- * namespace: $root.lang.number
- * imports:
- *   _type: $root.lang.type
- * exports:
- * - random
- * - max
- * - min
- * - confined
- * - rand
- * files:
- * - src/lang/number.js
+ * Number Utils
+ * ------------
+ * Dependencies: $root.lang.type
  */
 
 (function(root, factory) {

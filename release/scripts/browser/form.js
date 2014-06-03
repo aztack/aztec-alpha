@@ -1,18 +1,7 @@
 /**
- * ---
- * description: Form
- * namespace: $root.browser.form
- * imports:
- *   _type: $root.lang.type
- *   _argument: $root.lang.arguments
- *   _str: $root.lang.string
- *   _ary: $root.lang.array
- *   $: jquery
- * exports:
- * - Form
- * - toJSON
- * files:
- * - src/browser/form.js
+ * Form
+ * ----
+ * Dependencies: $root.lang.type,$root.lang.arguments,$root.lang.string,$root.lang.array,jquery
  */
 
 (function(root, factory) {

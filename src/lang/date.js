@@ -29,7 +29,6 @@
 
 var varArg = _arguments.varArg;
 
-//vars
 var secondsOfMinute = 60,
     secondsOfHour = 3600,
     secondsOfDay = 86400,
@@ -46,11 +45,6 @@ var secondsOfMinute = 60,
         'true': [-1, 31, 20, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
     };
 
-
-//helper
-
-
-//impl
 function now() {
     return new Date();
 }
@@ -67,13 +61,16 @@ function thisYear() {
     return new Date().getYear() + 1900;
 }
 
-function isLeapYear(y) {
+// return true if given year is leap year
+function isLeapYear(year) {
     //http://stackoverflow.com/questions/8175521/javascript-to-find-leap-year
-    return new Date(y, 1, 29).getMonth() == 1;
+    return new Date(year, 1, 29).getMonth() == 1;
 }
 
-function daysOfMonth(y, m) {
-    return _daysOfMonth[isLeapYear(y)][m];
+
+// return days in given month of year
+function daysOfMonth(year, month) {
+    return _daysOfMonth[isLeapYear(year)][month];
 }
 
 function format(self, sep) {

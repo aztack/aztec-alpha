@@ -312,16 +312,17 @@ function once(self) {
  * delay
  * @param  {Function} fn
  * @param  {Integer}   ms
+ * @param  {[type]} context [description]
  * @return {Function}
  */
-function delay(self, ms) {
+function delay(self, ms, context) {
     if (!isFunction(self)) {
         throw TypeError(firstArgMustBeFn);
     }
-    var args = _slice.call(arguments, 2),
+    var args = _slice.call(arguments, context ? 3 : 2),
         h = setTimeout(function() {
             clearTimeout(h);
-            self.apply(null, args);
+            self.apply(context, args);
         }, ms);
 }
 

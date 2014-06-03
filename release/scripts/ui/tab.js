@@ -1,21 +1,7 @@
 /**
+ * Tab
  * ---
- * description: Tab
- * namespace: $root.ui.tab
- * directory: ui/Tab
- * imports:
- *   _str: $root.lang.string
- *   _type: $root.lang.type
- *   _enum: $root.lang.enumerable
- *   _num: $root.lang.number
- *   _list: $root.ui.list
- *   _tpl: $root.browser.template
- *   _arguments: $root.lang.arguments
- *   $: jquery
- *   jqe: jQueryExt
- * returns: Tab
- * files:
- * - src/ui/Tab/Tab.js
+ * Dependencies: $root.lang.string,$root.lang.type,$root.lang.enumerable,$root.lang.number,$root.ui.list,$root.browser.template,$root.lang.arguments,jquery,jQueryExt
  */
 
 (function(root, factory) {

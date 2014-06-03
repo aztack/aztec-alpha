@@ -1,12 +1,7 @@
 /**
- * ---
- * description: The Aztec JavaScript framework
- * version: 0.0.1
- * namespace: $root
- * notransform: true
- * priority: 0
- * files:
- * - src/aztec.js
+ * The Aztec JavaScript framework
+ * ------------------------------
+ * Dependencies:
  */
 
 

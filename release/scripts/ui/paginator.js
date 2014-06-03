@@ -1,24 +1,7 @@
 /**
- * ---
- * description: Paginator
- * namespace: $root.ui.paginator
- * directory: ui/Paginator
- * imports:
- *   _type: $root.lang.type
- *   _num: $root.lang.number
- *   _str: $root.lang.string
- *   _ary: $root.lang.array
- *   _range: $root.lang.range
- *   _tpl: $root.browser.template
- *   _arguments: $root.lang.arguments
- *   _list: $root.ui.list
- *   $: jquery
- *   jqe: jQueryExt
- * exports:
- * - Paginator
- * - create
- * files:
- * - src/ui/Paginator/Paginator.js
+ * Paginator
+ * ---------
+ * Dependencies: $root.lang.type,$root.lang.number,$root.lang.string,$root.lang.array,$root.lang.range,$root.browser.template,$root.lang.arguments,$root.ui.list,jquery,jQueryExt
  */
 
 (function(root, factory) {
@@ -122,23 +105,24 @@
         perPage: 10,
         total: 0,
         maxButtonNumber: 5,
-        firstPageButton: '<<',
-        lastPageButton: '>>',
-        prevPageButton: '<',
-        nextPageButton: '>',
+        firstPageButtonText: '<<',
+        lastPageButtonText: '>>',
+        prevPageButtonText: '<',
+        nextPageButtonText: '>',
         ellipsis: '...',
         buttonLayout: '<<|<|.|>|>>|?/?',
         containerClass: 'ui-paginator',
         itemClass: 'ui-paginator-item',
         ratioFormat: '{page}/{totalPage}',
         onCreateButton: null,
+        autoHideButton: true,
         alwaysTriggerPageChangedEvent: false
     }).statics({
         ButtonLayout: {
             Default: '<<|<|.|>|>>|?/?',
             Smart: '<|...|>',
             Layout0: '<<|<|.|>|>>',
-            Layout1: '<|>|...'
+            Layout1: '<|...|>'
         }
     });
     
@@ -181,7 +165,25 @@
             self.$attr('page', opts.pageIndex + 1);
         }
     
+        function showHideNextPrevButtons(e, index) {
+            var nextPageButton = self.find('.next-page'),
+                prevPageButton = self.find('.prev-page');
+            if (index === self.totalPage - 1) {
+                nextPageButton.hide();
+            } else if (index === 0) {
+                prevPageButton.hide();
+            } else {
+                prevPageButton.show();
+                nextPageButton.show();
+            }
+        }
+    
+        if (opts.autoHideButton) {
+            self.on(Paginator.Events.OnPageChanged, showHideNextPrevButtons);
+        }
+    
         Paginator_makeButtons(self, opts);
+        showHideNextPrevButtons(null, self.pageIndex);
     }
     
     function Paginator_makeButtons(self, opts) {
@@ -196,15 +198,15 @@
         for (k = 0; k < layout.length; ++k) {
             btn = layout[k];
             if (btn == '<<' || btn == 'first') {
-                self.add(opts.firstPageButton, opt).addClass('first-page').data('action', 'first');
+                self.add(opts.firstPageButtonText, opt).addClass('first-page').data('action', 'first');
             } else if (btn == '<' || btn == 'prev') {
-                self.add(opts.prevPageButton, opt).data('action', 'prev').addClass('prev-page');
+                self.add(opts.prevPageButtonText, opt).data('action', 'prev').addClass('prev-page');
             } else if (btn == '.') {
                 Paginator_makeNumberedButton(self, opts, self.pageIndex);
             } else if (btn == '>' || btn == 'next') {
-                self.add(opts.nextPageButton, opt).data('action', 'next').addClass('next-page');
+                self.add(opts.nextPageButtonText, opt).data('action', 'next').addClass('next-page');
             } else if (btn == '>>' || btn == 'last') {
-                self.add(opts.lastPageButton, opt).addClass('last-page').data('action', 'last');
+                self.add(opts.lastPageButtonText, opt).addClass('last-page').data('action', 'last');
             } else if (btn == '?/?' || btn == 'ratio') {
                 self.add(_str.format(opts.ratioFormat, self)).addClass('ratio');
             } else if (btn == '...' || btn == 'ellipsis') {
@@ -240,24 +242,24 @@
                 if (_range.create('[)', 1, max).covers(page)) {
                     items = self.add(_ary.fromRange(1, max - 1), fmt);
                     $(items.get(index)).addClass(currentPage);
-                    
+    
                     self.add(ellipsis).addClass('ellipsis');
                     self.add(total).attr('data-index', total - 1);
                 } else if (_range.create('[]', max, total - max + 1).covers(page)) {
                     mid = Math.floor(max / 2);
                     self.add(1).attr('data-index', 1);
                     self.add(ellipsis).addClass('ellipsis');
-                    
+    
                     items = self.add(_ary.fromRange(index - mid, index + mid), fmt);
                     $(items.get(mid + 1)).addClass(currentPage);
-                    
+    
                     self.add(ellipsis).addClass('ellipsis');
                     self.add(total).attr('data-index', total - 1);
                 } else if (_range.create('(]', total - max + 1, total).covers(page)) {
                     mid = Math.floor(max / 2);
                     self.add(1).attr('data-index', 1);
                     self.add(ellipsis).addClass('ellipsis');
-                    
+    
                     items = self.add(_ary.fromRange(total - max + 1, total), fmt);
                     $(items.get(index - total + max)).addClass(currentPage);
                 }

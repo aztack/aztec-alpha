@@ -1,48 +1,7 @@
 /**
- * ---
- * description: JavaScript Type System Supplement
- * version: 0.0.1
- * namespace: $root.lang.type
- * exports:
- * - isPrimitive
- * - isUndefined
- * - isNull
- * - isNullOrUndefined
- * - isUndefinedOrNull
- * - containsNullOrUndefined
- * - isEmpty
- * - isRegExp
- * - isString
- * - isArray
- * - isArrayLike
- * - isFunction
- * - isNumber
- * - isInteger
- * - isFloat
- * - isFiniteNumber
- * - isBoolean
- * - isPlainObject
- * - isEmptyObject
- * - isElement
- * - isDate
- * - typename
- * - object
- * - hasSameTypeName
- * - isWindow
- * - Boolean
- * - Number
- * - String
- * - Undefined
- * - Integer
- * - Class
- * - Classes
- * - ObjectSpace
- * - create
- * - onCreate
- * files:
- * - src/lang/type.js
- * - src/lang/type.oop.js
- * imports: {}
+ * JavaScript Type System Supplement
+ * ---------------------------------
+ * Dependencies:
  */
 
 (function(root, factory) {
@@ -55,7 +14,7 @@
         factory(exports);
     }
 }(this, function(exports) {
-    //'use strict';
+    'use strict';
     exports = exports || {};
     
     var _toString = Object.prototype.toString,
@@ -600,6 +559,9 @@
         }
         var observers = metaData.observers;
         attrs = metaData.attrs;
+        if(typeof value == 'function') {
+            value = value(tryget(attrs, keyPath));
+        }
         tryset(attrs, keyPath, value);
         if (!!notifyObservers && observers) {
             for (var name in observers) {
@@ -703,7 +665,7 @@
         return instance$observe_internal.call(this, keyPath, name, null);
     }
     
-    function instance$dispose() {
+    function instance$dispose(returnCount) {
         var typename = this.$getClass().typename(),
             objSpace, id;
     
@@ -712,8 +674,9 @@
         objSpace = $ObjectSpace[typename];
         objSpace[id] = null;
         delete objSpace[id];
+        objSpace.count -= 1;
     
-        return this;
+        return returnCount === true ? objSpace.count : this;
     }
     
     function instance$opt(key, defaultValue) {

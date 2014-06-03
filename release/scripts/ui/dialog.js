@@ -1,27 +1,7 @@
 /**
- * ---
- * description: Dialog
- * namespace: $root.ui.dialog
- * directory: ui/Dialog
- * imports:
- *   _type: $root.lang.type
- *   _array: $root.lang.array
- *   _fn: $root.lang.fn
- *   _enum: $root.lang.enumerable
- *   _tpl: $root.browser.template
- *   _arguments: $root.lang.arguments
- *   _drag: $root.ui.draggable
- *   _overlay: $root.ui.overlay
- *   $: jquery
- *   jqe: jQueryExt
- * exports:
- * - Dialog
- * - Alert
- * - alert
- * - Notice
- * - notice
- * files:
- * - src/ui/Dialog/Dialog.js
+ * dialogs
+ * -------
+ * Dependencies: lang/type,lang/array,lang/fn,lang/enumerable,browser/template,lang/arguments,ui/draggable,ui/overlay,jquery,jQueryExt
  */
 
 (function(root, factory) {
@@ -44,25 +24,26 @@
         factory($root.lang.type, $root.lang.array, $root.lang.fn, $root.lang.enumerable, $root.browser.template, $root.lang.arguments, $root.ui.draggable, $root.ui.overlay, jquery, jQueryExt, exports);
     }
 }(this, function(_type, _array, _fn, _enum, _tpl, _arguments, _drag, _overlay, $, jqe, exports) {
-    //'use strict';
+    'use strict';
     exports = exports || {};
     _tpl
         .set('$root.ui.Dialog.dialog',"<div class=\"ui-dialog\">\n<div class=\"ui-dialog-header\">\n<a class=\"ui-dialog-title\"></a><a class=\"ui-dialog-title-button close\"></a>\n</div>\n<div class=\"ui-dialog-body\">\n            </div>\n<div class=\"ui-dialog-footer\"></div>\n</div>\n")
         .set('$root.ui.Dialog.button',"<button data-action=\"ok\" class=\"ui-dialog-button\"></button>\n")
         .set('$root.ui.Dialog.titleButton',"<a class=\"ui-dialog-close-button\" sigil-calss=\"Dialog\">&times;</a>\n")
         .set('$root.ui.Dialog.icon',"<span class=\"ui-dialog-icon\"></span>\n");
-    //Features
-    //[x] auto close, timeout
-    //[x] drag bug
+    //TODO
+    //====
+    //- [x] auto close, timeout
+    //- [x] drag bug
     
     var varArg = _arguments.varArg,
         tpl = _tpl.id$('$root.ui.Dialog');
     
     /**
-     * Generic Dialog
-     *     contains only empty header,body,footer
-     *     can not be dragged
-     *     extends this class to implements your own dialog
+     * Dialog
+     * ======
+     * Generic dialog which contains only empty header,body,footer and can not be dragged.
+     * Extends this class to implements your own dialog
      */
     var Dialog = _type.create('$root.ui.dialog.Dialog', jQuery, {
         init: function(opts) {
@@ -75,12 +56,43 @@
             this.$attr('buttons', this.sigil('.button'));
             Dialog_initialize(this, this.options);
         },
+        /**
+         * ##Dialog\#show()##
+         * if dialog is not in DOM append it to body
+         * if dialog is hidden, show it
+         * @return {Dialog} dialog
+         */
         show: function() {
             if (!this.parent().length) {
                 this.appendTo('body');
             }
+            if (this.options.mask) _overlay.Mask.getInstance().show();
             this.base.apply(this, arguments);
+            return this;
         },
+        hide: function(){
+            //prevent call mask.hide when dialog is already hidden
+            if(!this.is(':visible')) return this;
+            if (this.options.mask) _overlay.Mask.getInstance().hide();
+            this.base.apply(this, arguments);
+            return this;
+        },
+        /**
+         * ##Dialog\#showAt()##
+         * ###Dialog\#showAt(xpos[, ypos])###
+         * ###Dialog\#showAt(parent, xpos, ypox)###
+         * Show dialog at given position
+         * @param {Integer|Position} xpos
+         * @param {Integer|Position} ypos
+         * @param {Selector|HTMLElement} parent
+         * @return {Dialog} dialog
+         *
+         * ```javascript
+         * dialog.showAt(100,100);
+         * dialog.showAt(Dialog.Position.GoldenRatio);
+         * dialog.showAt(parent,Dialog.Position.Center);
+         * ```
+         */
         showAt: function() {
             var parent = this.parent(),
                 inDom = parent.length > 0;
@@ -118,15 +130,25 @@
                 });
             return this;
         },
+        /**
+         * ##Dialog\#remove()##
+         * Remove dialog from DOM.
+         * Remove mask behide dialog if has
+         * @return {Dialog} dialog
+         */
         remove: function() {
-            var mask = this.$get('mask');
-            if (mask) mask.remove();
+            var mask = _overlay.Mask.getInstance();
+            if (mask) {
+                mask.remove();
+            }
             this.base();
             return this;
         },
-        setHeader: function() {
-            return Dialog_setPart(this, 'header', arguments);
-        },
+        /**
+         * ##Dialog\#setTitle(title)##
+         * @param {String} title, string or html
+         * @return {Dialog} dialog
+         */
         setTitle: function(title) {
             var titleEle = this.sigil('.dialog-title');
             varArg(arguments, this)
@@ -139,18 +161,48 @@
                 .resolve();
             return this;
         },
+        /**
+         * ##Dialog\#setHeader(string)##
+         * ###Dialog\#setHeader(html[,style])###
+         */
+        setHeader: function() {
+            return Dialog_setPart(this, 'header', arguments);
+        },
+        /**
+         * ##Dialog\#setBody(string)##
+         * ###Dialog\#setBody(html[,style])###
+         */
         setBody: function() {
             return Dialog_setPart(this, 'body', arguments);
         },
+        /**
+         * ##Dialog\#setFooter(string)##
+         * ###Dialog\#setFooter(html[,style])###
+         */
         setFooter: function() {
             return Dialog_setPart(this, 'footer', arguments);
         },
+        /**
+         * ##Dialog\#bringToFront()##
+         * make dialog the first child of parent
+         * @return {Dialog} dialog
+         */
         bringToFront: function() {
             return Dialog_setLayerPosition(this, 'front');
         },
+        /**
+         * ##Dialog\#sendToBack()##
+         * make dialog the last child of parent
+         * @return {Dialog} dialog
+         */
         sendToBack: function() {
             return Dialog_setLayerPosition(this, 'back');
         },
+        /**
+         * ##Dialog\#setDraggable(isDraggable)##
+         * @param {Boolean} isDraggable
+         * @return {Dialog} dialog
+         */
         setDraggable: function(isDraggable) {
             var draggable = _drag.isDraggable(this.header);
             if (draggable == null) return this;
@@ -167,6 +219,22 @@
             }
             return this;
         },
+        /**
+         * ##Dialog\#setButtons(array of string)##
+         * ###Dialog\#setButtons(array of config)###
+         * ###Dialog\#setButtons(text1,...,textN)###
+         * ###Dialog\#setButtons(config1,...,configN)###
+         * @return {Dialog} dialog
+         *
+         * ```javascript
+         * dialog.setButtons('OK','Cancel');
+         * dialog.setButtons(['OK','Cancel']);
+         * dialog.setButtons(
+         *     {caption:'OK',css:{color:'green'},data:{id:100}},
+         *     {caption:'Cancel',css:{color:'red'},data:{id:101}}
+         * );
+         * ```
+         */
         setButtons: function() {
             var args = _arguments.toArray(arguments),
                 footer = this.footer;
@@ -185,35 +253,50 @@
             return this.$attr('buttons', this.sigil('.button'));
         }
     }).aliases({
+        /**
+         * ##Dialog\#setContent()##
+         * alias of Dialog#setBody
+         */
         setContent: 'setBody',
+        /**
+         * ##Dialog\#close()##
+         * alias of Dialog#setBody
+         */
         close: 'hide'
     }).options({
-        okButtonText: 'OK',
-        cancelButtonText: 'Cancel',
-        buttons: ['OK', 'Cancel'],
-        draggable: true,
-        closeButton: true,
-        autoReposition: true,
-        mask: true,
-        closeWhenLostFocus: true,
-        content: '',
-        title: '',
-        position: 'golden'
+        // #Creating Options of Dialog#
+        okButtonText: 'OK',         
+        cancelButtonText: 'Cancel', //default Cancel button text
+        buttons: ['OK', 'Cancel'],  //default buttons
+        draggable: true,            //whether dialog is draggble
+        closeButton: true,          //whether dialog has close button
+        autoReposition: true,       //whether reposition when window resized
+        mask: true,                 //whether mask screen when dialog show up
+        closeWhenLostFocus: true,   //whether close dialog when lost focus(click outside dialog)
+        content: '',                //content of dialog, can be text or html
+        title: '',                  //title of dialog
+        position: 'golden'          //default position when show
     }).statics({
+        // #Dialog.Template#
         Template: {
             DefaultTemplate: tpl('dialog'),
             DefaultButton: tpl('button')
         },
+        // #Dialog.Position#
         Position: {
             Center: 'center',
             GoldenRatio: 'golden'
         },
+        // #Dialog.Parts#
+        // Pre-defined Icons
         Parts: {
             IconError: $(tpl('icon')).addClass('error'),
             IconInfo: $(tpl('icon')).addClass('info'),
             IconWarnning: $(tpl('icon')).addClass('warnning')
         }
     }).events({
+        // Dialog.Events
+        // =============
         OnShowAt: 'ShowAt(event,x,y).Dialog',
         OnButtonClick: 'ButtonClick(event,buttonIndex,buttonCaption).Dialog'
     });
@@ -291,11 +374,11 @@
             if (action == 'ok' || action == 'cancel') {
                 self.close();
             }
+            return false;
         });
     
         if ( !! opts.mask) {
-            self.$attr('mask', _overlay.Mask.create());
-            self.mask.appendTo('body').click(function() {
+            _overlay.Mask.getInstance().show().appendTo('body').click(function() {
                 self.close();
             }).before(self);
         }
@@ -345,6 +428,7 @@
         return [x, y];
     }
     
+    
     function Dialog_setPart(self, whichPart, args) {
         var part = self[whichPart];
         if (!part || part.length === 0) {
@@ -381,7 +465,10 @@
     }
     
     /**
-     * Alert Dialog
+     * Alert
+     * =====
+     * Alert is a simple extension of Dialog.
+     * With OK,Cancel,Close buttons and simple content
      */
     var Alert = Dialog.extend('$root.ui.dialog.Alert', {
         init: function(options) {
@@ -438,20 +525,27 @@
     
     var alertSingleton = null;
     
+    /**
+     * ##dialog.alert(content)##
+     * ##dialog.alert(content, onClose)##
+     * ##dialog.alert(title, content, onClose)##
+     * ##dialog.alert(content, options)##
+     * @return {Alert} alert
+     */
     function alert() {
         if (alertSingleton) {
             alertSingleton.close().remove();
             alertSingleton = null;
         }
         alertSingleton = Alert.create.apply(null, arguments);
-        alertSingleton.showAt(Dialog.Position.GoldenRatio).on(Dialog.Events.OnButtonClick, function() {
-            alertSingleton.close();
-        }).setDraggable(false);
+        alertSingleton.showAt(Dialog.Position.GoldenRatio).setDraggable(false);
         return alertSingleton;
     }
     
     /**
      * Notice
+     * ======
+     * Notice is a auto-close Dialog without header, footer, buttons, only content.
      */
     var Notice = Dialog.extend('$root.ui.dialog.Notice', {
         init: function(options) {
@@ -472,20 +566,15 @@
             return this;
         }
     }).statics({
-        Values: {
-    
-        },
-        DefaultOptions: {
-            Type: 'info'
-        },
         Type: {
             Info: Dialog.Parts.IconInfo,
             Error: Dialog.Parts.IconError,
             Warnning: Dialog.Parts.IconWarnning
         }
     }).options({
-        duration: 2000,
-        type: Dialog.Parts.IconInfo
+        // ##Creating Options of Notice##
+        duration: 2000, //notice display duration
+        type: Dialog.Parts.IconInfo //notice default type, see Notice.Type
     });
     
     function Notice_initialize(self, opts) {
@@ -521,7 +610,7 @@
     exports['alert'] = alert;
     exports['Notice'] = Notice;
     exports['notice'] = notice;
-    exports.__doc__ = "Dialog";
+    exports.__doc__ = "dialogs";
     exports.VERSION = '0.0.1';
     return exports;
 }));

@@ -1,21 +1,7 @@
 /**
- * ---
- * description: ComboBox
- * namespace: $root.ui.comboBox
- * directory: ui/ComboBox
- * imports:
- *   _type: $root.lang.type
- *   _fn: $root.lang.fn
- *   _tpl: $root.browser.template
- *   _arguments: $root.lang.arguments
- *   _menu: $root.ui.menu
- *   _textfield: $root.ui.textField
- *   $: jquery
- *   jqe: jQueryExt
- * exports:
- * - ComboBox
- * files:
- * - src/ui/ComboBox/ComboBox.js
+ * ComboBox
+ * --------
+ * Dependencies: $root.lang.type,$root.lang.fn,$root.browser.template,$root.lang.arguments,$root.ui.menu,$root.ui.textField,jquery,jQueryExt
  */
 
 (function(root, factory) {

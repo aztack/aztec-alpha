@@ -1,20 +1,7 @@
 /**
- * ---
- * description: Draggable
- * namespace: $root.ui.draggable
- * imports:
- *   _type: $root.lang.type
- *   _fn: $root.lang.fn
- *   _arguments: $root.lang.arguments
- *   $: jquery
- *   jqe: jQueryExt
- * exports:
- * - draggable
- * - undraggable
- * - isDraggable
- * - Draggable
- * files:
- * - src/ui/draggable.js
+ * Draggable
+ * ---------
+ * Dependencies: $root.lang.type,$root.lang.fn,$root.lang.arguments,jquery,jQueryExt
  */
 
 (function(root, factory) {

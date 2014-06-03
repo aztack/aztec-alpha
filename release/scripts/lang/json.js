@@ -1,13 +1,7 @@
 /**
- * ---
- * description: JSON
- * namespace: $root.lang.json
- * imports: {}
- * exports:
- * - parse
- * - stringify
- * files:
- * - src/lang/json.js
+ * JSON
+ * ----
+ * Dependencies:
  */
 
 (function(root, factory) {

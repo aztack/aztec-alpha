@@ -1,39 +1,7 @@
 /**
- * ---
- * description: Function
- * version: 0.0.1
- * namespace: $root.lang.fn
- * imports:
- *   _type: $root.lang.type
- *   _obj: $root.lang.object
- * exports:
- * - noop
- * - alwaysTrue
- * - alwaysFalse
- * - alwaysNull
- * - alwaysUndefined
- * - return1st
- * - return2nd
- * - return3rd
- * - return4th
- * - bind
- * - bindTimeout
- * - call
- * - apply
- * - bindCallNew
- * - bindApplyNew
- * - callNew
- * - applyNew
- * - log
- * - stop
- * - ntimes
- * - once
- * - delay
- * - memoize
- * - wrap
- * - compose
- * files:
- * - src/lang/fn.js
+ * Function
+ * --------
+ * Dependencies: lang/type,lang/object
  */
 
 (function(root, factory) {
@@ -48,7 +16,7 @@
         factory($root.lang.type, $root.lang.object, exports);
     }
 }(this, function(_type, _obj, exports) {
-    //'use strict';
+    'use strict';
     exports = exports || {};
     
     ///exports
@@ -327,16 +295,17 @@
      * delay
      * @param  {Function} fn
      * @param  {Integer}   ms
+     * @param  {[type]} context [description]
      * @return {Function}
      */
-    function delay(self, ms) {
+    function delay(self, ms, context) {
         if (!isFunction(self)) {
             throw TypeError(firstArgMustBeFn);
         }
-        var args = _slice.call(arguments, 2),
+        var args = _slice.call(arguments, context ? 3 : 2),
             h = setTimeout(function() {
                 clearTimeout(h);
-                self.apply(null, args);
+                self.apply(context, args);
             }, ms);
     }
     

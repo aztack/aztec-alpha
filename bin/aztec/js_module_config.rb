@@ -61,6 +61,25 @@ module Aztec
             @config.to_yaml
         end
 
+        def to_markdown
+            deps = imports.values.map{|e|"`" + e.sub('$root.','').gsub('.','/') + "`"}
+            md = [
+                "#{'#' + description + '#'}",
+                "#{"=" * description.size}",
+                "- Dependencies: #{deps.join(',')}",
+                "- Version: #{ver}"
+            ]
+            if @config['remark']
+                md.concat([
+                    '```',
+                    "#{@config['remark']}",
+                    '```'
+                ])
+            end
+
+            md.join "\n"
+        end
+
         def deprecated?
             not @config['deprecated'].nil?
         end

@@ -1,21 +1,7 @@
 /**
- * ---
- * description: Rating
- * namespace: $root.ui.rating
- * directory: ui/Dialog
- * imports:
- *   _type: $root.lang.type
- *   _fn: $root.lang.fn
- *   _enum: $root.lang.enumerable
- *   _tpl: $root.browser.template
- *   _arguments: $root.lang.arguments
- *   _list: $root.ui.List
- *   $: jquery
- *   jqe: jQueryExt
- * exports:
- * - SimpleRating
- * files:
- * - src/ui/Rating/Rating.js
+ * Rating
+ * ------
+ * Dependencies: $root.lang.type,$root.lang.fn,$root.lang.enumerable,$root.browser.template,$root.lang.arguments,$root.ui.List,jquery,jQueryExt
  */
 
 (function(root, factory) {

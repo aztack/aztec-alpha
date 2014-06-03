@@ -1,14 +1,7 @@
 /**
- * ---
- * description: Range, immutable
- * namespace: $root.lang.range
- * imports:
- *   _type: $root.lang.type
- *   _str: $root.lang.string
- * exports:
- * - create
- * files:
- * - src/lang/range.js
+ * Range, immutable
+ * ----------------
+ * Dependencies: $root.lang.type,$root.lang.string
  */
 
 (function(root, factory) {

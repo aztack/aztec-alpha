@@ -1,21 +1,7 @@
 /**
- * ---
- * description: DOM Manipulation
- * version: 0.0.1
- * namespace: $root.browser.dom
- * imports:
- *   _type: $root.lang.type
- *   _enum: $root.lang.enumerable
- *   _str: $root.lang.string
- * exports:
- * - script
- * - stylesheet
- * - internalScript
- * - internalStylesheet
- * - removeWhiteTextNode
- * - findOffsetParent
- * files:
- * - src/browser/dom.js
+ * DOM Manipulation
+ * ----------------
+ * Dependencies: $root.lang.type,$root.lang.enumerable,$root.lang.string
  */
 
 (function(root, factory) {

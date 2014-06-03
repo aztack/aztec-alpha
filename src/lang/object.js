@@ -1,5 +1,5 @@
 ({
-    description: "Object utils",
+    description: "Object Utils",
     version: '0.0.1',
     namespace: $root.lang.object,
     imports: {
@@ -19,17 +19,24 @@
     ]
 });
 
-///exports
-
+/**
+ * ##obj.mix##
+ * extends target with source
+ * @param  {Object} target
+ * @param  {Object} source
+ * @return {Object} augmented target
+ */
 function mix(target, source) {
     _enum.each(source, function(v, k, i) {
-        target[k] = v;
+        if(source.hasOwnProperty(k)) {
+            target[k] = v;
+        }
     });
     return target;
 }
 
 /**
- * keys
+ * ##obj.keys(obj)##
  * return keys of obj
  * @param  {Object} obj
  * @return {Array}
@@ -45,7 +52,7 @@ var keys = Object.keys || function(obj) {
 };
 
 /**
- * values
+ * ##obj.values##
  * return values of obj
  * @param  {Object} obj
  * @return {Array}
@@ -61,14 +68,15 @@ function values(obj) {
 
 
 /**
- * tryget
+ * ##obj.tryget(obj,path,defaultValue)##
  * try to retrieve value of object according to given `path`
  * @param {Object} o
  * @param {String} path
  * @param {Any} v, default value if
- * @returns {Any}
- * @remark
- *     tryget({a:[{b:42}]},'a.0.b', -1) => 42
+ * @returns {Any} object
+ * ```javascript
+ * tryget({a:[{b:42}]},'a.0.b', -1) => 42
+ * ````
  */
 function tryget(o, path, v) {
     if (_type.isEmpty(o)) return v;
@@ -88,13 +96,14 @@ function tryget(o, path, v) {
 }
 
 /**
- * tryset
+ * ##obj.tryset(obj,path,value)##
  * @param  {Any} obj
  * @param  {String} path, dot separated property name
  * @param  {Any} v, value to be set to
  * @return {Any} obj
- * @remark
- *     tryset({a:[{b:42}]},'a.0.b', 43).a[0].b => 43
+ * ```javascript
+ * tryset({a:[{b:42}]},'a.0.b', 43).a[0].b => 43
+ * ```
  */
 function tryset(obj, path, v) {
     if (arguments.length !== 3) {
@@ -114,6 +123,11 @@ function tryset(obj, path, v) {
     return obj;
 }
 
+/**
+ * ##obj.pairs(obj)##
+ * @param  {[type]} obj [description]
+ * @return {[type]}     [description]
+ */
 function pairs(obj) {
     var ret = [];
     for (var k in obj) {
@@ -124,6 +138,11 @@ function pairs(obj) {
     return ret;
 }
 
+/**
+ * fromPairs
+ * @param  {[type]} pairs [description]
+ * @return {[type]}       [description]
+ */
 function fromPairs(pairs) {
     var obj = {},
         i = 0,
@@ -135,11 +154,26 @@ function fromPairs(pairs) {
     }
     return obj;
 }
+
 /**
- * fromKvString
- * @param  {string} self    string to be parsed
- * @param  {string} pairSep separator that separate key-value pairs
- * @param  {string} kvSep   separator that seperate key and value
- * @return {Object} object parsed from key-value string
+ * ##obj.fromKeyValuePairString(s [,pairSeparator, keyValueSeparator, start, end])##
+ * convert a key-value string into an hash(Object)
+ * @param  {String} self
+ * @param  {String} pairSeparator
+ * @param  {Object} keyValueSeparator
+ * @param  {[type]} start
+ * @param  {[type]} end
+ * @return {Object} object
+ *
+ * ```javascript
+ * obj.fromKeyValuePairString('uid=42&name=mike')
+ * => {uid: "42", name: "mike"}
+ *
+ * obj.fromKeyValuePairString('?uid=42&name=mike', null, null, 1)
+ * => {uid: "42", name: "mike"}
+ *
+ * obj.fromKeyValuePairString('{name:mike,age:28}',',',':',1,-1)
+ * => {name: "mike", age: "28"}
+ * ```
  */
 var fromKeyValuePairString = _str.toHash;

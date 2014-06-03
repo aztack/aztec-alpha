@@ -1,21 +1,7 @@
 /**
- * ---
- * description: TagInput
- * namespace: $root.ui.tagInput
- * directory: ui/TagInput
- * imports:
- *   _type: $root.lang.type
- *   _str: $root.lang.string
- *   _tpl: $root.browser.template
- *   _enum: $root.lang.enumerable
- *   _fn: $root.lang.fn
- *   _arguments: $root.lang.arguments
- *   $: jquery
- * exports:
- * - Tag
- * - TagInput
- * files:
- * - src/ui/TagInput/TagInput.js
+ * TagInput
+ * --------
+ * Dependencies: $root.lang.type,$root.lang.string,$root.browser.template,$root.lang.enumerable,$root.lang.fn,$root.lang.arguments,jquery
  */
 
 (function(root, factory) {

@@ -1,16 +1,7 @@
 /**
- * ---
- * description: Query Selector
- * namespace: $root.browser.query
- * imports:
- *   _type: $root.lang.type
- *   _str: $root.lang.string
- *   _ary: $root.lang.array
- * exports:
- * - $
- * - _querySelectorAll
- * files:
- * - src/browser/query.js
+ * Query Selector
+ * --------------
+ * Dependencies: $root.lang.type,$root.lang.string,$root.lang.array
  */
 
 (function(root, factory) {

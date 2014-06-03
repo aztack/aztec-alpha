@@ -1,31 +1,7 @@
 /**
- * ---
- * description: Date Utils
- * version: 0.0.1
- * namespace: $root.lang.date
- * imports:
- *   _type: $root.lang.type
- *   _fn: $root.lang.fn
- *   _arguments: $root.lang.arguments
- *   _str: $root.lang.string
- * exports:
- * - secondsOfMinute
- * - secondsOfHour
- * - secondsOfDay
- * - namesOfMonths
- * - namesOfWeekday
- * - now
- * - thisDay
- * - thisMonth
- * - thisYear
- * - isLeapYear
- * - daysOfMonth
- * - format
- * - calendar
- * - DateTime
- * - TimeSpan
- * files:
- * - src/lang/date.js
+ * Date Utils
+ * ----------
+ * Dependencies: $root.lang.type,$root.lang.fn,$root.lang.arguments,$root.lang.string
  */
 
 (function(root, factory) {
@@ -47,7 +23,6 @@
     
     var varArg = _arguments.varArg;
     
-    //vars
     var secondsOfMinute = 60,
         secondsOfHour = 3600,
         secondsOfDay = 86400,
@@ -64,11 +39,6 @@
             'true': [-1, 31, 20, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
         };
     
-    
-    //helper
-    
-    
-    //impl
     function now() {
         return new Date();
     }
@@ -85,13 +55,16 @@
         return new Date().getYear() + 1900;
     }
     
-    function isLeapYear(y) {
+    // return true if given year is leap year
+    function isLeapYear(year) {
         //http://stackoverflow.com/questions/8175521/javascript-to-find-leap-year
-        return new Date(y, 1, 29).getMonth() == 1;
+        return new Date(year, 1, 29).getMonth() == 1;
     }
     
-    function daysOfMonth(y, m) {
-        return _daysOfMonth[isLeapYear(y)][m];
+    
+    // return days in given month of year
+    function daysOfMonth(year, month) {
+        return _daysOfMonth[isLeapYear(year)][month];
     }
     
     function format(self, sep) {

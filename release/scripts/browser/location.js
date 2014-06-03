@@ -1,15 +1,7 @@
 /**
- * ---
- * description: Location
- * namespace: $root.browser.location
- * imports:
- *   _type: $root.lang.type
- *   _str: $root.lang.string
- * exports:
- * - get
- * - set
- * files:
- * - src/browser/location.js
+ * Location
+ * --------
+ * Dependencies: $root.lang.type,$root.lang.string
  */
 
 (function(root, factory) {

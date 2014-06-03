@@ -1,11 +1,7 @@
 /**
- * ---
- * description: RequireJS
- * namespace: requirejs
- * notransform: true
- * priority: 0
- * files:
- * - src/require.js
+ * RequireJS
+ * ---------
+ * Dependencies:
  */
 
 

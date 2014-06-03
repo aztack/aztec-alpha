@@ -1,17 +1,7 @@
 /**
- * ---
- * description: Event Utils
- * version: 0.0.1
- * namespace: $root.browser.event
- * imports:
- *   _type: $root.lang.type
- *   _fn: $root.lang.fn
- * exports:
- * - stopEvent
- * - EventEmitter
- * files:
- * - src/browser/event.js
- * - src/browser/event.emitter.js
+ * Event Utils
+ * -----------
+ * Dependencies: $root.lang.type,$root.lang.fn
  */
 
 (function(root, factory) {
