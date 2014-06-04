@@ -255,11 +255,11 @@ function instance$set(keyPath, value, notifyObservers) {
     }
     var observers = metaData.observers;
     attrs = metaData.attrs;
-    if(typeof value == 'function') {
+    if (typeof value == 'function') {
         value = value(tryget(attrs, keyPath));
     }
     tryset(attrs, keyPath, value);
-    if (!!notifyObservers && observers) {
+    if ( !! notifyObservers && observers) {
         for (var name in observers) {
             observers[name].call(this, value);
         }
@@ -375,12 +375,6 @@ function instance$dispose(returnCount) {
     return returnCount === true ? objSpace.count : this;
 }
 
-function instance$opt(key, defaultValue) {
-    var opts = this.$get('options');
-    if (!opts) return defaultValue;
-    return tryget(opts, key, defaultValue);
-}
-
 /**
  * Every instance created with `Class` which created with type.Class or type.create
  * havs a $getClass function with which you to get it's class object
@@ -394,7 +388,7 @@ function instance$noop() {}
 
 function instance$help() {
     var methods = this.$methods();
-    if(!methods.length) {
+    if (!methods.length) {
         methods = this.$methods(1);
     }
     return {
@@ -580,7 +574,7 @@ function clazz$extend() {
 }
 
 function clazz$readonly(name, initValue, force) {
-    if (!!force || !isFunction(this[name])) {
+    if ( !! force || !isFunction(this[name])) {
         this['get' + name] = function() {
             return initValue;
         };
@@ -595,21 +589,22 @@ function clazz$options(opts) {
     if (!metaData) {
         metaData = initMetaData(typename, cacheKey, 'static');
     }
-    if (opts) {
+    if (arguments.length == 1) {
         if (metaData.createOptions) {
             //If this is not the first time YourClass.options was called
             //return a updated copy of createOptions.
             //Typically in init method of YourClass creating instance.options:
             // this.$attr('options', YourClass.options(customOpts));
-            return $extend(true, {}, metaData.createOptions, opts);
+            return $extend(true, {}, metaData.createOptions, opts || {});
         } else {
             //This is the first time YourClass.options is called
             //Typically when defining YourClass.
-            var parent = this.parent(), popt, args;
+            var parent = this.parent(),
+                popt, args;
             if (typeof parent.options == 'function') {
                 args = [true, {}];
                 popt = parent.options();
-                if(popt) args.push(popt);
+                if (popt) args.push(popt);
                 args.push(opts);
                 metaData.createOptions = $extend.apply(null, args);
             } else {

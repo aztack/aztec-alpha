@@ -38,14 +38,14 @@ var varArg = _arguments.varArg,
  */
 var Dialog = _type.create('$root.ui.dialog.Dialog', jQuery, {
     init: function(opts) {
-        this.options = opts || {};
-        this.$attr('options', Dialog.options(opts));
+        var options = Dialog.options(opts);
+        this.$attr('options', options);
         this.base(this.options.template || Dialog.Template.DefaultTemplate);
         this.$attr('header', this.sigil('.header'));
         this.$attr('body', this.sigil('.body'));
         this.$attr('footer', this.sigil('.footer'));
         this.$attr('buttons', this.sigil('.button'));
-        Dialog_initialize(this, this.options);
+        Dialog_initialize(this, options);
     },
     /**
      * ##Dialog\#show()##
@@ -129,10 +129,7 @@ var Dialog = _type.create('$root.ui.dialog.Dialog', jQuery, {
      * @return {Dialog} dialog
      */
     remove: function() {
-        var mask = _overlay.Mask.getInstance();
-        if (mask) {
-            mask.remove();
-        }
+        if (this.options.mask) _overlay.Mask.getInstance().remove();
         this.base();
         return this;
     },
@@ -270,7 +267,7 @@ var Dialog = _type.create('$root.ui.dialog.Dialog', jQuery, {
     closeButton: true, //whether dialog has close button
     autoReposition: true, //whether reposition when window resized
     mask: true, //whether mask screen when dialog show up
-    closeWhenLostFocus: true, //whether close dialog when lost focus(click outside dialog)
+    closeWhenLostFocus: false, //whether close dialog when lost focus(click outside dialog)
     content: '', //content of dialog, can be text or html
     title: '', //title of dialog
     position: 'golden' //default position when show
@@ -378,29 +375,38 @@ function Dialog_initialize(self, opts) {
     });
 
     if (opts.mask) {
-        _overlay.Mask.getInstance().show().click(function() {
-            self.close();
-        }).before(self);
+        self.addClass(_overlay.Mask.WithMaskClass);
+        _overlay.Mask.getInstance().show().before(self);
     }
 
-    if (opts.autoReposition && !opts.draggable) {
-        Dialog_reposition(self);
-    }
-    if (opts.closeWhenLostFocus) {
+    $(document).click(function(e) {
+        if (!self.options.closeWhenLostFocus) return;
         setTimeout(function() {
-            $(document).click(function(e) {
-                if (!self.find(e.target).length) self.remove();
-            });
+            if (!self.find(e.target).length) self.remove();
         }, 0);
-    }
+    });
 }
+
+function Dialog_initialize_bug(self, opts) {
+    if (opts.mask) {
+        _overlay.Mask.getInstance().show().before(self);
+    }
+    var x = opts,
+        y = self.options,
+        z = x === y,
+        u = self;
+    $(document).click(function(e) {
+        x, y, z, u, self;
+        if (!opts.closeWhenLostFocus) return;
+    });
+}
+
 
 function Dialog_reposition(self) {
     var resizeEvent = 'resize.dialog',
         win = $(window);
     win.off(resizeEvent).on(resizeEvent, function() {
-        var pos = self.data('showAt'),
-            coord;
+        var coord, pos = self.data('showAt');
         if (!pos) return;
         coord = Dialog_getShowPosition(self, pos[0], pos[1]);
         self.css({
@@ -411,10 +417,8 @@ function Dialog_reposition(self) {
 }
 
 function Dialog_getShowPosition(self, xpos, ypos) {
-    var x = xpos,
-        w,
+    var w, h, x = xpos,
         y = ypos,
-        h,
         dim = self.dimension(),
         Center = Dialog.Position.Center,
         GoldenRatio = Dialog.Position.GoldenRatio,
@@ -571,9 +575,9 @@ var Notice = Dialog.extend('$root.ui.dialog.Notice', {
         var self = this,
             opts = this.$get('options');
         this.base.apply(this, arguments);
-        setTimeout(function() {
-            self.remove();
-        }, opts.duration);
+        if (opts.duration > 0) {
+            _fn.delay(self.remove, opts.duration, self);
+        }
         return this;
     }
 }).statics({
@@ -584,14 +588,11 @@ var Notice = Dialog.extend('$root.ui.dialog.Notice', {
     }
 }).options({
     // ##Creating Options of Notice##
-    duration: 2000, //notice display duration
+    duration: 4000, //notice display duration
     type: Dialog.Parts.IconInfo //notice default type, see Notice.Type
 });
 
 function Notice_initialize(self, opts) {
-    self.body.click(function() {
-        self.remove();
-    });
     if (opts.type && opts.type.length > 0) self.body.prepend(opts.type);
 }
 
@@ -603,5 +604,5 @@ function notice(content, duration, opts) {
     n = new Notice(opts);
     n.showAt(Dialog.Position.GoldenRatio)
         .appendTo('body');
-    return notice;
+    return n;
 }

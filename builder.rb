@@ -30,6 +30,8 @@ OptionParser.new do |opts|
 		ex = exclude.nil? ? [] : exclude.split(';')
 		s = man.js_with_dependency(namespace,spec,ex)
 		File.write(namespace +'.js',s);
+		s = man.css_with_dependency(namespace)
+		File.write(namespace + '.css',s)
 		$stdout.puts 'Done!'
 	end
 	

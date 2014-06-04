@@ -113,15 +113,16 @@
 
         <a xtemplate="$root.ui.Dialog.titleButton,delete" class="ui-dialog-close-button" sigil-calss="Dialog" sigil=".close-button">×</a>
 
-        <span xtemplate="$root.ui.Dialog.icon" class="ui-dialog-icon"></span>
+        <div xtemplate="$root.ui.Dialog.icon" class="ui-dialog-icon"></div>
 
-        <div style="width:400px;height:400px;background-color: gray"></div>
+
+        <div id="gray" style="width:400px;height:400px;background-color: gray"></div>
 
         <script>
             require.config({
                 baseUrl: '../../../release/scripts/'
             });
-            require(['ui/dialog','ui/overlay'], function(dialog) {
+            require(['ui/dialog','ui/overlay','lang/type'], function(dialog,o,type) {
                 window.dialog = dialog
                 Dialog = dialog.Dialog;
                 Alert = dialog.Alert;
@@ -146,7 +147,7 @@
                                 .setButtons(['Bene', 'Cancellare'])
                                 .showAt(100, 200);
                         } else {
-                            dialog.notice("Operation Successfully Performed!", 400000, {
+                            window.n = dialog.notice("Operation Successfully Performed!", 40000, {
                                 autoReposition: true,
                                 closeWhenLostFocus: true,
                                 mask: true,
@@ -155,11 +156,26 @@
                         }
                     });
 
-                $('body').click(function() {
-                    d.show();
-                });
 
-                a = $alert();
+                AAA = type.create('aaa',{
+                    init: function(opts){
+                        var options = AAA.options(opts || {});
+                        this.$attr('options', options);
+                        AAA_init(this, options)
+                    }
+                }).options({
+                    a:1,
+                    b:2
+                });
+                function AAA_init(self, opts){
+                  $(document).click(function(e){
+                    self;
+                    if(opts.a === 1) console.log('yes');
+                  });
+                }
+
+
+                a = new AAA({a:2});
             });
         </script>
     </body>
