@@ -392,6 +392,20 @@ function clazz$getClass() {
 
 function instance$noop() {}
 
+function instance$help() {
+    var methods = this.$methods();
+    if(!methods.length) {
+        methods = this.$methods(1);
+    }
+    return {
+        type: this.$class.typename(),
+        parentType: this.$class.parent().typename(),
+        attributes: this.$attr(),
+        methods: this.$methods(),
+        events: this.$class.Events
+    };
+}
+
 var clazz$parent = clazz$getClass;
 
 /**
@@ -644,6 +658,7 @@ function Class(name, parent) {
         this.$observe = instance$observe;
         this.$unobserve = instance$unobserve;
         this.$dispose = instance$dispose;
+        this.$help = instance$help;
 
         id = this.__id__ = objSpace.count;
         objSpace[id] = {};

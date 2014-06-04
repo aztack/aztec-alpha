@@ -2,10 +2,7 @@
     description: "Function",
     version: '0.0.1',
     namespace: $root.lang.fn,
-    imports: {
-        _type: $root.lang.type,
-        _obj: $root.lang.object
-    },
+    imports: {},
     exports: [
         noop,
         alwaysTrue,
@@ -25,7 +22,6 @@
         callNew,
         applyNew,
         log,
-        stop,
         ntimes,
         once,
         delay,
@@ -38,8 +34,14 @@
 
 ///exports
 
-var isFunction = _type.isFunction,
+var _toString = Object.prototype.toString,
     _slice = Array.prototype.slice,
+    isFunction = function(f) {
+        return typeof f == 'function';
+    },
+    isArray = Array.isArray || function isArray(arg) {
+        return _toString.call(arg) == '[object Array]';
+    },
     firstArgMustBeFn = 'first argument must be a function';
 
 /**
@@ -138,13 +140,13 @@ function bindTimeout(self, context, ms) {
  * @return {Any}
  */
 function call(self, context) {
-    if (!_type.isFunction(self)) return;
+    if (!isFunction(self)) return;
     var args = _slice.call(arguments, 2);
     return self.apply(context, args);
 }
 
 function apply(self, context, args) {
-    if (!_type.isFunction(self)) return;
+    if (!isFunction(self)) return;
     //ie7 and 8 require 2nd argument for Function.prototype.apply must be a array or arguments
     args = _slice.call(args);
     return self.apply(context, args);
@@ -160,7 +162,7 @@ function apply(self, context, args) {
 function bindCallNew() {
     var ctor, args;
     ctor = arguments[0];
-    if (!_type.isFunction(ctor)) {
+    if (!isFunction(ctor)) {
         throw Error(firstArgMustBeFn);
     }
     args = arguments;
@@ -180,7 +182,7 @@ function bindCallNew() {
  */
 function bindApplyNew(ctor, args) {
     var len;
-    if (!_type.isArray(args)) {
+    if (!isArray(args)) {
         throw Error('Arguments list has wrong type: second argument must be an array');
     }
     if (args.length > 7) {
@@ -245,39 +247,6 @@ function log(fn) {
         console.log(arguments);
     }
     fn.apply(this, arguments);
-}
-
-/**
- * stop
- * stop at a method call of context by insert a `debugger` statement before
- * @param  {String} path, path of a method
- * @param  {Object} context
- * @param  {Function} sniffer
- * @return {Object} context
- * @remark
- *     var obj = {fn:{do:function(){}}};
- *     stop('fn.do', obj, function(){
- *         console.log(arguments);
- *     });
- *     //will print out arguments everytime when `obj.fn.do` is called
- *     stop('fn.do', obj)
- *     //will stop before `obj.fn.do` is called(only if debug console is openning)
- */
-function stop(path, context, sniffer) {
-    if (_type.isEmpty(context)) {
-        throw Error('second argument must provide');
-    }
-
-    var origin = _obj.tryget(context, path);
-    if (!_type.isFunction(origin)) {
-        throw Error(path + ' is not a function');
-    }
-
-    _obj.tryset(context, path, function() {
-        (sniffer || breakpoint).apply(context, arguments);
-        origin.apply(context, arguments);
-    });
-    return context;
 }
 
 /**

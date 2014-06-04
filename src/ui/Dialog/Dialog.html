@@ -13,7 +13,6 @@
                 z-index: 10000;
                 background-color: white;
                 box-shadow: 0 0 8px rgba(0,0,0,0.5);
-                max-width: 500px;
                 min-height: 150px;
                 min-width: 300px;
             }
@@ -94,6 +93,7 @@
             }
 
         </style>
+        <meta charset="utf-8">
         <link rel="stylesheet" href="../../../release/css/overlay.css" />
         <script src="../../../release/scripts/requirejs.js"></script>
     </head>
@@ -146,7 +146,7 @@
                                 .setButtons(['Bene', 'Cancellare'])
                                 .showAt(100, 200);
                         } else {
-                            dialog.notice("Operation Successfully Performed!", 4000, {
+                            dialog.notice("Operation Successfully Performed!", 400000, {
                                 autoReposition: true,
                                 closeWhenLostFocus: true,
                                 mask: true,

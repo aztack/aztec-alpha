@@ -21,7 +21,7 @@
         module.exports = factory(<%=@mods.map{|e|e.gsub('.','_')}.push('exports, module, require').join(', ') rescue nil%>);
     } else {
         var exports = $root._createNS('<%=@name%>');
-        factory(<%=@mods.push('exports').join(', ')%>);
+        factory(<%=@mods.push('exports').join(', ').gsub('jquery','jQuery')%>);
     }
 }(this, function(<%=@imports.keys.push('exports').join(', ')%>) {
     <%=@usestrict%>

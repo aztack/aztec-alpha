@@ -13,7 +13,6 @@
     ]
 });
 
-//vars
 var templates = {},
     XTEMPLATE_ID_ATTR = 'xtemplate',
     XTEMPLATE_ID_ATTR_SEL = '[xtemplate]',
@@ -22,7 +21,7 @@ var templates = {},
         /(\s*)sigil=".*?"(\s*)/g
     ];
 
-//helper
+
 function stripAttr(matched, precedeSpace, succeedSpace) {
     return precedeSpace && succeedSpace ? ' ' : '';
 }
@@ -50,7 +49,6 @@ function removeWhiteTextNode(node) {
     return node;
 }
 
-//exports
 
 /**
  * collect
@@ -129,4 +127,6 @@ function id$(namespace) {
 
 //collect template in current page when dom is ready
 //dynamic created template may not collected
-$(collect);
+if($ || jQuery) {
+    ($||jQuery)(collect);
+}

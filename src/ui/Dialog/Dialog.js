@@ -110,7 +110,7 @@ var Dialog = _type.create('$root.ui.dialog.Dialog', jQuery, {
                 return [parent, x || 0, y || 0];
             })
             .invoke(function(parent, x, y) {
-                parent = this.parent();
+                parent = parent || this.parent();
                 if (parent.length === 0) {
                     parent = document.body;
                 }
@@ -118,6 +118,7 @@ var Dialog = _type.create('$root.ui.dialog.Dialog', jQuery, {
                     left: x,
                     top: y
                 }).appendTo(parent).show();
+                if (this.options.mask) _overlay.Mask.getInstance().show();
             });
         return this;
     },
@@ -195,7 +196,8 @@ var Dialog = _type.create('$root.ui.dialog.Dialog', jQuery, {
      * @return {Dialog} dialog
      */
     setDraggable: function(isDraggable) {
-        var draggable = _drag.isDraggable(this.header);
+        var draggable = _drag.isDraggable(this.header),
+            opts = this.options;
         if (draggable == null) return this;
 
         if (typeof isDraggable == 'undefined') {
@@ -203,10 +205,15 @@ var Dialog = _type.create('$root.ui.dialog.Dialog', jQuery, {
         }
         if (isDraggable) {
             draggable.enable();
+            opts.draggable = true;
             this.header.css('cursor', 'move');
         } else {
             draggable.disable();
+            opts.draggable = false;
             this.header.css('cursor', 'default');
+        }
+        if (opts.autoReposition && !opts.draggable) {
+            Dialog_reposition(this);
         }
         return this;
     },
@@ -259,7 +266,7 @@ var Dialog = _type.create('$root.ui.dialog.Dialog', jQuery, {
     okButtonText: 'OK',
     cancelButtonText: 'Cancel', //default Cancel button text
     buttons: ['OK', 'Cancel'], //default buttons
-    draggable: true, //whether dialog is draggble
+    draggable: false, //whether dialog is draggble
     closeButton: true, //whether dialog has close button
     autoReposition: true, //whether reposition when window resized
     mask: true, //whether mask screen when dialog show up
@@ -314,9 +321,11 @@ function Dialog_createButton() {
 function Dialog_initialize(self, opts) {
     self.addClass('ui-generic-dialog');
 
+    var draggable;
     opts.draggable = opts.draggable || true;
     if (opts.draggable) {
-        _drag.draggable(self.header, self);
+        draggable = _drag.draggable(self.header, self);
+        self.$attr('draggable', draggable);
     } else {
         self.header.css('cursor', 'default');
     }
@@ -368,29 +377,37 @@ function Dialog_initialize(self, opts) {
         return false;
     });
 
-    if ( !! opts.mask) {
+    if (opts.mask) {
         _overlay.Mask.getInstance().show().click(function() {
             self.close();
         }).before(self);
     }
 
-    if ( !! opts.autoReposition) {
-        $(window).on('resize', function() {
-            var pos = self.data('showAt'),
-                coord = Dialog_getShowPosition(self, pos[0], pos[1]);
-            self.css({
-                left: coord[0],
-                top: coord[1]
-            });
-        });
+    if (opts.autoReposition && !opts.draggable) {
+        Dialog_reposition(self);
     }
-    if ( !! opts.closeWhenLostFocus) {
+    if (opts.closeWhenLostFocus) {
         setTimeout(function() {
             $(document).click(function(e) {
                 if (!self.find(e.target).length) self.remove();
             });
         }, 0);
     }
+}
+
+function Dialog_reposition(self) {
+    var resizeEvent = 'resize.dialog',
+        win = $(window);
+    win.off(resizeEvent).on(resizeEvent, function() {
+        var pos = self.data('showAt'),
+            coord;
+        if (!pos) return;
+        coord = Dialog_getShowPosition(self, pos[0], pos[1]);
+        self.css({
+            left: coord[0],
+            top: coord[1]
+        });
+    });
 }
 
 function Dialog_getShowPosition(self, xpos, ypos) {
@@ -401,17 +418,19 @@ function Dialog_getShowPosition(self, xpos, ypos) {
         dim = self.dimension(),
         Center = Dialog.Position.Center,
         GoldenRatio = Dialog.Position.GoldenRatio,
-        parent = self.parent();
+        parent = self.parent()[0];
     if (typeof ypos == 'undefined') {
         ypos = Center;
     }
     if (xpos == Center || xpos == GoldenRatio) {
-        w = parent.width();
+        w = parent.clientWidth;
         x = w / 2 - dim.width / 2;
+        if (x < 0) x = 0;
     }
     if (ypos == Center || ypos == GoldenRatio) {
-        h = parent.height();
+        h = parent.clientHeight;
         y = h / 2 - dim.height / 2;
+        if (y < 0) y = 0;
     }
     if (xpos == GoldenRatio || ypos == GoldenRatio) {
         y = y * 0.618;
@@ -463,8 +482,9 @@ function Dialog_setLayerPosition(self, frontOrBack) {
  */
 var Alert = Dialog.extend('$root.ui.dialog.Alert', {
     init: function(options) {
-        var opts = this.options = options || {};
+        var opts = Dialog.options(options || {});
         this.base.apply(this, arguments);
+        this.$attr('options', opts);
         this.setTitle(opts.title || '');
         Alert_initialize(this, opts);
     }

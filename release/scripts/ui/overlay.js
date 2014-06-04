@@ -17,7 +17,7 @@
         module.exports = factory($root_lang_type, $root_browser_template, $root_lang_arguments, jquery, jQueryExt, exports, module, require);
     } else {
         var exports = $root._createNS('$root.ui.overlay');
-        factory($root.lang.type, $root.browser.template, $root.lang.arguments, jquery, jQueryExt, exports);
+        factory($root.lang.type, $root.browser.template, $root.lang.arguments, jQuery, jQueryExt, exports);
     }
 }(this, function(_type, _tpl, _arguments, $, jqe, exports) {
     'use strict';

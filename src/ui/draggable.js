@@ -123,7 +123,6 @@ function Draggable_onMouseDown(self, e) {
         $parent.on(mouseMoveEvent, function(e) {
             offset.left = e.pageX - mouseDownPosition.x;
             offset.top = e.pageY - mouseDownPosition.y;
-            console.log(e.pageX, e.pageY);
 
             //Call restriction function on `offset`
             _fn.call(restriction, self, offset, e, mouseDownPosition);

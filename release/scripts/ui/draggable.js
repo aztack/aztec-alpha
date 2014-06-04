@@ -17,7 +17,7 @@
         module.exports = factory($root_lang_type, $root_lang_fn, $root_lang_arguments, jquery, jQueryExt, exports, module, require);
     } else {
         var exports = $root._createNS('$root.ui.draggable');
-        factory($root.lang.type, $root.lang.fn, $root.lang.arguments, jquery, jQueryExt, exports);
+        factory($root.lang.type, $root.lang.fn, $root.lang.arguments, jQuery, jQueryExt, exports);
     }
 }(this, function(_type, _fn, _arguments, $, jqe, exports) {
     'use strict';
@@ -131,7 +131,6 @@
             $parent.on(mouseMoveEvent, function(e) {
                 offset.left = e.pageX - mouseDownPosition.x;
                 offset.top = e.pageY - mouseDownPosition.y;
-                console.log(e.pageX, e.pageY);
     
                 //Call restriction function on `offset`
                 _fn.call(restriction, self, offset, e, mouseDownPosition);

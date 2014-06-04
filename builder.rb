@@ -27,7 +27,8 @@ OptionParser.new do |opts|
 	opts.on('-u [namespace,spec,exclude]', Array, 'generate code under namespace with dependency') do |args|
 		namespace,spec,exclude = *args
 		man.scan
-		s = man.js_with_dependency(namespace,spec,exclude.split(';'))
+		ex = exclude.nil? ? [] : exclude.split(';')
+		s = man.js_with_dependency(namespace,spec,ex)
 		File.write(namespace +'.js',s);
 		$stdout.puts 'Done!'
 	end
