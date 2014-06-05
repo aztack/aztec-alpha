@@ -369,7 +369,7 @@ function Dialog_initialize(self) {
         if (action == 'ok' || action == 'cancel') {
             self.close();
         }
-    }).delegate(titleButtonSelector, 'click', function(e) {
+    }).delegate(titleButtonSelector, 'mouseup', function(e) {
         var button = $(e.target),
             buttons = self.sigil('.title-button'),
             index = buttons.index(button);

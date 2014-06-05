@@ -61,7 +61,7 @@ var Draggable = _type.create('$root.ui.Draggable', {
      * @return {Draggable}
      */
     disable: function() {
-        this.$.off(mouseDownEvent).css('cursor','default');
+        this.$.off(mouseDownEvent).css('cursor', 'default');
         //this.finalize();
         return this;
     },
@@ -72,9 +72,10 @@ var Draggable = _type.create('$root.ui.Draggable', {
      */
     enable: function() {
         var self = this;
+        this.disable();
         this.$.on(mouseDownEvent, function(e) {
             Draggable_onMouseDown(self, e);
-        }).css('cursor','move');
+        }).css('cursor', 'move');
         return this;
     },
     finalize: function() {
@@ -103,14 +104,14 @@ var Draggable = _type.create('$root.ui.Draggable', {
 });
 
 function Draggable_onMouseDown(self, e) {
+    if ($(e.target).hasClass('undraggable')) return true;
+
     var onMoveFn = self.options.onMouseMove,
         restriction = self.options.draggingRestriction,
         mouseDownPosition = {},
         $ele = self.$,
         $parent = self.$offsetParent,
         elePos = $ele.offset(); //position relative to document
-
-    if($(e.target).hasClass('undraggable')) return true;
 
     mouseDownPosition.x = e.pageX - elePos.left;
     mouseDownPosition.y = e.pageY - elePos.top;
@@ -135,7 +136,7 @@ function Draggable_onMouseDown(self, e) {
             onMoveFn.call(self, e, offset, mouseDownPosition);
         });
         if ($parent[0] === document.documentElement) p = $('body');
-        p.on(scrollEvent, function() {
+        p.off(scrollEvent).on(scrollEvent, function() {
             offset.left -= p.scrollX;
             offset.top -= p.scrollY;
         });

@@ -27,7 +27,7 @@
     'use strict';
     exports = exports || {};
     _tpl
-        .set('$root.ui.Dialog.dialog',"<div class=\"ui-dialog\">\n<div class=\"ui-dialog-header\">\n<a class=\"ui-dialog-title-button close\"></a><a class=\"ui-dialog-title\"></a>\n</div>\n<div class=\"ui-dialog-body\">\n            </div>\n<div class=\"ui-dialog-footer\"></div>\n</div>\n")
+        .set('$root.ui.Dialog.dialog',"<div class=\"ui-dialog\">\n<div class=\"ui-dialog-header\">\n<a class=\"ui-dialog-title-button undraggable close\"></a><a class=\"ui-dialog-title\"></a>\n</div>\n<div class=\"ui-dialog-body\">\n            </div>\n<div class=\"ui-dialog-footer\"></div>\n</div>\n")
         .set('$root.ui.Dialog.button',"<button data-action=\"ok\" class=\"ui-dialog-button\"></button>\n")
         .set('$root.ui.Dialog.titleButton',"<a class=\"ui-dialog-close-button\" sigil-calss=\"Dialog\">&times;</a>\n")
         .set('$root.ui.Dialog.icon',"<div class=\"ui-dialog-icon\"></div>\n")
@@ -380,7 +380,7 @@
             if (action == 'ok' || action == 'cancel') {
                 self.close();
             }
-        }).delegate(titleButtonSelector, 'click', function(e) {
+        }).delegate(titleButtonSelector, 'mouseup', function(e) {
             var button = $(e.target),
                 buttons = self.sigil('.title-button'),
                 index = buttons.index(button);

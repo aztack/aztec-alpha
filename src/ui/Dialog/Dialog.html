@@ -115,7 +115,7 @@
     <body>
         <div xtemplate="$root.ui.Dialog.dialog,delete" sigil-class="Dialog" class="ui-dialog" sigil=".dialog" style="display:none">
             <div class="ui-dialog-header" sigil=".header">
-                <a class="ui-dialog-title-button close" sigil=".close-button"></a>
+                <a class="ui-dialog-title-button undraggable close" sigil=".close-button"></a>
                 <a class="ui-dialog-title" sigil=".dialog-title"></a>
             </div>
             <div class="ui-dialog-body" sigil=".body">
@@ -171,27 +171,10 @@
                             });
                         }
                     });
-
-
-                AAA = type.create('aaa',{
-                    init: function(opts){
-                        var options = AAA.options(opts || {});
-                        this.$attr('options', options);
-                        AAA_init(this, options)
-                    }
-                }).options({
-                    a:1,
-                    b:2
+                d.header.append(Dialog.Parts.TitleButtonArrowDown);
+                d.on(Dialog.Events.OnTitleButtonClicked,function(e,index,button){
+                    console.log(index,button);
                 });
-                function AAA_init(self, opts){
-                  $(document).click(function(e){
-                    self;
-                    if(opts.a === 1) console.log('yes');
-                  });
-                }
-
-
-                a = new AAA({a:2});
             });
         </script>
     </body>

@@ -65,9 +65,10 @@
      */
     function collect(force) {
         if (typeof force == 'undefined') force = false;
-        
+    
         $(XTEMPLATE_ID_ATTR_SEL).each(function(i, ele) {
             var n = $(ele),
+                tmp,
                 data = n.attr(XTEMPLATE_ID_ATTR).split(','),
                 id = data[0],
                 html;
@@ -134,8 +135,8 @@
     
     //collect template in current page when dom is ready
     //dynamic created template may not collected
-    if($ || jQuery) {
-        ($||jQuery)(collect);
+    if ($ || jQuery) {
+        ($ || jQuery)(collect);
     }
     
     exports['collect'] = collect;
