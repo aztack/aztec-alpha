@@ -1,7 +1,8 @@
 /**
- * Tab
- * ---
- * Dependencies: $root.lang.string,$root.lang.type,$root.lang.enumerable,$root.lang.number,$root.ui.list,$root.browser.template,$root.lang.arguments,jquery,jQueryExt
+ * #Tab#
+ * ===
+ * - Dependencies: `lang/string`,`lang/type`,`lang/enumerable`,`lang/number`,`ui/list`,`browser/template`,`lang/arguments`,`jquery`,`jQueryExt`
+ * - Version: 0.0.1
  */
 
 (function(root, factory) {
@@ -20,10 +21,10 @@
         module.exports = factory($root_lang_string, $root_lang_type, $root_lang_enumerable, $root_lang_number, $root_ui_list, $root_browser_template, $root_lang_arguments, jquery, jQueryExt, exports, module, require);
     } else {
         var exports = $root._createNS('$root.ui.tab');
-        factory($root.lang.string, $root.lang.type, $root.lang.enumerable, $root.lang.number, $root.ui.list, $root.browser.template, $root.lang.arguments, jquery, jQueryExt, exports);
+        factory($root.lang.string, $root.lang.type, $root.lang.enumerable, $root.lang.number, $root.ui.list, $root.browser.template, $root.lang.arguments, jQuery, jQueryExt, exports);
     }
 }(this, function(_str, _type, _enum, _num, _list, _tpl, _arguments, $, jqe, exports) {
-    //'use strict';
+    'use strict';
     exports = exports || {};
     _tpl
         .set('$root.ui.tab.Tab',"<div class=\"ui-tab\"><div class=\"ui-tab-content\"></div></div>\n");

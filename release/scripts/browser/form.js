@@ -1,7 +1,8 @@
 /**
- * Form
- * ----
- * Dependencies: $root.lang.type,$root.lang.arguments,$root.lang.string,$root.lang.array,jquery
+ * #Form#
+ * ====
+ * - Dependencies: `lang/type`,`lang/arguments`,`lang/string`,`lang/array`,`jquery`
+ * - Version: 0.0.1
  */
 
 (function(root, factory) {
@@ -16,10 +17,10 @@
         module.exports = factory($root_lang_type, $root_lang_arguments, $root_lang_string, $root_lang_array, jquery, exports, module, require);
     } else {
         var exports = $root._createNS('$root.browser.form');
-        factory($root.lang.type, $root.lang.arguments, $root.lang.string, $root.lang.array, jquery, exports);
+        factory($root.lang.type, $root.lang.arguments, $root.lang.string, $root.lang.array, jQuery, exports);
     }
 }(this, function(_type, _argument, _str, _ary, $, exports) {
-    //'use strict';
+    'use strict';
     exports = exports || {};
     
     ///vars

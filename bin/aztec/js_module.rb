@@ -171,7 +171,7 @@ module Aztec
             ctx[:meta] = @config.to_markdown.to_multiline_comment.endl
             #preprocess
             ctx[:original] = is_root ? @source : @source.indent(4)
-            ctx[:usestrict] = "'use strict';"
+            ctx[:usestrict] = @config.strict ? "'use strict';" : ''
             
             #exports
             doc = "\n" + ("exports.__doc__ = " + @config['description'].inspect + ";").indent(4)

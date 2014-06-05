@@ -1,7 +1,8 @@
 /**
- * Number Utils
- * ------------
- * Dependencies: $root.lang.type
+ * #Number Utils#
+ * ============
+ * - Dependencies: `lang/type`
+ * - Version: 0.0.1
  */
 
 (function(root, factory) {
@@ -15,7 +16,7 @@
         factory($root.lang.type, exports);
     }
 }(this, function(_type, exports) {
-    //'use strict';
+    'use strict';
     exports = exports || {};
     
     //vars

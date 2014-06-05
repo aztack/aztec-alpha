@@ -61,7 +61,7 @@ var Draggable = _type.create('$root.ui.Draggable', {
      * @return {Draggable}
      */
     disable: function() {
-        this.$.off(mouseDownEvent);
+        this.$.off(mouseDownEvent).css('cursor','default');
         //this.finalize();
         return this;
     },
@@ -74,7 +74,7 @@ var Draggable = _type.create('$root.ui.Draggable', {
         var self = this;
         this.$.on(mouseDownEvent, function(e) {
             Draggable_onMouseDown(self, e);
-        });
+        }).css('cursor','move');
         return this;
     },
     finalize: function() {
@@ -109,6 +109,8 @@ function Draggable_onMouseDown(self, e) {
         $ele = self.$,
         $parent = self.$offsetParent,
         elePos = $ele.offset(); //position relative to document
+
+    if($(e.target).hasClass('undraggable')) return true;
 
     mouseDownPosition.x = e.pageX - elePos.left;
     mouseDownPosition.y = e.pageY - elePos.top;

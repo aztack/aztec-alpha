@@ -1,7 +1,8 @@
 /**
- * TextField
- * ---------
- * Dependencies: $root.lang.type,$root.browser.template,$root.lang.arguments,jquery,jQueryExt
+ * #TextField#
+ * =========
+ * - Dependencies: `lang/type`,`browser/template`,`lang/arguments`,`jquery`,`jQueryExt`
+ * - Version: 0.0.1
  */
 
 (function(root, factory) {
@@ -16,10 +17,10 @@
         module.exports = factory($root_lang_type, $root_browser_template, $root_lang_arguments, jquery, jQueryExt, exports, module, require);
     } else {
         var exports = $root._createNS('$root.ui.textField');
-        factory($root.lang.type, $root.browser.template, $root.lang.arguments, jquery, jQueryExt, exports);
+        factory($root.lang.type, $root.browser.template, $root.lang.arguments, jQuery, jQueryExt, exports);
     }
 }(this, function(_type, _tpl, _arguments, $, jqe, exports) {
-    //'use strict';
+    'use strict';
     exports = exports || {};
     _tpl
         .set('$root.ui.TextField.textfield',"<input type=\"text\" class=\"ui-textfield\" _placeholder=\"placeholder\">\n");

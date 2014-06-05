@@ -1,7 +1,8 @@
 /**
- * Handlebars
- * ----------
- * Dependencies:
+ * #Handlebars#
+ * ==========
+ * - Dependencies: 
+ * - Version: 0.0.1
  */
 
 

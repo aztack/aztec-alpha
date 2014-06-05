@@ -1,7 +1,8 @@
 /**
- * Templating
- * ----------
- * Dependencies: $root.lang.type,jquery
+ * #Templating#
+ * ==========
+ * - Dependencies: `lang/type`,`jquery`
+ * - Version: 0.0.1
  */
 
 (function(root, factory) {
@@ -13,13 +14,12 @@
         module.exports = factory($root_lang_type, jquery, exports, module, require);
     } else {
         var exports = $root._createNS('$root.browser.template');
-        factory($root.lang.type, jquery, exports);
+        factory($root.lang.type, jQuery, exports);
     }
 }(this, function(_type, $, exports) {
-    //'use strict';
+    'use strict';
     exports = exports || {};
     
-    //vars
     var templates = {},
         XTEMPLATE_ID_ATTR = 'xtemplate',
         XTEMPLATE_ID_ATTR_SEL = '[xtemplate]',
@@ -28,7 +28,7 @@
             /(\s*)sigil=".*?"(\s*)/g
         ];
     
-    //helper
+    
     function stripAttr(matched, precedeSpace, succeedSpace) {
         return precedeSpace && succeedSpace ? ' ' : '';
     }
@@ -56,7 +56,6 @@
         return node;
     }
     
-    //exports
     
     /**
      * collect
@@ -135,7 +134,9 @@
     
     //collect template in current page when dom is ready
     //dynamic created template may not collected
-    $(collect);
+    if($ || jQuery) {
+        ($||jQuery)(collect);
+    }
     
     exports['collect'] = collect;
     exports['set'] = set;

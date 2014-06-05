@@ -1,7 +1,8 @@
 /**
- * Location
- * --------
- * Dependencies: $root.lang.type,$root.lang.string
+ * #Location#
+ * ========
+ * - Dependencies: `lang/type`,`lang/string`
+ * - Version: 0.0.1
  */
 
 (function(root, factory) {
@@ -16,7 +17,7 @@
         factory($root.lang.type, $root.lang.string, exports);
     }
 }(this, function(_type, _str, exports) {
-    //'use strict';
+    'use strict';
     exports = exports || {};
     
     ///vars

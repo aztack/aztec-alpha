@@ -1,7 +1,8 @@
 /**
- * Event Utils
- * -----------
- * Dependencies: $root.lang.type,$root.lang.fn
+ * #Event Utils#
+ * ===========
+ * - Dependencies: `lang/type`,`lang/fn`
+ * - Version: 0.0.1
  */
 
 (function(root, factory) {
@@ -16,7 +17,7 @@
         factory($root.lang.type, $root.lang.fn, exports);
     }
 }(this, function(_type, _fn, exports) {
-    //'use strict';
+    'use strict';
     exports = exports || {};
     
     ///exports

@@ -36,7 +36,6 @@ var List = _type.create('$root.ui.List', jQuery, {
 			.invoke(function(arg, opts) {
 				opts = List.options(opts || {});
 				this.$attr('options', opts);
-				this.$attr('itemType', opts.itemType);
 				this.base.call(this, arg || opts.containerTag);
 				if (opts.containerClass) {
 					this.addClass(opts.containerClass);
@@ -67,7 +66,7 @@ var List = _type.create('$root.ui.List', jQuery, {
 	},
 	getItemAt: function(index) {
 		var item = this.items().get(index),
-			Item = this.itemType;
+			Item = this.options.itemType;
 
 		if (item) {
 			return Item ? new Item(item) : item;
@@ -78,7 +77,7 @@ var List = _type.create('$root.ui.List', jQuery, {
 	},
 	setItemType: function(clazz) {
 		if (_type.isFunction(clazz)) {
-			this.itemType = clazz;
+			this.options.itemType = clazz;
 		}
 		return this;
 	},
@@ -93,7 +92,7 @@ var List = _type.create('$root.ui.List', jQuery, {
 	itemType: null
 });
 
-function List_insertX(arg, pos, cbk, flag) {
+function List_insertX1(arg, pos, cbk, flag) {
 	var item, opts = this.options;
 	if (_str.isHtmlFragment(arg) || arg instanceof jQuery || arg.nodeType === 1) {
 		item = $(opts.itemTag);
@@ -126,6 +125,68 @@ function List_insertX(arg, pos, cbk, flag) {
 	return item;
 }
 
+function List_insertX(arg, pos, cbk, flag) {
+	var opts = this.options;
+	/*
+	if (_str.isHtmlFragment(arg) || arg instanceof jQuery || arg.nodeType === 1) {
+		item = $(opts.itemTag);
+		item.append(typeof cbk == 'function' ? cbk.call(item, arg) : arg);
+	} else if (_type.isArray(arg)) {
+		item = List_createItems(this, this.options, arg, cbk);
+	} else {
+		item = $(opts.itemTag);
+		item.text(typeof cbk == 'function' ? cbk.call(item, arg) : arg);
+	}*/
+
+	return varArg([arg], this)
+		.when('jqueryOrElementOrHtml', function(arg) {
+			var item = $(opts.itemTag);
+			item.append(typeof cbk == 'function' ? cbk.call(item, arg) : arg);
+			return [item];
+		})
+		.when('array<string>', function(arg) {
+			return [List_createItems(this, opts, arg, cbk)];
+		})
+		.when('array<jqueryOrElement>', function(arg) {
+			return [arg];
+		})
+		.otherwise(function(arg) {
+			var item = $(opts.itemTag);
+			item.text(typeof cbk == 'function' ? cbk.call(item, arg) : arg);
+			return [item];
+		})
+		.invoke(function(items) {
+			var children = this.children(),
+				targetEle;
+			if (children.length === 0) {
+				this.append(items);
+			} else {
+				targetEle = children.slice(pos).first();
+				if (flag === true) {
+					targetEle.after(items);
+					//item.insertAfter(targetEle);
+				} else {
+					targetEle.before(items);
+					//item.insertBefore(targetEle);
+				}
+			}
+
+			var itemClass;
+			if (cbk && typeof cbk != 'function' && cbk.itemClass) {
+				itemClass = cbk.itemClass;
+			} else {
+				itemClass = opts.itemClass;
+			}
+			if(items.jquery) {
+				items.addClass(itemClass);
+			} else {
+				$(items).addClass(itemClass);
+			}
+			return items;
+		});
+}
+
+// create list item from html string
 function List_createItems(self, opts, arg, cbk) {
 	var i = 0,
 		len = arg.length,

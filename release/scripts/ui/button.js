@@ -1,7 +1,8 @@
 /**
- * Button
- * ------
- * Dependencies: $root.lang.type,$root.lang.arguments,$root.lang.number,$root.lang.enumerable,$root.lang.string,$root.ui.draggable,jquery,jQueryExt,$root.browser.template
+ * #Button#
+ * ======
+ * - Dependencies: `lang/type`,`lang/arguments`,`lang/number`,`lang/enumerable`,`lang/string`,`ui/draggable`,`jquery`,`jQueryExt`,`browser/template`
+ * - Version: 0.1
  */
 
 (function(root, factory) {
@@ -20,10 +21,10 @@
         module.exports = factory($root_lang_type, $root_lang_arguments, $root_lang_number, $root_lang_enumerable, $root_lang_string, $root_ui_draggable, jquery, jQueryExt, $root_browser_template, exports, module, require);
     } else {
         var exports = $root._createNS('$root.ui.button');
-        factory($root.lang.type, $root.lang.arguments, $root.lang.number, $root.lang.enumerable, $root.lang.string, $root.ui.draggable, jquery, jQueryExt, $root.browser.template, exports);
+        factory($root.lang.type, $root.lang.arguments, $root.lang.number, $root.lang.enumerable, $root.lang.string, $root.ui.draggable, jQuery, jQueryExt, $root.browser.template, exports);
     }
 }(this, function(_type, _arguments, _number, _enum, _str, _drag, $, jqe, _tpl, exports) {
-    //'use strict';
+    'use strict';
     exports = exports || {};
     _tpl
         .set('$root.ui.button.Normal',"<button class=\"ui-button\"><span class=\"ui-button-text\"></span></button>\n")

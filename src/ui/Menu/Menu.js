@@ -15,8 +15,7 @@
     },
     exports: [
         Menu,
-        MenuItem,
-        ScrollableMenu
+        MenuItem
     ]
 });
 //Features
@@ -28,7 +27,8 @@ var tpl = _tpl.id$('$root.ui.Menu'),
     menuTemplate = tpl('menu'),
     menuItemTemplate = tpl('item'),
     textTemplate = tpl('text'),
-    varArg = _arguments.varArg;
+    varArg = _arguments.varArg,
+    List = _list.List;
 
 ///impl
 var MenuItem = _type.create('$root.ui.MenuItem', jQuery, {
@@ -39,10 +39,10 @@ var MenuItem = _type.create('$root.ui.MenuItem', jQuery, {
             this.base(menuItemTemplate);
             this.text(arg);
         }
-        this.addClass('ui-menut-item');
+        this.addClass('ui-menu-item');
     },
     text: function(arg) {
-        var t = this.sigil('text');
+        var t = this.sigil('.text');
         if (_type.isNullOrUndefined(arg)) {
             return t.text();
         } else {
@@ -52,20 +52,43 @@ var MenuItem = _type.create('$root.ui.MenuItem', jQuery, {
     }
 });
 
-var Menu = _type.create('$root.ui.Menu', _list.List, {
+var Menu = _type.create('$root.ui.Menu', List, {
     init: function(options) {
-        options = options || {};
-        this.base(menuTemplate);
+        this.base(menuTemplate); //call base before set options attr
+        options = Menu.options(options || {});
+        this.$attr('options', options);
         this.addClass('ui-menu');
         this.setItemType(options.menuItemType || Menu.DefaultMenuItemType);
         Menu_initialize(this);
     },
-    addItems: function(texts) {
-        _enum.each(texts, function(text) {
-            var item = new this.itemType();
-            item.text(text);
-            this.add(item);
-        }, this);
+    /**
+     * ##Menu\#addItems([captions][,callback]);
+     * @param {Array<String>|Array<MenuItemData>} texts
+     * @param {[type]} callback, callback(created menu item)
+     *
+     * ```javascript
+     * MenuItemData = {
+     *     text: 'menu-item',
+     *     submemnu: [MenuItemData],
+     *     data: arbitrary data
+     * }
+     *
+     * menu.addItems(['New File','Open File']);
+     * menu.addItems([
+     *     {text:'New File..',submenu: ['CSS','JavaScript','HTML']},
+     *     {text:'Open File',data: 'custome-data'}
+     * ]);
+     * ```
+     */
+    addItems: function(texts, callback) {
+        var opts = this.options,
+            ItemType = opts.itemType,
+            itemTag = opts.itemTag,
+            items = _enum.map(texts, function(config) {
+                return Menu_createMenuItem(this, config, callback);
+            }, this);
+        this.add(items);
+        Menu_addMouseOverMenuItemListener(this);
         return this;
     },
     setItems: function(texts) {
@@ -78,10 +101,10 @@ var Menu = _type.create('$root.ui.Menu', _list.List, {
             .when(function() {
                 return [parent, this.css('left'), this.css('top')];
             })
-            .when('int', 'int', function(x, y) {
+            .when('number', 'number', function(x, y) {
                 return [parent, x, y];
             })
-            .when('jquery', 'int', 'int', function(parent, x, y) {
+            .when('jquery', 'number', 'number', function(parent, x, y) {
                 return [parent, x || 0, y || 0];
             })
             .invoke(function(parent, x, y) {
@@ -90,19 +113,29 @@ var Menu = _type.create('$root.ui.Menu', _list.List, {
                     top: y
                 });
             });
+        Menu_hideOpenedSubmenu(this);
+        return this;
+    },
+    hide: function() {
+        Menu_hideOpenedSubmenu(this);
+        this.base.apply(this, arguments);
         return this;
     },
     asContextMenuOf: function(target) {
         return Menu_asContextMenuOf(this, target);
     }
-}).statics({
-    DefaultMenuItemType: MenuItem
+}).options({
+    itemClass: 'ui-menu-item',
+    separatorClass: 'ui-menu-separator',
+    itemType: MenuItem
 }).events({
-    OnItemSelected: 'ItemSelected(event,item,index).Menu',
-    BeforeShowAt: 'BeforeShowAt(event,data).Menu'
+    OnItemSelected: 'ItemSelected(event,item,index,parent).Menu',
+    BeforeShowAt: 'BeforeShowAt(event,data).Menu',
+    OnMouseOverItem: 'MouseOverItem(event,item,index).Menu'
 });
 
 function Menu_initialize(self) {
+    var submenu;
     self.css('position', 'absolute').on('mouseup', function(e) {
         var index = self.indexOf(e.target),
             item;
@@ -112,7 +145,81 @@ function Menu_initialize(self) {
         }
         if (index < 0) return;
         item = self.getItemAt(index);
-        self.trigger(Menu.Events.OnItemSelected, [item, index]);
+        self.trigger(Menu.Events.OnItemSelected, [item, index, null]);
+        self.hide();
+    });
+    $(document).on('mousedown', function(e) {
+        var t = $(e.target);
+        if (t.closest('ui-menu').length == 0 ) {
+            self.hide();
+        }
+    });
+}
+
+function Menu_createMenuItem(self, config, cbk) {
+    var item, text = config,
+        opts = self.options,
+        ItemType = opts.itemType,
+        itemTag = opts.itemTag,
+        submenu;
+    if (config == null) throw new Error('Menu item can not be null or undefined!');
+
+    if (typeof config.text == 'function') {
+        text = config.text();
+    } else if (typeof config.text == 'string') {
+        text = config.text;
+    }
+
+    //create menu item
+    if (config == null || /^-+$/.test(text)) {
+        item = $(itemTag).addClass(opts.itemClass)
+            .addClass(opts.separatorClass);
+    } else {
+        item = new ItemType(text);
+    }
+
+    //remove submenu arrow if does't have submenu
+    if (!config.submenu) {
+        item.sigil('.sub').remove();
+    } else {
+        submenu = new Menu().addItems(config.submenu);
+        submenu.on(Menu.Events.OnItemSelected, function() {
+            var args = _arguments.toArray(arguments, 1);
+            args.pop();
+            args.push(item);
+            self.trigger(Menu.Events.OnItemSelected, args);
+        });
+        item.data('submenu', submenu);
+    }
+
+    if (config && config.data) {
+        item.data('data', config.data);
+    }
+    cbk && cbk.call(item, config);
+    return item;
+}
+
+function Menu_hideOpenedSubmenu(self) {
+    var openedSubmenu = self.data('openedSubmenu');
+    if (openedSubmenu) {
+        openedSubmenu.hide();
+        self.removeData('openedSubmenu');
+    }
+}
+
+function Menu_addMouseOverMenuItemListener(self) {
+    var opts = self.options,
+        items = self.children();
+    if (!items.length) return;
+    items.unbind('mouseenter').on('mouseenter', function(e) {
+        var item = $(e.target),
+            submenu = item.data('submenu'),
+            rect = item[0].getBoundingClientRect();
+        Menu_hideOpenedSubmenu(self);
+        if (!submenu) return;
+        submenu.appendTo(self.parent());
+        submenu.showAt(rect.left + rect.width, rect.top);
+        self.data('openedSubmenu', submenu);
     });
 }
 
@@ -154,15 +261,3 @@ function Menu_asContextMenuOf(self, target) {
     self.appendTo(p).hide();
     return self;
 }
-
-/**
- * Scrollable Menu
- */
-var ScrollableMenu = _type.create('$root.ui.ScrollableMenu', Menu, {
-    init: function(){
-       this.base.apply(this, arguments);
-    }
-}).events({
-    OnScrollToTop:'ScrollToTop(event)',
-    OnScrollToBottom:'ScrollToBottom(event)'
-});

@@ -52,10 +52,13 @@
         getZIndex: function() {
             return this.css('z-index');
         }
-    });
+    }).statics({
+        WithMaskClassName: 'withmask'
+    })
     
     var theMask = null,
-        _oldHide, _oldShow, _oldRemove;
+        _oldHide, _oldShow, _oldRemove,
+        visibleMaskSel = '.' + Mask.WithMaskClassName + ':visible';
     /**
      * ##Mask.getInstance()##
      * @return {Mask}
@@ -70,7 +73,7 @@
             theMask.hide = function() {
                 var args = arguments;
                 setTimeout(function() {
-                    if ($('.' + Mask.WithMaskClassName + ':visible').length == 0) {
+                    if ($(visibleMaskSel).length === 0) {
                         _oldHide.apply(theMask, args);
                     }
                 }, 0);
@@ -79,14 +82,10 @@
             theMask.remove = function() {
                 var args = arguments;
                 setTimeout(function() {
-                    if ($('.' + Mask.WithMaskClassName + ':visible').length == 0) {
+                    if ($(visibleMaskSel).length === 0) {
                         _oldRemove.apply(theMask, args);
                     }
                 }, 0);
-                return this;
-            };
-            theMask.show = function() {
-                _oldShow.apply(this, arguments);
                 return this;
             };
         }
@@ -95,8 +94,6 @@
         }
         return theMask;
     };
-    
-    Mask.WithMaskClassName = 'withmask';
     
     Mask.disposeInstance = function() {
         if (theMask) {

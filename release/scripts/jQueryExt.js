@@ -1,7 +1,8 @@
 /**
- * jQuery Sigil Extension
- * ----------------------
- * Dependencies: lang/type,lang/object
+ * #jQuery Sigil Extension#
+ * ======================
+ * - Dependencies: `lang/type`,`lang/object`
+ * - Version: 0.0.1
  */
 
 (function(root, factory) {

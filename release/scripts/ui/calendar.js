@@ -1,7 +1,8 @@
 /**
- * Calendar
- * --------
- * Dependencies: $root.lang.type,$root.lang.string,$root.lang.arguments,$root.lang.date,$root.browser.template,$root.ui.table,jquery
+ * #Calendar#
+ * ========
+ * - Dependencies: `lang/type`,`lang/string`,`lang/arguments`,`lang/date`,`browser/template`,`ui/table`,`jquery`
+ * - Version: 0.0.1
  */
 
 (function(root, factory) {
@@ -18,10 +19,10 @@
         module.exports = factory($root_lang_type, $root_lang_string, $root_lang_arguments, $root_lang_date, $root_browser_template, $root_ui_table, jquery, exports, module, require);
     } else {
         var exports = $root._createNS('$root.ui.calendar');
-        factory($root.lang.type, $root.lang.string, $root.lang.arguments, $root.lang.date, $root.browser.template, $root.ui.table, jquery, exports);
+        factory($root.lang.type, $root.lang.string, $root.lang.arguments, $root.lang.date, $root.browser.template, $root.ui.table, jQuery, exports);
     }
 }(this, function(_type, _str, _arguments, _date, _tpl, _table, $, exports) {
-    //'use strict';
+    'use strict';
     exports = exports || {};
     _tpl
         .set('$root.ui.Calendar.header',"<tr><th colspan=\"7\" style=\"text-align: center;\">\n<span class=\"ui-button ui-calendar-prev-month\" data-action=\"prev-month\"></span><span class=\"ui-calendar-title\" sigil=\".title\"></span><span class=\"ui-button ui-calendar-next-month\" data-action=\"next-month\"></span>\n</th></tr>\n")

@@ -12,12 +12,14 @@
                 background-color: #fff;
                 display: inline-block;
                 position: absolute;
+                list-style: none;
+                z-index: 10010;
             }
             .ui-menu-item {
                 list-style: none;
                 padding: 0;
-                margin: 2px;
                 display: block;
+                padding: 2px;
             }
             .ui-menu-item a{
                 text-decoration: none;
@@ -34,8 +36,27 @@
                 color: #fff;
                 text-decoration: none;
             }
+            .ui-menu-separator {
+                border-bottom: 1px solid #eee;
+                border-top: 1px solid #fff;
+                height: 0;
+                padding: 0;
+                margin: 0;
+                float:right;
+                right: 5px;
+            }
+            .ui-menu-item-sub {
+                background: url(images/menu-submenu-arrow-black.png) no-repeat center center;
+                width: 4px;
+                height: 18px;
+                display: inline-block;
+                right: 5px;
+                position: absolute;
+            }
+            .ui-menu-item:hover .ui-menu-item-sub {
+                background: url(images/menu-submenu-arrow-white.png) no-repeat center center;
+            }
         </style>
-        <link rel="stylesheet" href="../../../release/css/menu.css" />
         <script src="../../../release/scripts/requirejs.js"></script>
     </head>
 
@@ -50,9 +71,9 @@
                 sigil=".item"
                 sigil-class="MenuItem" 
                 style="display:none">
-                <span class="ui-menu-item-text">
-                    <a href="javascript:;" sigil="text"></a>
-                </span>
+                <a class="ui-menu-item-sub" href="javascript:;" sigil=".sub"></a>
+                <a class="ui-menu-item-icon" href="javascript:;" sigil=".icon"></a>
+                <a class="ui-menu-item-text" href="javascript:;" sigil=".text"></a>
             </li>
         </div>
 
@@ -69,14 +90,23 @@
                 Menu = menu.Menu;
                 menu = new Menu();
                 menu.addItems([
-                    "New File",
-                    "Save ..",
-                    "Save As .."
+                    {
+                        text: "New File",
+                        submenu: ["a", "b", "c","-","d"]
+                    },
+                    "Save",
+                    "--------",
+                    {
+                        text:"Save As ..",
+                        submenu: ["PNG","JPG",{text:"BMP",submenu:[1,2,3],data:{a:1}}]
+                    }
                 ]);
                 menu.showAt(100, 100);
-                menu.on(Menu.Events.OnItemSelected, function(e, item, index) {
-                    console.log(item.$getClass().typename(),item.text(), index);
-                })
+                menu.on(Menu.Events.OnItemSelected, function(e, item, index, parent) {
+                    var text = '';
+                    if(parent) text = parent.text();
+                    console.log(item.text(), index, text, item.data('data'));
+                });
 
                 menu2 = new Menu();
                 menu2.addItems([1, 2, 3]);

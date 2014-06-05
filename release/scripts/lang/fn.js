@@ -1,28 +1,33 @@
 /**
- * Function
- * --------
- * Dependencies: lang/type,lang/object
+ * #Function#
+ * ========
+ * - Dependencies: 
+ * - Version: 0.0.1
  */
 
 (function(root, factory) {
     if (typeof define === 'function' && define.amd) {
-        define('lang/fn', ['lang/type', 'lang/object'], factory);
+        define('lang/fn', [], factory);
     } else if (typeof module === 'object') {
-        var $root_lang_type = require('lang/type'),
-            $root_lang_object = require('lang/object');
-        module.exports = factory($root_lang_type, $root_lang_object, exports, module, require);
+        module.exports = factory(exports, module, require);
     } else {
         var exports = $root._createNS('$root.lang.fn');
-        factory($root.lang.type, $root.lang.object, exports);
+        factory(exports);
     }
-}(this, function(_type, _obj, exports) {
+}(this, function(exports) {
     'use strict';
     exports = exports || {};
     
     ///exports
     
-    var isFunction = _type.isFunction,
+    var _toString = Object.prototype.toString,
         _slice = Array.prototype.slice,
+        isFunction = function(f) {
+            return typeof f == 'function';
+        },
+        isArray = Array.isArray || function isArray(arg) {
+            return _toString.call(arg) == '[object Array]';
+        },
         firstArgMustBeFn = 'first argument must be a function';
     
     /**
@@ -121,13 +126,13 @@
      * @return {Any}
      */
     function call(self, context) {
-        if (!_type.isFunction(self)) return;
+        if (!isFunction(self)) return;
         var args = _slice.call(arguments, 2);
         return self.apply(context, args);
     }
     
     function apply(self, context, args) {
-        if (!_type.isFunction(self)) return;
+        if (!isFunction(self)) return;
         //ie7 and 8 require 2nd argument for Function.prototype.apply must be a array or arguments
         args = _slice.call(args);
         return self.apply(context, args);
@@ -143,7 +148,7 @@
     function bindCallNew() {
         var ctor, args;
         ctor = arguments[0];
-        if (!_type.isFunction(ctor)) {
+        if (!isFunction(ctor)) {
             throw Error(firstArgMustBeFn);
         }
         args = arguments;
@@ -163,7 +168,7 @@
      */
     function bindApplyNew(ctor, args) {
         var len;
-        if (!_type.isArray(args)) {
+        if (!isArray(args)) {
             throw Error('Arguments list has wrong type: second argument must be an array');
         }
         if (args.length > 7) {
@@ -228,39 +233,6 @@
             console.log(arguments);
         }
         fn.apply(this, arguments);
-    }
-    
-    /**
-     * stop
-     * stop at a method call of context by insert a `debugger` statement before
-     * @param  {String} path, path of a method
-     * @param  {Object} context
-     * @param  {Function} sniffer
-     * @return {Object} context
-     * @remark
-     *     var obj = {fn:{do:function(){}}};
-     *     stop('fn.do', obj, function(){
-     *         console.log(arguments);
-     *     });
-     *     //will print out arguments everytime when `obj.fn.do` is called
-     *     stop('fn.do', obj)
-     *     //will stop before `obj.fn.do` is called(only if debug console is openning)
-     */
-    function stop(path, context, sniffer) {
-        if (_type.isEmpty(context)) {
-            throw Error('second argument must provide');
-        }
-    
-        var origin = _obj.tryget(context, path);
-        if (!_type.isFunction(origin)) {
-            throw Error(path + ' is not a function');
-        }
-    
-        _obj.tryset(context, path, function() {
-            (sniffer || breakpoint).apply(context, arguments);
-            origin.apply(context, arguments);
-        });
-        return context;
     }
     
     /**
@@ -389,7 +361,6 @@
     exports['callNew'] = callNew;
     exports['applyNew'] = applyNew;
     exports['log'] = log;
-    exports['stop'] = stop;
     exports['ntimes'] = ntimes;
     exports['once'] = once;
     exports['delay'] = delay;

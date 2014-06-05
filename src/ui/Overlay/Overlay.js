@@ -42,10 +42,13 @@ var Mask = _type.create('$root.ui.overlay.Mask', jQuery, {
     getZIndex: function() {
         return this.css('z-index');
     }
-});
+}).statics({
+    WithMaskClassName: 'withmask'
+})
 
 var theMask = null,
-    _oldHide, _oldShow, _oldRemove;
+    _oldHide, _oldShow, _oldRemove,
+    visibleMaskSel = '.' + Mask.WithMaskClassName + ':visible';
 /**
  * ##Mask.getInstance()##
  * @return {Mask}
@@ -60,7 +63,7 @@ Mask.getInstance = function() {
         theMask.hide = function() {
             var args = arguments;
             setTimeout(function() {
-                if ($('.' + Mask.WithMaskClassName + ':visible').length == 0) {
+                if ($(visibleMaskSel).length === 0) {
                     _oldHide.apply(theMask, args);
                 }
             }, 0);
@@ -69,14 +72,10 @@ Mask.getInstance = function() {
         theMask.remove = function() {
             var args = arguments;
             setTimeout(function() {
-                if ($('.' + Mask.WithMaskClassName + ':visible').length == 0) {
+                if ($(visibleMaskSel).length === 0) {
                     _oldRemove.apply(theMask, args);
                 }
             }, 0);
-            return this;
-        };
-        theMask.show = function() {
-            _oldShow.apply(this, arguments);
             return this;
         };
     }
@@ -85,8 +84,6 @@ Mask.getInstance = function() {
     }
     return theMask;
 };
-
-Mask.WithMaskClassName = 'withmask';
 
 Mask.disposeInstance = function() {
     if (theMask) {

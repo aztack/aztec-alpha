@@ -1,7 +1,8 @@
 /**
- * TagInput
- * --------
- * Dependencies: $root.lang.type,$root.lang.string,$root.browser.template,$root.lang.enumerable,$root.lang.fn,$root.lang.arguments,jquery
+ * #TagInput#
+ * ========
+ * - Dependencies: `lang/type`,`lang/string`,`browser/template`,`lang/enumerable`,`lang/fn`,`lang/arguments`,`jquery`
+ * - Version: 0.0.1
  */
 
 (function(root, factory) {
@@ -18,10 +19,10 @@
         module.exports = factory($root_lang_type, $root_lang_string, $root_browser_template, $root_lang_enumerable, $root_lang_fn, $root_lang_arguments, jquery, exports, module, require);
     } else {
         var exports = $root._createNS('$root.ui.tagInput');
-        factory($root.lang.type, $root.lang.string, $root.browser.template, $root.lang.enumerable, $root.lang.fn, $root.lang.arguments, jquery, exports);
+        factory($root.lang.type, $root.lang.string, $root.browser.template, $root.lang.enumerable, $root.lang.fn, $root.lang.arguments, jQuery, exports);
     }
 }(this, function(_type, _str, _tpl, _enum, _fn, _arguments, $, exports) {
-    //'use strict';
+    'use strict';
     exports = exports || {};
     _tpl
         .set('$root.ui.TagInput.tag',"<div class=\"ui-taginput-tag\">\n<span class=\"ui-taginput-tagtext\"></span><a class=\"ui-taginput-button\" href=\"javascript:;\"></a>\n</div>\n")

@@ -1,9 +1,9 @@
 /* $root.ui.menu */
 .ui-menu {
-margin: 0; padding: 0; border: 1px solid gray; cursor: pointer; min-width: 100px; box-shadow: 2px 2px 2px #888; background-color: #fff; display: inline-block; position: absolute;
+margin: 0; padding: 0; border: 1px solid gray; cursor: pointer; min-width: 100px; box-shadow: 2px 2px 2px #888; background-color: #fff; display: inline-block; position: absolute; list-style: none; z-index: 10010;
 }
 .ui-menu-item {
-list-style: none; padding: 0; margin: 2px; display: block;
+list-style: none; display: block; padding: 2px;
 }
 .ui-menu-item a {
 text-decoration: none; color: #000;
@@ -16,4 +16,13 @@ background-color: gray; color: #fff;
 }
 .ui-menu-item:hover a {
 color: #fff; text-decoration: none;
+}
+.ui-menu-separator {
+border-bottom: 1px solid #eee; border-top: 1px solid #fff; height: 0; padding: 0; margin: 0; float: right; right: 5px;
+}
+.ui-menu-item-sub {
+background: url(images/menu-submenu-arrow-black.png) no-repeat center center; width: 4px; height: 18px; display: inline-block; right: 5px; position: absolute;
+}
+.ui-menu-item:hover .ui-menu-item-sub {
+background: url(images/menu-submenu-arrow-white.png) no-repeat center center;
 }

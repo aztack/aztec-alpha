@@ -1,7 +1,8 @@
 /**
- * Enumerable Interface
- * --------------------
- * Dependencies: lang/type,lang/array
+ * #Enumerable Interface#
+ * ====================
+ * - Dependencies: `lang/type`,`lang/array`
+ * - Version: 0.0.1
  */
 
 (function(root, factory) {

@@ -1,7 +1,8 @@
 /**
- * Paginator
- * ---------
- * Dependencies: $root.lang.type,$root.lang.number,$root.lang.string,$root.lang.array,$root.lang.range,$root.browser.template,$root.lang.arguments,$root.ui.list,jquery,jQueryExt
+ * #Paginator#
+ * =========
+ * - Dependencies: `lang/type`,`lang/number`,`lang/string`,`lang/array`,`lang/range`,`browser/template`,`lang/arguments`,`ui/list`,`jquery`,`jQueryExt`
+ * - Version: 0.0.1
  */
 
 (function(root, factory) {
@@ -21,10 +22,10 @@
         module.exports = factory($root_lang_type, $root_lang_number, $root_lang_string, $root_lang_array, $root_lang_range, $root_browser_template, $root_lang_arguments, $root_ui_list, jquery, jQueryExt, exports, module, require);
     } else {
         var exports = $root._createNS('$root.ui.paginator');
-        factory($root.lang.type, $root.lang.number, $root.lang.string, $root.lang.array, $root.lang.range, $root.browser.template, $root.lang.arguments, $root.ui.list, jquery, jQueryExt, exports);
+        factory($root.lang.type, $root.lang.number, $root.lang.string, $root.lang.array, $root.lang.range, $root.browser.template, $root.lang.arguments, $root.ui.list, jQuery, jQueryExt, exports);
     }
 }(this, function(_type, _num, _str, _ary, _range, _tpl, _arguments, _list, $, jqe, exports) {
-    //'use strict';
+    'use strict';
     exports = exports || {};
     
     //Features
@@ -208,7 +209,10 @@
             } else if (btn == '>>' || btn == 'last') {
                 self.add(opts.lastPageButtonText, opt).addClass('last-page').data('action', 'last');
             } else if (btn == '?/?' || btn == 'ratio') {
-                self.add(_str.format(opts.ratioFormat, self)).addClass('ratio');
+                self.add(_str.format(opts.ratioFormat, {
+                    page: self.page,
+                    totalPage: self.totalPage
+                })).addClass('ratio');
             } else if (btn == '...' || btn == 'ellipsis') {
                 Paginator_makeNumberedButton(self, opts, self.pageIndex, true);
             } else {

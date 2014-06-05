@@ -1,7 +1,8 @@
 /**
- * RequireJS
- * ---------
- * Dependencies:
+ * #RequireJS#
+ * =========
+ * - Dependencies: 
+ * - Version: 0.0.1
  */
 
 

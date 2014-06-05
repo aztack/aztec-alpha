@@ -1,7 +1,8 @@
 /**
- * String Utils
- * ------------
- * Dependencies: lang/type
+ * #String Utils#
+ * ============
+ * - Dependencies: `lang/type`
+ * - Version: 0.0.1
  */
 
 (function(root, factory) {
@@ -336,21 +337,21 @@ var format = (function() {
                 ret.pad = all.substring(p2 + 1, all.length);
             }
         }
-        return ret;
+        return ret;//{index,pad,align}
     }
 
     return function(self, args) {
         var len = arguments.length;
         if (len > 2) {
             args = Array.prototype.slice.call(arguments, 1);
-        } else if(len === 2 && !_type.isArray(args)) {
+        } else if(len === 2 && !_type.isPlainObject(args)) {
             args = [args];
         } else if (len === 1) {
             return self;
         }
         return self.replace(format.InterpolationPattern, function(all, m) {
-            var a = p(m);
-            ret = '' + tryget(args, a.index);
+            var a = p(m),
+                ret = tryget(args, a.index);
             if (ret == null) ret = a.index;
             return a.align == null && a.pad == null ? ret : postprocess(ret, a) || ret;
         });

@@ -1,7 +1,8 @@
 /**
- * jQuery
- * ------
- * Dependencies:
+ * #jQuery#
+ * ======
+ * - Dependencies: 
+ * - Version: 0.0.1
  */
 
 

@@ -1,7 +1,8 @@
 /**
- * Rating
- * ------
- * Dependencies: $root.lang.type,$root.lang.fn,$root.lang.enumerable,$root.browser.template,$root.lang.arguments,$root.ui.List,jquery,jQueryExt
+ * #Rating#
+ * ======
+ * - Dependencies: `lang/type`,`lang/fn`,`lang/enumerable`,`browser/template`,`lang/arguments`,`ui/List`,`jquery`,`jQueryExt`
+ * - Version: 0.0.1
  */
 
 (function(root, factory) {
@@ -19,10 +20,10 @@
         module.exports = factory($root_lang_type, $root_lang_fn, $root_lang_enumerable, $root_browser_template, $root_lang_arguments, $root_ui_List, jquery, jQueryExt, exports, module, require);
     } else {
         var exports = $root._createNS('$root.ui.rating');
-        factory($root.lang.type, $root.lang.fn, $root.lang.enumerable, $root.browser.template, $root.lang.arguments, $root.ui.List, jquery, jQueryExt, exports);
+        factory($root.lang.type, $root.lang.fn, $root.lang.enumerable, $root.browser.template, $root.lang.arguments, $root.ui.List, jQuery, jQueryExt, exports);
     }
 }(this, function(_type, _fn, _enum, _tpl, _arguments, _list, $, jqe, exports) {
-    //'use strict';
+    'use strict';
     exports = exports || {};
     
     ///vars

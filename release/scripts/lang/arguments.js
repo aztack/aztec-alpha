@@ -1,7 +1,8 @@
 /**
- * Arguments Utils
- * ---------------
- * Dependencies: $root.lang.fn,$root.lang.type
+ * #Arguments Utils#
+ * ===============
+ * - Dependencies: `lang/fn`,`lang/type`
+ * - Version: 0.0.1
  */
 
 (function(root, factory) {
@@ -16,7 +17,7 @@
         factory($root.lang.fn, $root.lang.type, exports);
     }
 }(this, function(_fn, _type, exports) {
-    //'use strict';
+    'use strict';
     exports = exports || {};
     
     ///vars
@@ -241,7 +242,7 @@
                 return _fn.applyNew(ctor, getArgs());
             },
             args: function(i) {
-                return getArgs()[i];
+                return typeof i == 'undefined' ? getArgs() : getArgs()[i];
             },
             resolve: function() {
                 getArgs();

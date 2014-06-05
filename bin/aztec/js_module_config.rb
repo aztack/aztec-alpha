@@ -88,6 +88,11 @@ module Aztec
             @config['version'] || '0.0.1'
         end
 
+        def strict
+            is_strict = @config['strict']
+            is_strict.nil? ? true : is_strict
+        end
+
         private
         def merge(key, config, merege_method, default)
             a = @config[key] || default.dup

@@ -1,7 +1,8 @@
 /**
- * ComboBox
- * --------
- * Dependencies: $root.lang.type,$root.lang.fn,$root.browser.template,$root.lang.arguments,$root.ui.menu,$root.ui.textField,jquery,jQueryExt
+ * #ComboBox#
+ * ========
+ * - Dependencies: `lang/type`,`lang/fn`,`browser/template`,`lang/arguments`,`ui/menu`,`ui/textField`,`jquery`,`jQueryExt`
+ * - Version: 0.0.1
  */
 
 (function(root, factory) {
@@ -19,10 +20,10 @@
         module.exports = factory($root_lang_type, $root_lang_fn, $root_browser_template, $root_lang_arguments, $root_ui_menu, $root_ui_textField, jquery, jQueryExt, exports, module, require);
     } else {
         var exports = $root._createNS('$root.ui.comboBox');
-        factory($root.lang.type, $root.lang.fn, $root.browser.template, $root.lang.arguments, $root.ui.menu, $root.ui.textField, jquery, jQueryExt, exports);
+        factory($root.lang.type, $root.lang.fn, $root.browser.template, $root.lang.arguments, $root.ui.menu, $root.ui.textField, jQuery, jQueryExt, exports);
     }
 }(this, function(_type, _fn, _tpl, _arguments, _menu, _textfield, $, jqe, exports) {
-    //'use strict';
+    'use strict';
     exports = exports || {};
     _tpl
         .set('$root.ui.ComboBox.box',"<div class=\"ui-combobox\">\n        \n    </div>\n");

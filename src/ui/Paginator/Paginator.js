@@ -200,7 +200,10 @@ function Paginator_makeButtons(self, opts) {
         } else if (btn == '>>' || btn == 'last') {
             self.add(opts.lastPageButtonText, opt).addClass('last-page').data('action', 'last');
         } else if (btn == '?/?' || btn == 'ratio') {
-            self.add(_str.format(opts.ratioFormat, self)).addClass('ratio');
+            self.add(_str.format(opts.ratioFormat, {
+                page: self.page,
+                totalPage: self.totalPage
+            })).addClass('ratio');
         } else if (btn == '...' || btn == 'ellipsis') {
             Paginator_makeNumberedButton(self, opts, self.pageIndex, true);
         } else {

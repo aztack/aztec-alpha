@@ -1,7 +1,8 @@
 /**
- * Underscore Interface Implementation
- * -----------------------------------
- * Dependencies: $root.lang.type,$root.enuerable,$root.lang.fn
+ * #Underscore Interface Implementation#
+ * ===================================
+ * - Dependencies: `lang/type`,`enuerable`,`lang/fn`
+ * - Version: 0.0.1
  */
 
 (function(root, factory) {
@@ -17,7 +18,7 @@
         factory($root.lang.type, $root.enuerable, $root.lang.fn, exports);
     }
 }(this, function(_type, _enum, _fn, exports) {
-    //'use strict';
+    'use strict';
     exports = exports || {};
     
     

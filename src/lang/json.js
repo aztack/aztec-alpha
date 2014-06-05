@@ -5,7 +5,8 @@
     exports: [
         parse,
         stringify
-    ]
+    ],
+    strict: false
 });
 
 if (typeof JSON != 'undefined' && typeof JSON.parse == 'function' && typeof JSON.stringify == 'function') {

@@ -1,7 +1,8 @@
 /**
- * DOM Manipulation
- * ----------------
- * Dependencies: $root.lang.type,$root.lang.enumerable,$root.lang.string
+ * #DOM Manipulation#
+ * ================
+ * - Dependencies: `lang/type`,`lang/enumerable`,`lang/string`
+ * - Version: 0.0.1
  */
 
 (function(root, factory) {
@@ -17,7 +18,7 @@
         factory($root.lang.type, $root.lang.enumerable, $root.lang.string, exports);
     }
 }(this, function(_type, _enum, _str, exports) {
-    //'use strict';
+    'use strict';
     exports = exports || {};
     
     function ReadyToAttach(node, defaultParent) {

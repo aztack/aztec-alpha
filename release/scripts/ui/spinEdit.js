@@ -1,7 +1,8 @@
 /**
- * SpinEdit
- * --------
- * Dependencies: $root.lang.type,$root.lang.string,$root.lang.number,$root.lang.fn,$root.lang.arguments,$root.browser.template,$root.ui.textField,jquery,jQueryExt
+ * #SpinEdit#
+ * ========
+ * - Dependencies: `lang/type`,`lang/string`,`lang/number`,`lang/fn`,`lang/arguments`,`browser/template`,`ui/textField`,`jquery`,`jQueryExt`
+ * - Version: 0.0.1
  */
 
 (function(root, factory) {
@@ -20,10 +21,10 @@
         module.exports = factory($root_lang_type, $root_lang_string, $root_lang_number, $root_lang_fn, $root_lang_arguments, $root_browser_template, $root_ui_textField, jquery, jQueryExt, exports, module, require);
     } else {
         var exports = $root._createNS('$root.ui.spinEdit');
-        factory($root.lang.type, $root.lang.string, $root.lang.number, $root.lang.fn, $root.lang.arguments, $root.browser.template, $root.ui.textField, jquery, jQueryExt, exports);
+        factory($root.lang.type, $root.lang.string, $root.lang.number, $root.lang.fn, $root.lang.arguments, $root.browser.template, $root.ui.textField, jQuery, jQueryExt, exports);
     }
 }(this, function(_type, _str, _number, _fn, _arguments, _tpl, _tf, $, jqe, exports) {
-    //'use strict';
+    'use strict';
     exports = exports || {};
     _tpl
         .set('$root.ui.SpinEdit.SpinEdit',"<div class=\"ui-spinedit\">\n        </div>\n")

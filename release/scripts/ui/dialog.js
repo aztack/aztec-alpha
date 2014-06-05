@@ -1,16 +1,15 @@
 /**
  * #dialogs#
  * =======
- * - Dependencies: `lang/type`,`lang/array`,`lang/fn`,`lang/enumerable`,`browser/template`,`lang/arguments`,`ui/draggable`,`ui/overlay`,`jquery`,`jQueryExt`
+ * - Dependencies: `lang/type`,`lang/fn`,`lang/enumerable`,`browser/template`,`lang/arguments`,`ui/draggable`,`ui/overlay`,`jquery`,`jQueryExt`
  * - Version: 0.0.1
  */
 
 (function(root, factory) {
     if (typeof define === 'function' && define.amd) {
-        define('ui/dialog', ['lang/type', 'lang/array', 'lang/fn', 'lang/enumerable', 'browser/template', 'lang/arguments', 'ui/draggable', 'ui/overlay', 'jquery', 'jQueryExt'], factory);
+        define('ui/dialog', ['lang/type', 'lang/fn', 'lang/enumerable', 'browser/template', 'lang/arguments', 'ui/draggable', 'ui/overlay', 'jquery', 'jQueryExt'], factory);
     } else if (typeof module === 'object') {
         var $root_lang_type = require('lang/type'),
-            $root_lang_array = require('lang/array'),
             $root_lang_fn = require('lang/fn'),
             $root_lang_enumerable = require('lang/enumerable'),
             $root_browser_template = require('browser/template'),
@@ -19,19 +18,20 @@
             $root_ui_overlay = require('ui/overlay'),
             jquery = require('jquery'),
             jQueryExt = require('jQueryExt');
-        module.exports = factory($root_lang_type, $root_lang_array, $root_lang_fn, $root_lang_enumerable, $root_browser_template, $root_lang_arguments, $root_ui_draggable, $root_ui_overlay, jquery, jQueryExt, exports, module, require);
+        module.exports = factory($root_lang_type, $root_lang_fn, $root_lang_enumerable, $root_browser_template, $root_lang_arguments, $root_ui_draggable, $root_ui_overlay, jquery, jQueryExt, exports, module, require);
     } else {
         var exports = $root._createNS('$root.ui.dialog');
-        factory($root.lang.type, $root.lang.array, $root.lang.fn, $root.lang.enumerable, $root.browser.template, $root.lang.arguments, $root.ui.draggable, $root.ui.overlay, jQuery, jQueryExt, exports);
+        factory($root.lang.type, $root.lang.fn, $root.lang.enumerable, $root.browser.template, $root.lang.arguments, $root.ui.draggable, $root.ui.overlay, jQuery, jQueryExt, exports);
     }
-}(this, function(_type, _array, _fn, _enum, _tpl, _arguments, _drag, _overlay, $, jqe, exports) {
+}(this, function(_type, _fn, _enum, _tpl, _arguments, _drag, _overlay, $, jqe, exports) {
     'use strict';
     exports = exports || {};
     _tpl
-        .set('$root.ui.Dialog.dialog',"<div class=\"ui-dialog\">\n<div class=\"ui-dialog-header\">\n<a class=\"ui-dialog-title\"></a><a class=\"ui-dialog-title-button close\"></a>\n</div>\n<div class=\"ui-dialog-body\">\n            </div>\n<div class=\"ui-dialog-footer\"></div>\n</div>\n")
+        .set('$root.ui.Dialog.dialog',"<div class=\"ui-dialog\">\n<div class=\"ui-dialog-header\">\n<a class=\"ui-dialog-title-button close\"></a><a class=\"ui-dialog-title\"></a>\n</div>\n<div class=\"ui-dialog-body\">\n            </div>\n<div class=\"ui-dialog-footer\"></div>\n</div>\n")
         .set('$root.ui.Dialog.button',"<button data-action=\"ok\" class=\"ui-dialog-button\"></button>\n")
         .set('$root.ui.Dialog.titleButton',"<a class=\"ui-dialog-close-button\" sigil-calss=\"Dialog\">&times;</a>\n")
-        .set('$root.ui.Dialog.icon',"<div class=\"ui-dialog-icon\"></div>\n");
+        .set('$root.ui.Dialog.icon',"<div class=\"ui-dialog-icon\"></div>\n")
+        .set('$root.ui.Dialog.title-button',"<a class=\"ui-dialog-title-button undraggable\"></a>\n");
     //TODO
     //====
     //- [x] auto close, timeout
@@ -104,19 +104,19 @@
                 .when(function() {
                     return [parent, this.css('left'), this.css('top')];
                 })
-                .same(['string'], ['int', 'string'], ['string', 'int'], function(xpos, ypos) {
+                .same(['string'], ['number', 'string'], ['string', 'number'], function(xpos, ypos) {
                     this.data('showAt', [xpos, ypos]);
                     var coord = Dialog_getShowPosition(this, xpos, ypos);
                     coord.unshift(parent);
                     return coord;
                 })
-                .when('int', 'int', function(x, y) {
+                .when('number', 'number', function(x, y) {
                     return [parent, x, y];
                 })
-                .when('int', function(x) {
+                .when('number', function(x) {
                     return [parent, x, this.css('top')];
                 })
-                .when('jquery', 'int', 'int', function(parent, x, y) {
+                .when('jquery', 'number', 'number', function(parent, x, y) {
                     return [parent, x || 0, y || 0];
                 })
                 .invoke(function(parent, x, y) {
@@ -250,7 +250,7 @@
                 .invoke(function(captions) {
                     captions = captions || args;
                     footer.empty();
-                    _array.forEach(captions, function(arg) {
+                    _enum.each(captions, function(arg) {
                         var btn = Dialog_createButton(arg);
                         btn.appendTo(footer);
                     });
@@ -297,13 +297,15 @@
         Parts: {
             IconError: $(tpl('icon')).addClass('error'),
             IconInfo: $(tpl('icon')).addClass('info'),
-            IconWarnning: $(tpl('icon')).addClass('warnning')
+            IconWarnning: $(tpl('icon')).addClass('warnning'),
+            TitleButtonArrowDown: $(tpl('title-button')).addClass('arrow-down')
         }
     }).events({
         // Dialog.Events
         // =============
         OnShowAt: 'ShowAt(event,x,y).Dialog',
-        OnButtonClick: 'ButtonClick(event,buttonIndex,buttonCaption).Dialog'
+        OnButtonClicked: 'ButtonClicked(event,buttonIndex,buttonCaption).Dialog',
+        OnTitleButtonClicked: 'TitleButtonClicked(event,buttonIndex,button).Dialog'
     });
     
     function Dialog_createButton() {
@@ -325,7 +327,8 @@
         return button;
     }
     
-    function Dialog_initialize(self, opts) {
+    function Dialog_initialize(self) {
+        var opts = self.options;
         self.addClass('ui-generic-dialog');
     
         var draggable;
@@ -359,29 +362,29 @@
         }
     
         //bring dialog to front when active
-        self.on('mousedown', function(e) {
-            var target = e.target;
-            //ignore mousedown on footer and it's children
-            if (self.footer[0] == target || self.footer.find(e.target).length) return;
-    
-            //otherwise, bringToFron will make buttons unclickable
+        self.header.on('mousedown', function(e) {
             self.bringToFront();
         });
     
         //delegate button click event
-        var selector = self.sigil('.button', true);
-        self.delegate(selector, 'click', function(e) {
+        var buttonSelector = self.sigil('.button', true),
+            titleButtonSelector = self.sigil('.title-button', true);
+        self.delegate(buttonSelector, 'click', function(e) {
             var button = $(e.target),
                 buttons = self.sigil('.button'),
                 index = buttons.index(button[0]),
                 caption = button.text(),
                 action = button.data('action');
     
-            self.trigger(Dialog.Events.OnButtonClick, [index, caption]);
+            self.trigger(Dialog.Events.OnButtonClicked, [index, caption]);
             if (action == 'ok' || action == 'cancel') {
                 self.close();
             }
-            return false;
+        }).delegate(titleButtonSelector, 'click', function(e) {
+            var button = $(e.target),
+                buttons = self.sigil('.title-button'),
+                index = buttons.index(button);
+            self.trigger(Dialog.Events.OnTitleButtonClicked, [index, button]);
         });
     
         if (opts.mask) {
@@ -390,24 +393,10 @@
         }
     
         $(document).click(function(e) {
-            if (!self.options.closeWhenLostFocus) return;
+            if (!opts.closeWhenLostFocus) return;
             setTimeout(function() {
                 if (!self.find(e.target).length) self.remove();
             }, 0);
-        });
-    }
-    
-    function Dialog_initialize_bug(self, opts) {
-        if (opts.mask) {
-            _overlay.Mask.getInstance().show().before(self);
-        }
-        var x = opts,
-            y = self.options,
-            z = x === y,
-            u = self;
-        $(document).click(function(e) {
-            x, y, z, u, self;
-            if (!opts.closeWhenLostFocus) return;
         });
     }
     
@@ -496,17 +485,17 @@
      */
     var Alert = Dialog.extend('$root.ui.dialog.Alert', {
         init: function(options) {
-            var opts = Dialog.options(options || {});
             this.base.apply(this, arguments);
-            this.$attr('options', opts);
-            this.setTitle(opts.title || '');
-            Alert_initialize(this, opts);
+            $.extend(this.options, options);
+            this.setTitle(this.options.title || '');
+            Alert_initialize(this);
         }
     });
     
-    function Alert_initialize(self, opts) {
+    function Alert_initialize(self) {
+        var opts = self.options,
+            button;
         //if no buttons specified, create a default 'OK' button
-        var button;
         if (!opts.buttons && self.buttons.length === 0) {
             self.setButtons(opts.okButtonText);
         } else {
@@ -620,12 +609,13 @@
     ///sigils
     if (!Dialog.Sigils) Dialog.Sigils = {};
     Dialog.Sigils[".header"] = ".ui-dialog-header";
-    Dialog.Sigils[".dialog-title"] = ".ui-dialog-title";
     Dialog.Sigils[".close-button"] = ".close";
+    Dialog.Sigils[".dialog-title"] = ".ui-dialog-title";
     Dialog.Sigils[".body"] = ".ui-dialog-body";
     Dialog.Sigils[".footer"] = ".ui-dialog-footer";
     Dialog.Sigils[".dialog"] = ".ui-dialog";
     Dialog.Sigils[".button"] = ".ui-dialog-button";
+    Dialog.Sigils[".title-button"] = ".undraggable";
 
     exports['Dialog'] = Dialog;
     exports['Alert'] = Alert;

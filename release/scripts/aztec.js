@@ -1,7 +1,8 @@
 /**
- * The Aztec JavaScript framework
- * ------------------------------
- * Dependencies:
+ * #The Aztec JavaScript framework#
+ * ==============================
+ * - Dependencies: 
+ * - Version: 0.0.1
  */
 
 

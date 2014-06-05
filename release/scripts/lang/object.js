@@ -1,7 +1,8 @@
 /**
- * Object Utils
- * ------------
- * Dependencies: lang/type,lang/string,lang/enumerable
+ * #Object Utils#
+ * ============
+ * - Dependencies: `lang/type`,`lang/string`,`lang/enumerable`
+ * - Version: 0.0.1
  */
 
 (function(root, factory) {

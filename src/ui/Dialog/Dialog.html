@@ -8,7 +8,6 @@
                 top: 0;
                 border: 1px solid #999;
                 font-size: .875em;
-                min-height: 80px;
                 min-width: 200px;
                 z-index: 10000;
                 background-color: white;
@@ -34,31 +33,42 @@
                 line-height: 24px;
                 min-height: 24px;
             }
+            .ui-dialog-title {
+                display: inline-block;
+            }
             .ui-dialog-body {
                 padding: 5px;
             }
             .ui-dialog-footer {
                 text-align: right;
                 position: absolute;
-                bottom: 0.2em;
-                right: 0.2em;
+                bottom: 0em;
+                width: 100%;
             }
             .ui-dialog-button {
                 background-color: white;
                 border: 1px solid #ccc;
                 cursor: pointer;
                 min-width: 1em;
+                _min-width: 3em;
+                *min-width: 3em;
                 min-height: 24px;
+                margin: 6px 6px 6px 0;
             }
-            .ui-dialog-title-button {
-                border-left: 1px solid transparent;
+            .ui-dialog-title-button {   
                 width: 24px;
                 height: 24px;
                 float: right;
                 cursor: pointer;
+                border-left: 1px solid transparent;
+                border-right: 1px solid transparent;
+            }
+            .ui-dialog-header .close {
+                border-left: 1px solid transparent;
             }
             .ui-dialog-title-button:hover {
                 border-left: 1px solid #ddd;
+                border-right: 1px solid #ddd;
             }
             .ui-dialog-title-button.close {
                 background: url(images/dialog-close-button.png) no-repeat center center;
@@ -86,10 +96,14 @@
                 background: url(images/dialog-icon-error.png) center center no-repeat;
             }
             .ui-dialog-icon.info{
-                background: url(images/dialog-icon-info.png);
+                background: url(images/dialog-icon-info.png) no-repeat center center;
             }
             .ui-dialog-icon.warnning{
-                background: url(images/dialog-icon-warnning.png);
+                background: url(images/dialog-icon-warnning.png) no-repeat center center;
+            }
+
+            .ui-dialog-header .arrow-down {
+                background: url(images/dialog-icon-arrow-down.png) no-repeat center center;
             }
 
         </style>
@@ -101,8 +115,8 @@
     <body>
         <div xtemplate="$root.ui.Dialog.dialog,delete" sigil-class="Dialog" class="ui-dialog" sigil=".dialog" style="display:none">
             <div class="ui-dialog-header" sigil=".header">
-                <a class="ui-dialog-title" sigil=".dialog-title"></a>
                 <a class="ui-dialog-title-button close" sigil=".close-button"></a>
+                <a class="ui-dialog-title" sigil=".dialog-title"></a>
             </div>
             <div class="ui-dialog-body" sigil=".body">
             </div>
@@ -114,6 +128,8 @@
         <a xtemplate="$root.ui.Dialog.titleButton,delete" class="ui-dialog-close-button" sigil-calss="Dialog" sigil=".close-button">×</a>
 
         <div xtemplate="$root.ui.Dialog.icon" class="ui-dialog-icon"></div>
+
+        <a xtemplate="$root.ui.Dialog.title-button" class="ui-dialog-title-button undraggable" sigil=".title-button" sigil-class="Dialog"></a>
 
 
         <div id="gray" style="width:400px;height:400px;background-color: gray"></div>
@@ -129,7 +145,7 @@
                 Notice = dialog.Notice;
 
                 $alert = dialog.alert;
-                d = new Alert({
+                window.d = new Alert({
                     title: 'Hello',
                     mask: true
                 });

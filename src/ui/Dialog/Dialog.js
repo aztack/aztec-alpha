@@ -4,7 +4,6 @@
     directory: 'ui/Dialog',
     imports: {
         _type: $root.lang.type,
-        _array: $root.lang.array,
         _fn: $root.lang.fn,
         _enum: $root.lang.enumerable,
         _tpl: $root.browser.template,
@@ -94,19 +93,19 @@ var Dialog = _type.create('$root.ui.dialog.Dialog', jQuery, {
             .when(function() {
                 return [parent, this.css('left'), this.css('top')];
             })
-            .same(['string'], ['int', 'string'], ['string', 'int'], function(xpos, ypos) {
+            .same(['string'], ['number', 'string'], ['string', 'number'], function(xpos, ypos) {
                 this.data('showAt', [xpos, ypos]);
                 var coord = Dialog_getShowPosition(this, xpos, ypos);
                 coord.unshift(parent);
                 return coord;
             })
-            .when('int', 'int', function(x, y) {
+            .when('number', 'number', function(x, y) {
                 return [parent, x, y];
             })
-            .when('int', function(x) {
+            .when('number', function(x) {
                 return [parent, x, this.css('top')];
             })
-            .when('jquery', 'int', 'int', function(parent, x, y) {
+            .when('jquery', 'number', 'number', function(parent, x, y) {
                 return [parent, x || 0, y || 0];
             })
             .invoke(function(parent, x, y) {
@@ -240,7 +239,7 @@ var Dialog = _type.create('$root.ui.dialog.Dialog', jQuery, {
             .invoke(function(captions) {
                 captions = captions || args;
                 footer.empty();
-                _array.forEach(captions, function(arg) {
+                _enum.each(captions, function(arg) {
                     var btn = Dialog_createButton(arg);
                     btn.appendTo(footer);
                 });
@@ -287,13 +286,15 @@ var Dialog = _type.create('$root.ui.dialog.Dialog', jQuery, {
     Parts: {
         IconError: $(tpl('icon')).addClass('error'),
         IconInfo: $(tpl('icon')).addClass('info'),
-        IconWarnning: $(tpl('icon')).addClass('warnning')
+        IconWarnning: $(tpl('icon')).addClass('warnning'),
+        TitleButtonArrowDown: $(tpl('title-button')).addClass('arrow-down')
     }
 }).events({
     // Dialog.Events
     // =============
     OnShowAt: 'ShowAt(event,x,y).Dialog',
-    OnButtonClick: 'ButtonClick(event,buttonIndex,buttonCaption).Dialog'
+    OnButtonClicked: 'ButtonClicked(event,buttonIndex,buttonCaption).Dialog',
+    OnTitleButtonClicked: 'TitleButtonClicked(event,buttonIndex,button).Dialog'
 });
 
 function Dialog_createButton() {
@@ -315,7 +316,8 @@ function Dialog_createButton() {
     return button;
 }
 
-function Dialog_initialize(self, opts) {
+function Dialog_initialize(self) {
+    var opts = self.options;
     self.addClass('ui-generic-dialog');
 
     var draggable;
@@ -349,29 +351,29 @@ function Dialog_initialize(self, opts) {
     }
 
     //bring dialog to front when active
-    self.on('mousedown', function(e) {
-        var target = e.target;
-        //ignore mousedown on footer and it's children
-        if (self.footer[0] == target || self.footer.find(e.target).length) return;
-
-        //otherwise, bringToFron will make buttons unclickable
+    self.header.on('mousedown', function(e) {
         self.bringToFront();
     });
 
     //delegate button click event
-    var selector = self.sigil('.button', true);
-    self.delegate(selector, 'click', function(e) {
+    var buttonSelector = self.sigil('.button', true),
+        titleButtonSelector = self.sigil('.title-button', true);
+    self.delegate(buttonSelector, 'click', function(e) {
         var button = $(e.target),
             buttons = self.sigil('.button'),
             index = buttons.index(button[0]),
             caption = button.text(),
             action = button.data('action');
 
-        self.trigger(Dialog.Events.OnButtonClick, [index, caption]);
+        self.trigger(Dialog.Events.OnButtonClicked, [index, caption]);
         if (action == 'ok' || action == 'cancel') {
             self.close();
         }
-        return false;
+    }).delegate(titleButtonSelector, 'click', function(e) {
+        var button = $(e.target),
+            buttons = self.sigil('.title-button'),
+            index = buttons.index(button);
+        self.trigger(Dialog.Events.OnTitleButtonClicked, [index, button]);
     });
 
     if (opts.mask) {
@@ -380,24 +382,10 @@ function Dialog_initialize(self, opts) {
     }
 
     $(document).click(function(e) {
-        if (!self.options.closeWhenLostFocus) return;
+        if (!opts.closeWhenLostFocus) return;
         setTimeout(function() {
             if (!self.find(e.target).length) self.remove();
         }, 0);
-    });
-}
-
-function Dialog_initialize_bug(self, opts) {
-    if (opts.mask) {
-        _overlay.Mask.getInstance().show().before(self);
-    }
-    var x = opts,
-        y = self.options,
-        z = x === y,
-        u = self;
-    $(document).click(function(e) {
-        x, y, z, u, self;
-        if (!opts.closeWhenLostFocus) return;
     });
 }
 
@@ -486,17 +474,17 @@ function Dialog_setLayerPosition(self, frontOrBack) {
  */
 var Alert = Dialog.extend('$root.ui.dialog.Alert', {
     init: function(options) {
-        var opts = Dialog.options(options || {});
         this.base.apply(this, arguments);
-        this.$attr('options', opts);
-        this.setTitle(opts.title || '');
-        Alert_initialize(this, opts);
+        $.extend(this.options, options);
+        this.setTitle(this.options.title || '');
+        Alert_initialize(this);
     }
 });
 
-function Alert_initialize(self, opts) {
+function Alert_initialize(self) {
+    var opts = self.options,
+        button;
     //if no buttons specified, create a default 'OK' button
-    var button;
     if (!opts.buttons && self.buttons.length === 0) {
         self.setButtons(opts.okButtonText);
     } else {

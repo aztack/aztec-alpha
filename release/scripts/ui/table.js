@@ -1,7 +1,8 @@
 /**
- * Table
- * -----
- * Dependencies: $root.lang.type,$root.lang.string,$root.lang.object,$root.lang.enumerable,$root.lang.fn,$root.lang.arguments,$root.browser.template,jquery,jQueryExt,$root.browser.template
+ * #Table#
+ * =====
+ * - Dependencies: `lang/type`,`lang/string`,`lang/object`,`lang/enumerable`,`lang/fn`,`lang/arguments`,`browser/template`,`jquery`,`jQueryExt`,`browser/template`
+ * - Version: 0.0.1
  */
 
 (function(root, factory) {
@@ -21,10 +22,10 @@
         module.exports = factory($root_lang_type, $root_lang_string, $root_lang_object, $root_lang_enumerable, $root_lang_fn, $root_lang_arguments, $root_browser_template, jquery, jQueryExt, $root_browser_template, exports, module, require);
     } else {
         var exports = $root._createNS('$root.ui.table');
-        factory($root.lang.type, $root.lang.string, $root.lang.object, $root.lang.enumerable, $root.lang.fn, $root.lang.arguments, $root.browser.template, jquery, jQueryExt, $root.browser.template, exports);
+        factory($root.lang.type, $root.lang.string, $root.lang.object, $root.lang.enumerable, $root.lang.fn, $root.lang.arguments, $root.browser.template, jQuery, jQueryExt, $root.browser.template, exports);
     }
 }(this, function(_type, _str, _object, _enum, _fn, _arguments, _template, $, jqe, _tpl, exports) {
-    //'use strict';
+    'use strict';
     exports = exports || {};
     _tpl
         .set('$root.ui.Table.table',"<table class=\"ui-table\">\n<thead class=\"ui-thead\"></thead>\n<tbody class=\"ui-tbody-data\"></tbody>\n<tbody class=\"ui-tbody-loading\"><tr><td></td></tr></tbody>\n<tbody class=\"ui-tbody-nodata\"><tr><td>No Data</td></tr></tbody>\n<tfoot class=\"ui-tfoot\"><tr><td></td></tr></tfoot>\n</table>\n")

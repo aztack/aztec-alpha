@@ -1,7 +1,8 @@
 /**
- * Tree
- * ----
- * Dependencies: $root.lang.type,$root.lang.string,$root.lang.fn,$root.browser.template,$root.lang.arguments,$root.lang.enumerable,jquery,jQueryExt
+ * #Tree#
+ * ====
+ * - Dependencies: `lang/type`,`lang/string`,`lang/fn`,`browser/template`,`lang/arguments`,`lang/enumerable`,`jquery`,`jQueryExt`
+ * - Version: 0.0.1
  */
 
 (function(root, factory) {
@@ -19,10 +20,10 @@
         module.exports = factory($root_lang_type, $root_lang_string, $root_lang_fn, $root_browser_template, $root_lang_arguments, $root_lang_enumerable, jquery, jQueryExt, exports, module, require);
     } else {
         var exports = $root._createNS('$root.ui.tree');
-        factory($root.lang.type, $root.lang.string, $root.lang.fn, $root.browser.template, $root.lang.arguments, $root.lang.enumerable, jquery, jQueryExt, exports);
+        factory($root.lang.type, $root.lang.string, $root.lang.fn, $root.browser.template, $root.lang.arguments, $root.lang.enumerable, jQuery, jQueryExt, exports);
     }
 }(this, function(_type, _str, _fn, _tpl, _arguments, _enum, $, jqe, exports) {
-    //'use strict';
+    'use strict';
     exports = exports || {};
     _tpl
         .set('$root.ui.Tree.node',"<li>\n<i class=\"icon expander\" sigil=\".expander\"></i><a class=\"anchor\" href=\"javascript:;\"><i class=\"icon checkbox\" sigil=\".checkbox\"></i><i class=\"icon theme\" sigil=\".icon\"></i><span class=\"text\" sigil=\".text\"></span></a>\n</li>\n");

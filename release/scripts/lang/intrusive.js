@@ -1,7 +1,8 @@
 /**
- * Extend JavaScript builtins intrusively
- * --------------------------------------
- * Dependencies: $root.lang.string,$root.lang.array,$root.lang.object,$root.lang.date,$root.lang.number,$root.lang.enumerable,$root.lang.fn
+ * #Extend JavaScript builtins intrusively#
+ * ======================================
+ * - Dependencies: `lang/string`,`lang/array`,`lang/object`,`lang/date`,`lang/number`,`lang/enumerable`,`lang/fn`
+ * - Version: 0.0.1
  */
 
 (function(root, factory) {
@@ -21,7 +22,7 @@
         factory($root.lang.string, $root.lang.array, $root.lang.object, $root.lang.date, $root.lang.number, $root.lang.enumerable, $root.lang.fn, exports);
     }
 }(this, function(_str, _array, _object, _date, _num, _enum, _fn, exports) {
-    //'use strict';
+    'use strict';
     exports = exports || {};
     
     var _slice = Array.prototype.slice;

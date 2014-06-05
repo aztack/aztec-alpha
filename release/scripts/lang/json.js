@@ -1,7 +1,8 @@
 /**
- * JSON
- * ----
- * Dependencies:
+ * #JSON#
+ * ====
+ * - Dependencies: 
+ * - Version: 0.0.1
  */
 
 (function(root, factory) {
@@ -14,7 +15,7 @@
         factory(exports);
     }
 }(this, function(exports) {
-    //'use strict';
+    
     exports = exports || {};
     
     if (typeof JSON != 'undefined' && typeof JSON.parse == 'function' && typeof JSON.stringify == 'function') {

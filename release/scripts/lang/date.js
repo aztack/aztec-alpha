@@ -1,7 +1,8 @@
 /**
- * Date Utils
- * ----------
- * Dependencies: $root.lang.type,$root.lang.fn,$root.lang.arguments,$root.lang.string
+ * #Date Utils#
+ * ==========
+ * - Dependencies: `lang/type`,`lang/fn`,`lang/arguments`,`lang/string`
+ * - Version: 0.0.1
  */
 
 (function(root, factory) {
@@ -18,7 +19,7 @@
         factory($root.lang.type, $root.lang.fn, $root.lang.arguments, $root.lang.string, exports);
     }
 }(this, function(_type, _fn, _arguments, _str, exports) {
-    //'use strict';
+    'use strict';
     exports = exports || {};
     
     var varArg = _arguments.varArg;

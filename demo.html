@@ -1,8 +1,11 @@
 <html>
     <head>
         <title>The Big Demo</title>
+        <base href="." />
         <link rel="stylesheet" href="release/css/Paginator.css" />
         <link rel="stylesheet" href="release/css/Table.css" />
+        <link rel="stylesheet" href="release/css/Dialog.css" />
+        <link rel="stylesheet" href="release/css/Menu.css" />
 
         <script src="release/scripts/aztec.js"></script>
         <script src="release/scripts/lang/json.js"></script>
@@ -24,6 +27,11 @@
         <script src="release/scripts/ui/list.js"></script>
         <script src="release/scripts/ui/paginator.js"></script>
         <script src="release/scripts/ui/table.js"></script>
+        
+        <script src="release/scripts/ui/draggable.js"></script>
+        <script src="release/scripts/ui/overlay.js"></script>
+        <script src="release/scripts/ui/dialog.js"></script>
+        <script src="release/scripts/ui/menu.js"></script>
     </head>
 
     <body>
@@ -37,6 +45,28 @@
 
             });
             p.appendTo('body');
+
+            //Menu
+            Menu = $root.ui.menu.Menu;
+            m = new Menu();
+            m.addItems(['Share','Copy Text']).appendTo('body').hide();
+
+            //Dialog
+            Dialog = $root.ui.dialog.Dialog;
+            d = new Dialog().setTitle('Dialog Demo').setContent('Hello World!');
+            d.header.append(Dialog.Parts.TitleButtonArrowDown);
+            d.on(Dialog.Events.OnTitleButtonClicked, function(e, index, button){
+                var rect;
+                if(index == 1) {
+                    rect = button[0].getBoundingClientRect();
+                    m.showAt(rect.right - m.width(), rect.bottom);
+                }
+            })
+            d.setButtons(d.options.buttons);
+            d.appendTo('body');
+            d.showAt('golden');
+
+
         </script>
         <script type="text/x-aztec-widget">
             <widget appendTo="body">

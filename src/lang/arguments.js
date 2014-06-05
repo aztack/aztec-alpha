@@ -235,7 +235,7 @@ function varArg(args, context) {
             return _fn.applyNew(ctor, getArgs());
         },
         args: function(i) {
-            return getArgs()[i];
+            return typeof i == 'undefined' ? getArgs() : getArgs()[i];
         },
         resolve: function() {
             getArgs();

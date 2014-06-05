@@ -1,7 +1,8 @@
 /**
- * Query Selector
- * --------------
- * Dependencies: $root.lang.type,$root.lang.string,$root.lang.array
+ * #Query Selector#
+ * ==============
+ * - Dependencies: `lang/type`,`lang/string`,`lang/array`
+ * - Version: 0.0.1
  */
 
 (function(root, factory) {
@@ -17,7 +18,7 @@
         factory($root.lang.type, $root.lang.string, $root.lang.array, exports);
     }
 }(this, function(_type, _str, _ary, exports) {
-    //'use strict';
+    'use strict';
     exports = exports || {};
     
 /*
