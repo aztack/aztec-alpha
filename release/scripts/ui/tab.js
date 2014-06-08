@@ -5,22 +5,12 @@
  * - Version: 0.0.1
  */
 
-(function(root, factory) {
+(function(global, factory) {
     if (typeof define === 'function' && define.amd) {
         define('ui/tab', ['lang/string', 'lang/type', 'lang/enumerable', 'lang/number', 'ui/list', 'browser/template', 'lang/arguments', 'jquery', 'jQueryExt'], factory);
-    } else if (typeof module === 'object') {
-        var $root_lang_string = require('lang/string'),
-            $root_lang_type = require('lang/type'),
-            $root_lang_enumerable = require('lang/enumerable'),
-            $root_lang_number = require('lang/number'),
-            $root_ui_list = require('ui/list'),
-            $root_browser_template = require('browser/template'),
-            $root_lang_arguments = require('lang/arguments'),
-            jquery = require('jquery'),
-            jQueryExt = require('jQueryExt');
-        module.exports = factory($root_lang_string, $root_lang_type, $root_lang_enumerable, $root_lang_number, $root_ui_list, $root_browser_template, $root_lang_arguments, jquery, jQueryExt, exports, module, require);
     } else {
-        var exports = $root._createNS('$root.ui.tab');
+        var $root = global.$root,
+            exports = $root._createNS('$root.ui.tab');
         factory($root.lang.string, $root.lang.type, $root.lang.enumerable, $root.lang.number, $root.ui.list, $root.browser.template, $root.lang.arguments, jQuery, jQueryExt, exports);
     }
 }(this, function(_str, _type, _enum, _num, _list, _tpl, _arguments, $, jqe, exports) {

@@ -5,22 +5,12 @@
  * - Version: 0.0.1
  */
 
-(function(root, factory) {
+(function(global, factory) {
     if (typeof define === 'function' && define.amd) {
         define('ui/spinEdit', ['lang/type', 'lang/string', 'lang/number', 'lang/fn', 'lang/arguments', 'browser/template', 'ui/textField', 'jquery', 'jQueryExt'], factory);
-    } else if (typeof module === 'object') {
-        var $root_lang_type = require('lang/type'),
-            $root_lang_string = require('lang/string'),
-            $root_lang_number = require('lang/number'),
-            $root_lang_fn = require('lang/fn'),
-            $root_lang_arguments = require('lang/arguments'),
-            $root_browser_template = require('browser/template'),
-            $root_ui_textField = require('ui/textField'),
-            jquery = require('jquery'),
-            jQueryExt = require('jQueryExt');
-        module.exports = factory($root_lang_type, $root_lang_string, $root_lang_number, $root_lang_fn, $root_lang_arguments, $root_browser_template, $root_ui_textField, jquery, jQueryExt, exports, module, require);
     } else {
-        var exports = $root._createNS('$root.ui.spinEdit');
+        var $root = global.$root,
+            exports = $root._createNS('$root.ui.spinEdit');
         factory($root.lang.type, $root.lang.string, $root.lang.number, $root.lang.fn, $root.lang.arguments, $root.browser.template, $root.ui.textField, jQuery, jQueryExt, exports);
     }
 }(this, function(_type, _str, _number, _fn, _arguments, _tpl, _tf, $, jqe, exports) {

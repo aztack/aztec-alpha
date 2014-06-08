@@ -5,7 +5,8 @@
         _type: $root.lang.type,
         _object: $root.lang.object
     },
-    priority: 1
+    priority: 1,
+    returns: jQuery
 });
 
 jQuery.typename = function() {
@@ -152,4 +153,6 @@ if (typeof jQuery !== 'undefined') {
         this.trigger('afterremove');
         return this;
     };
-} //we have jQuery
+
+    window.jQueryExt = jQuery;
+}

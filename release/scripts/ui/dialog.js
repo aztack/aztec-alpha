@@ -5,22 +5,12 @@
  * - Version: 0.0.1
  */
 
-(function(root, factory) {
+(function(global, factory) {
     if (typeof define === 'function' && define.amd) {
         define('ui/dialog', ['lang/type', 'lang/fn', 'lang/enumerable', 'browser/template', 'lang/arguments', 'ui/draggable', 'ui/overlay', 'jquery', 'jQueryExt'], factory);
-    } else if (typeof module === 'object') {
-        var $root_lang_type = require('lang/type'),
-            $root_lang_fn = require('lang/fn'),
-            $root_lang_enumerable = require('lang/enumerable'),
-            $root_browser_template = require('browser/template'),
-            $root_lang_arguments = require('lang/arguments'),
-            $root_ui_draggable = require('ui/draggable'),
-            $root_ui_overlay = require('ui/overlay'),
-            jquery = require('jquery'),
-            jQueryExt = require('jQueryExt');
-        module.exports = factory($root_lang_type, $root_lang_fn, $root_lang_enumerable, $root_browser_template, $root_lang_arguments, $root_ui_draggable, $root_ui_overlay, jquery, jQueryExt, exports, module, require);
     } else {
-        var exports = $root._createNS('$root.ui.dialog');
+        var $root = global.$root,
+            exports = $root._createNS('$root.ui.dialog');
         factory($root.lang.type, $root.lang.fn, $root.lang.enumerable, $root.browser.template, $root.lang.arguments, $root.ui.draggable, $root.ui.overlay, jQuery, jQueryExt, exports);
     }
 }(this, function(_type, _fn, _enum, _tpl, _arguments, _drag, _overlay, $, jqe, exports) {

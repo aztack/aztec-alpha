@@ -5,15 +5,12 @@
  * - Version: 0.0.1
  */
 
-(function(root, factory) {
+(function(global, factory) {
     if (typeof define === 'function' && define.amd) {
         define('browser/template', ['lang/type', 'jquery'], factory);
-    } else if (typeof module === 'object') {
-        var $root_lang_type = require('lang/type'),
-            jquery = require('jquery');
-        module.exports = factory($root_lang_type, jquery, exports, module, require);
     } else {
-        var exports = $root._createNS('$root.browser.template');
+        var $root = global.$root,
+            exports = $root._createNS('$root.browser.template');
         factory($root.lang.type, jQuery, exports);
     }
 }(this, function(_type, $, exports) {

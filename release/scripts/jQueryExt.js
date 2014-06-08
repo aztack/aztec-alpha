@@ -5,15 +5,12 @@
  * - Version: 0.0.1
  */
 
-(function(root, factory) {
+(function(global, factory) {
     if (typeof define === 'function' && define.amd) {
         define('jQueryExt', ['lang/type', 'lang/object'], factory);
-    } else if (typeof module === 'object') {
-        var $root_lang_type = require('lang/type'),
-            $root_lang_object = require('lang/object');
-        module.exports = factory($root_lang_type, $root_lang_object, exports, module, require);
     } else {
-        var exports = $root._createNS('jQueryExt');
+        var $root = global.$root,
+            exports = $root._createNS('jQueryExt');
         factory($root.lang.type, $root.lang.object, exports);
     }
 }(this, function(_type, _object, exports) {
@@ -164,11 +161,10 @@ if (typeof jQuery !== 'undefined') {
         this.trigger('afterremove');
         return this;
     };
-} //we have jQuery
+
+    window.jQueryExt = jQuery;
+}
     
-    
-    exports.__doc__ = "jQuery Sigil Extension";
-    exports.VERSION = '0.0.1';
-    return exports;
+    return jQuery;
 }));
 //end of jQueryExt

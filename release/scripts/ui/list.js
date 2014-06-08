@@ -5,19 +5,12 @@
  * - Version: 0.0.1
  */
 
-(function(root, factory) {
+(function(global, factory) {
     if (typeof define === 'function' && define.amd) {
         define('ui/list', ['lang/type', 'lang/fn', 'lang/string', 'lang/arguments', 'jquery', 'jQueryExt'], factory);
-    } else if (typeof module === 'object') {
-        var $root_lang_type = require('lang/type'),
-            $root_lang_fn = require('lang/fn'),
-            $root_lang_string = require('lang/string'),
-            $root_lang_arguments = require('lang/arguments'),
-            jquery = require('jquery'),
-            jQueryExt = require('jQueryExt');
-        module.exports = factory($root_lang_type, $root_lang_fn, $root_lang_string, $root_lang_arguments, jquery, jQueryExt, exports, module, require);
     } else {
-        var exports = $root._createNS('$root.ui.list');
+        var $root = global.$root,
+            exports = $root._createNS('$root.ui.list');
         factory($root.lang.type, $root.lang.fn, $root.lang.string, $root.lang.arguments, jQuery, jQueryExt, exports);
     }
 }(this, function(_type, _fn, _str, _arguments, $, jqe, exports) {

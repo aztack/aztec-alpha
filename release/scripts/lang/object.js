@@ -5,16 +5,17 @@
  * - Version: 0.0.1
  */
 
-(function(root, factory) {
+(function(global, factory) {
     if (typeof define === 'function' && define.amd) {
         define('lang/object', ['lang/type', 'lang/string', 'lang/enumerable'], factory);
-    } else if (typeof module === 'object') {
-        var $root_lang_type = require('lang/type'),
-            $root_lang_string = require('lang/string'),
-            $root_lang_enumerable = require('lang/enumerable');
+    } else if (typeof module == 'object') {
+        var $root_lang_type = require('./type.js'),
+            $root_lang_string = require('./string.js'),
+            $root_lang_enumerable = require('./enumerable.js');
         module.exports = factory($root_lang_type, $root_lang_string, $root_lang_enumerable, exports, module, require);
     } else {
-        var exports = $root._createNS('$root.lang.object');
+        var $root = global.$root,
+            exports = $root._createNS('$root.lang.object');
         factory($root.lang.type, $root.lang.string, $root.lang.enumerable, exports);
     }
 }(this, function(_type, _str, _enum, exports) {
@@ -43,7 +44,7 @@
      * @param  {Object} obj
      * @return {Array}
      */
-    var keys = Object.keys || function(obj) {
+    function keys(obj) {
         var ret = [];
         for (var i in obj) {
             if (obj.hasOwnProperty(i)) {

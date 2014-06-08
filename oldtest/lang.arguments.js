@@ -82,14 +82,5 @@ test("$root.lang.arguments", function(require, specs) {
                 }).args();
             return [a[0], b, c[0]];
         })
-        .___('arguments#varArg.color')
-        .it.should.equal([true], function() {
-            var a = _arg.varArg(['red', '#ff0000', '#0ff'])
-                .when('color', 'color', 'color', function() {
-                    return true;
-                })
-                .args();
-            return [a[0]];
-        })
         .done();
 });

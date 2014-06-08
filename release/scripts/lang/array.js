@@ -5,15 +5,16 @@
  * - Version: 0.0.1
  */
 
-(function(root, factory) {
+(function(global, factory) {
     if (typeof define === 'function' && define.amd) {
         define('lang/array', ['lang/type', 'lang/fn'], factory);
-    } else if (typeof module === 'object') {
-        var $root_lang_type = require('lang/type'),
-            $root_lang_fn = require('lang/fn');
+    } else if (typeof module == 'object') {
+        var $root_lang_type = require('./type.js'),
+            $root_lang_fn = require('./fn.js');
         module.exports = factory($root_lang_type, $root_lang_fn, exports, module, require);
     } else {
-        var exports = $root._createNS('$root.lang.array');
+        var $root = global.$root,
+            exports = $root._createNS('$root.lang.array');
         factory($root.lang.type, $root.lang.fn, exports);
     }
 }(this, function(_type, _fn, exports) {

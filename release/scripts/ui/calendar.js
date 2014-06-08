@@ -5,20 +5,12 @@
  * - Version: 0.0.1
  */
 
-(function(root, factory) {
+(function(global, factory) {
     if (typeof define === 'function' && define.amd) {
         define('ui/calendar', ['lang/type', 'lang/string', 'lang/arguments', 'lang/date', 'browser/template', 'ui/table', 'jquery'], factory);
-    } else if (typeof module === 'object') {
-        var $root_lang_type = require('lang/type'),
-            $root_lang_string = require('lang/string'),
-            $root_lang_arguments = require('lang/arguments'),
-            $root_lang_date = require('lang/date'),
-            $root_browser_template = require('browser/template'),
-            $root_ui_table = require('ui/table'),
-            jquery = require('jquery');
-        module.exports = factory($root_lang_type, $root_lang_string, $root_lang_arguments, $root_lang_date, $root_browser_template, $root_ui_table, jquery, exports, module, require);
     } else {
-        var exports = $root._createNS('$root.ui.calendar');
+        var $root = global.$root,
+            exports = $root._createNS('$root.ui.calendar');
         factory($root.lang.type, $root.lang.string, $root.lang.arguments, $root.lang.date, $root.browser.template, $root.ui.table, jQuery, exports);
     }
 }(this, function(_type, _str, _arguments, _date, _tpl, _table, $, exports) {

@@ -5,20 +5,21 @@
  * - Version: 0.0.1
  */
 
-(function(root, factory) {
+(function(global, factory) {
     if (typeof define === 'function' && define.amd) {
         define('lang/intrusive', ['lang/string', 'lang/array', 'lang/object', 'lang/date', 'lang/number', 'lang/enumerable', 'lang/fn'], factory);
-    } else if (typeof module === 'object') {
-        var $root_lang_string = require('lang/string'),
-            $root_lang_array = require('lang/array'),
-            $root_lang_object = require('lang/object'),
-            $root_lang_date = require('lang/date'),
-            $root_lang_number = require('lang/number'),
-            $root_lang_enumerable = require('lang/enumerable'),
-            $root_lang_fn = require('lang/fn');
+    } else if (typeof module == 'object') {
+        var $root_lang_string = require('./string.js'),
+            $root_lang_array = require('./array.js'),
+            $root_lang_object = require('./object.js'),
+            $root_lang_date = require('./date.js'),
+            $root_lang_number = require('./number.js'),
+            $root_lang_enumerable = require('./enumerable.js'),
+            $root_lang_fn = require('./fn.js');
         module.exports = factory($root_lang_string, $root_lang_array, $root_lang_object, $root_lang_date, $root_lang_number, $root_lang_enumerable, $root_lang_fn, exports, module, require);
     } else {
-        var exports = $root._createNS('$root.lang.intrusive');
+        var $root = global.$root,
+            exports = $root._createNS('$root.lang.intrusive');
         factory($root.lang.string, $root.lang.array, $root.lang.object, $root.lang.date, $root.lang.number, $root.lang.enumerable, $root.lang.fn, exports);
     }
 }(this, function(_str, _array, _object, _date, _num, _enum, _fn, exports) {

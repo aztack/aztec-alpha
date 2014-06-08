@@ -150,8 +150,9 @@ function Menu_initialize(self) {
     });
     $(document).on('mousedown', function(e) {
         var t = $(e.target);
-        if (t.closest('ui-menu').length == 0 ) {
+        if (!t.closest('.ui-menu').length && self.is(':visible')) {
             self.hide();
+            return false;
         }
     });
 }

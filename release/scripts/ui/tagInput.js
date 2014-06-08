@@ -5,20 +5,12 @@
  * - Version: 0.0.1
  */
 
-(function(root, factory) {
+(function(global, factory) {
     if (typeof define === 'function' && define.amd) {
         define('ui/tagInput', ['lang/type', 'lang/string', 'browser/template', 'lang/enumerable', 'lang/fn', 'lang/arguments', 'jquery'], factory);
-    } else if (typeof module === 'object') {
-        var $root_lang_type = require('lang/type'),
-            $root_lang_string = require('lang/string'),
-            $root_browser_template = require('browser/template'),
-            $root_lang_enumerable = require('lang/enumerable'),
-            $root_lang_fn = require('lang/fn'),
-            $root_lang_arguments = require('lang/arguments'),
-            jquery = require('jquery');
-        module.exports = factory($root_lang_type, $root_lang_string, $root_browser_template, $root_lang_enumerable, $root_lang_fn, $root_lang_arguments, jquery, exports, module, require);
     } else {
-        var exports = $root._createNS('$root.ui.tagInput');
+        var $root = global.$root,
+            exports = $root._createNS('$root.ui.tagInput');
         factory($root.lang.type, $root.lang.string, $root.browser.template, $root.lang.enumerable, $root.lang.fn, $root.lang.arguments, jQuery, exports);
     }
 }(this, function(_type, _str, _tpl, _enum, _fn, _arguments, $, exports) {

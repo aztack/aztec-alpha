@@ -5,16 +5,12 @@
  * - Version: 0.0.1
  */
 
-(function(root, factory) {
+(function(global, factory) {
     if (typeof define === 'function' && define.amd) {
         define('browser/dom', ['lang/type', 'lang/enumerable', 'lang/string'], factory);
-    } else if (typeof module === 'object') {
-        var $root_lang_type = require('lang/type'),
-            $root_lang_enumerable = require('lang/enumerable'),
-            $root_lang_string = require('lang/string');
-        module.exports = factory($root_lang_type, $root_lang_enumerable, $root_lang_string, exports, module, require);
     } else {
-        var exports = $root._createNS('$root.browser.dom');
+        var $root = global.$root,
+            exports = $root._createNS('$root.browser.dom');
         factory($root.lang.type, $root.lang.enumerable, $root.lang.string, exports);
     }
 }(this, function(_type, _enum, _str, exports) {

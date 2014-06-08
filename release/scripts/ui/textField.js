@@ -5,18 +5,12 @@
  * - Version: 0.0.1
  */
 
-(function(root, factory) {
+(function(global, factory) {
     if (typeof define === 'function' && define.amd) {
         define('ui/textField', ['lang/type', 'browser/template', 'lang/arguments', 'jquery', 'jQueryExt'], factory);
-    } else if (typeof module === 'object') {
-        var $root_lang_type = require('lang/type'),
-            $root_browser_template = require('browser/template'),
-            $root_lang_arguments = require('lang/arguments'),
-            jquery = require('jquery'),
-            jQueryExt = require('jQueryExt');
-        module.exports = factory($root_lang_type, $root_browser_template, $root_lang_arguments, jquery, jQueryExt, exports, module, require);
     } else {
-        var exports = $root._createNS('$root.ui.textField');
+        var $root = global.$root,
+            exports = $root._createNS('$root.ui.textField');
         factory($root.lang.type, $root.browser.template, $root.lang.arguments, jQuery, jQueryExt, exports);
     }
 }(this, function(_type, _tpl, _arguments, $, jqe, exports) {

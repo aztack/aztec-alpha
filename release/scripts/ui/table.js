@@ -5,23 +5,12 @@
  * - Version: 0.0.1
  */
 
-(function(root, factory) {
+(function(global, factory) {
     if (typeof define === 'function' && define.amd) {
         define('ui/table', ['lang/type', 'lang/string', 'lang/object', 'lang/enumerable', 'lang/fn', 'lang/arguments', 'browser/template', 'jquery', 'jQueryExt', 'browser/template'], factory);
-    } else if (typeof module === 'object') {
-        var $root_lang_type = require('lang/type'),
-            $root_lang_string = require('lang/string'),
-            $root_lang_object = require('lang/object'),
-            $root_lang_enumerable = require('lang/enumerable'),
-            $root_lang_fn = require('lang/fn'),
-            $root_lang_arguments = require('lang/arguments'),
-            $root_browser_template = require('browser/template'),
-            jquery = require('jquery'),
-            jQueryExt = require('jQueryExt'),
-            $root_browser_template = require('browser/template');
-        module.exports = factory($root_lang_type, $root_lang_string, $root_lang_object, $root_lang_enumerable, $root_lang_fn, $root_lang_arguments, $root_browser_template, jquery, jQueryExt, $root_browser_template, exports, module, require);
     } else {
-        var exports = $root._createNS('$root.ui.table');
+        var $root = global.$root,
+            exports = $root._createNS('$root.ui.table');
         factory($root.lang.type, $root.lang.string, $root.lang.object, $root.lang.enumerable, $root.lang.fn, $root.lang.arguments, $root.browser.template, jQuery, jQueryExt, $root.browser.template, exports);
     }
 }(this, function(_type, _str, _object, _enum, _fn, _arguments, _template, $, jqe, _tpl, exports) {

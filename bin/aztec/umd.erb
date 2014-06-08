@@ -3,15 +3,21 @@
 <%=@original -%>
 <% else %>
 <%
+	def get_relative_path(a,b)
+		pa = Pathname.new(a.sub('$root.','').gsub('.','/') + '.js')
+		pb = Pathname.new(b.sub('$root.','').gsub('.','/') + '.js')
+		pb.relative_path_from(pa).to_s.sub('../','./')
+	end
     def ns_to_assign(e)
-        "#{e.gsub('.','_')} = require('#{e.gsub('$root.','').gsub('.','/')}')"
+        "#{e.gsub('.','_')} = require('#{get_relative_path(@config.namespace, e)}')"
     end
 %>
-(function(root, factory) {
+(function(global, factory) {
     <% @mods = @imports.values.clone %>
     if (typeof define === 'function' && define.amd) {
         define('<%=@name_requirejs%>', [<% unless @imports_requirejs.empty?%><%=@imports_requirejs%><% end %>], factory);
-    } else if (typeof module === 'object') {
+    <% if @config.namespace['.lang.'] %>
+    } else if (typeof module == 'object') {
         <% if @mods.size > 0 -%>
         var <%=ns_to_assign(@mods[0])%><%=@mods.size == 1 ? ';' : ','%>
             <% @mm = @mods[1..-1];@mm.each_with_index do |e,i| -%>
@@ -19,8 +25,10 @@
             <% end -%>
         <% end -%>
         module.exports = factory(<%=@mods.map{|e|e.gsub('.','_')}.push('exports, module, require').join(', ') rescue nil%>);
+    <% end %>
     } else {
-        var exports = $root._createNS('<%=@name%>');
+        var $root = global.$root,
+            exports = $root._createNS('<%=@name%>');
         factory(<%=@mods.push('exports').join(', ').gsub('jquery','jQuery')%>);
     }
 }(this, function(<%=@imports.keys.push('exports').join(', ')%>) {

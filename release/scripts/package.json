@@ -1,0 +1,22 @@
+{
+  "name": "aztec",
+  "version": "0.0.1",
+  "description": "The Aztec JavaScript Framework",
+  "main": "aztec.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/aztack/aztec-alpha.git"
+  },
+  "keywords": [
+    "JavaScript"
+  ],
+  "author": "Aztack",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/aztack/aztec-alpha/issues"
+  },
+  "homepage": "https://github.com/aztack/aztec-alpha"
+}

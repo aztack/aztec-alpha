@@ -31,7 +31,7 @@ OptionParser.new do |opts|
 		s = man.js_with_dependency(namespace,spec,ex)
 		File.write(namespace +'.js',s);
 		s = man.css_with_dependency(namespace)
-		File.write(namespace + '.css',s)
+		File.write(namespace + '.css',s) if s.size > 0
 		$stdout.puts 'Done!'
 	end
 	

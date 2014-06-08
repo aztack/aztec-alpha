@@ -41,7 +41,7 @@ function mix(target, source) {
  * @param  {Object} obj
  * @return {Array}
  */
-var keys = Object.keys || function(obj) {
+function keys(obj) {
     var ret = [];
     for (var i in obj) {
         if (obj.hasOwnProperty(i)) {

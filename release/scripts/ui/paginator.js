@@ -5,23 +5,12 @@
  * - Version: 0.0.1
  */
 
-(function(root, factory) {
+(function(global, factory) {
     if (typeof define === 'function' && define.amd) {
         define('ui/paginator', ['lang/type', 'lang/number', 'lang/string', 'lang/array', 'lang/range', 'browser/template', 'lang/arguments', 'ui/list', 'jquery', 'jQueryExt'], factory);
-    } else if (typeof module === 'object') {
-        var $root_lang_type = require('lang/type'),
-            $root_lang_number = require('lang/number'),
-            $root_lang_string = require('lang/string'),
-            $root_lang_array = require('lang/array'),
-            $root_lang_range = require('lang/range'),
-            $root_browser_template = require('browser/template'),
-            $root_lang_arguments = require('lang/arguments'),
-            $root_ui_list = require('ui/list'),
-            jquery = require('jquery'),
-            jQueryExt = require('jQueryExt');
-        module.exports = factory($root_lang_type, $root_lang_number, $root_lang_string, $root_lang_array, $root_lang_range, $root_browser_template, $root_lang_arguments, $root_ui_list, jquery, jQueryExt, exports, module, require);
     } else {
-        var exports = $root._createNS('$root.ui.paginator');
+        var $root = global.$root,
+            exports = $root._createNS('$root.ui.paginator');
         factory($root.lang.type, $root.lang.number, $root.lang.string, $root.lang.array, $root.lang.range, $root.browser.template, $root.lang.arguments, $root.ui.list, jQuery, jQueryExt, exports);
     }
 }(this, function(_type, _num, _str, _ary, _range, _tpl, _arguments, _list, $, jqe, exports) {
