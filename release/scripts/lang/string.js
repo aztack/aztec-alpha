@@ -296,16 +296,25 @@ var format = (function() {
     function postprocess(ret, a) {
         var align = parseInt(a.align),
             absAlign = Math.abs(a.align),
-            result;
+            result, retStr;
+
+        if(ret == null) {
+            retStr = '';
+        } else if(typeof ret == 'number') {
+            retStr = '' + ret;
+        } else {
+            throw new Error('Invalid argument type!');
+        }
 
         if (absAlign === 0) {
             return ret;
-        } else if (absAlign < ret.length) {
-            return align > 0 ? ret.slice(0, absAlign) : ret.slice(-absAlign);
+        } else if (absAlign < retStr.length) {
+            result = align > 0 ? retStr.slice(0, absAlign) : retStr.slice(-absAlign);
         } else {
-            result = Array(absAlign - ret.length + 1).join(a.pad || format.DefaultPaddingChar);
-            return align > 0 ? result + ret : ret + result;
+            result = Array(absAlign - retStr.length + 1).join(a.pad || format.DefaultPaddingChar);
+            result = align > 0 ? result + retStr : retStr + result;
         }
+        return result;
     }
 
     function tryget(o, path, v) {

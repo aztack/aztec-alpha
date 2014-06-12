@@ -18,7 +18,7 @@ text-align: center;
 text-align: left;
 }
 .ui-table thead th {
-min-width: 3em; white-space: nowrap; padding: 4px;
+white-space: nowrap; padding: 4px;
 }
 .ui-table thead {
 background: url(images/table-header_bg.png) repeat-x 0 0;

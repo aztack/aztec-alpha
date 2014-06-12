@@ -109,7 +109,7 @@
                     return [parent, x || 0, y || 0];
                 })
                 .invoke(function(parent, x, y) {
-                    this.appendTo(parent).show().css({
+                    this.appendTo(parent||'body').show().css({
                         left: x,
                         top: y
                     });

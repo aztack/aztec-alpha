@@ -183,6 +183,16 @@ module Aztec
                     f.write tmp.send(:"to_#{spec}")
                 end
             end
+
+            #css
+            filename_noext = File.basename(main.basename,'.js')
+            output_css_path = "#{output_dir}/css/#{filename_noext}.css"
+            css_text = main.styles
+            if css_text and css_text.size > 0
+                File.open(output_css_path,"w:utf-8") do |f|
+                    f.write main.styles
+                end
+            end
         end
 
         def [](namespace)

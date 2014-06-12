@@ -34,11 +34,15 @@ var secondsOfMinute = 60,
     secondsOfDay = 86400,
     namesOfMonths = {
         en: [null, 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'Augest', 'September', 'October', 'November', 'December'],
-        chs: [null, '一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月']
+        enShort: [null, 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+        chs: [null, '一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+        chsShort: [null, '一', '二', '三', '四', '五', '六', '七', '八', '九', '十', '十一', '十二']
     },
     namesOfWeekday = {
         en: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
-        chs: ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六', ]
+        enShort: ['Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat'],
+        chs: ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'],
+        chsShort: ['日', '一', '二', '三', '四', '五', '六']
     },
     _daysOfMonth = {
         'false': [-1, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31],
@@ -83,9 +87,12 @@ function format(self, sep) {
     });
 }
 
-function _returnDay() {
-    return this.date;
-}
+var _returnDay = function() {
+        return this.date;
+    },
+    _format = function() {
+        return this.year + '-' + this.month + '-' + this.date;
+    };
 
 
 function calendar(year, month) {
@@ -95,7 +102,7 @@ function calendar(year, month) {
     var cacheKey = '' + year + '-' + month;
     if (calendar.cache[cacheKey]) return calendar.cache[cacheKey];
 
-    table = [
+    var table = [
         [null, null, null, null, null, null, null],
         [null, null, null, null, null, null, null],
         [null, null, null, null, null, null, null],
@@ -136,7 +143,8 @@ function calendar(year, month) {
         for (j = 0; j < 7; ++j) {
             var dayInfo = {
                 toString: _returnDay,
-                valueOf: _returnDay
+                valueOf: _returnDay,
+                format: _format
             };
             if (x <= days && (i > 0 || (i === 0 && j >= day))) {
                 if (flag && x === today.getDate() && thisMonth === today.getMonth() + 1 && thisYear === today.getFullYear()) {
