@@ -78,6 +78,8 @@ var Table = _type.create('$root.ui.Table', jQuery, {
                 var template = Table.Template.Table;
                 if (opts.fixhead || false) {
                     template = Table.Template.FixHeadTable;
+                } else if (opts.simple) {
+                    template = Table.Template.Simple;
                 }
                 return [this.base(template), opts];
             })
@@ -104,8 +106,8 @@ var Table = _type.create('$root.ui.Table', jQuery, {
             })
             .when('arrayLike', function(headers) {
                 var ths = _enum.map(headers, function(col) {
-                    return _str.format('<th>{0}</th>', [col]);
-                }).join(''),
+                        return _str.format('<th>{0}</th>', [col]);
+                    }).join(''),
                     lastTr = this.header.children().last(),
                     html = '<tr>' + ths + '</tr>';
                 if (lastTr.length) {
@@ -311,11 +313,13 @@ var Table = _type.create('$root.ui.Table', jQuery, {
         }
     }
 }).options({
-    fixhead: false
+    fixhead: false,
+    footer: false
 }).statics({
     Template: {
         Table: tpl('table'),
-        FixHeadTable: tpl('fixHeadTable')
+        FixHeadTable: tpl('fixHeadTable'),
+        Simple: tpl('simple')
     },
     Status: {
         Loading: 'loading',
@@ -344,20 +348,21 @@ function Table_initialize(self, opts) {
     }
     if (!opts.footer) {
         self.footer.remove();
-        self.$attr('footer', $());
+        self.$attr('footer', null);
     }
 
-    self.body.delegate('td', 'click', function(e) {
+    self.body.delegate('td', 'mouseup', function(e) {
+        if (e.which !== 1) return;
         var data = self.$get('tableData'),
             td = $(this),
             tr = td.closest('tr'),
-            data = self.$get('tableData'),
             col = tr.children().index(td),
             row = tr.parent().children().index(tr);
         self.trigger(Table.Events.OnCellClicked, [e.target, row, col, data[row][col]]);
     });
 
-    self.header.delegate('th', 'click', function(e) {
+    self.header.delegate('th', 'mouseup', function(e) {
+        if (e.which !== 1) return;
         var ths = self.header.find('th'),
             i = ths.index(this),
             text = $(this).text();

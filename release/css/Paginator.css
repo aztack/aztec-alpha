@@ -1,12 +1,12 @@
 /* $root.ui.paginator */
 .ui-paginator {
-margin: 0; padding: 0;
+margin: 0; padding: 0; font-size: 12px;
 }
 .ui-paginator-item {
-border: 1px solid #ccc; display: inline-block; cursor: pointer; margin: 0 2px 0 2px; padding: 0 4px 0 4px; text-align: center; -webkit-user-select: none;
+border: 1px solid #ccc; display: inline-block; cursor: pointer; margin: 0 2px 0 2px; padding: 2px 5px 2px 5px; text-align: center; -webkit-user-select: none;
 }
 .ui-paginator-button {
-border: 1px solid #ccc; display: inline-block; cursor: pointer; margin: 0 2px 0 2px; padding: 0 4px 0 4px; text-align: center; -webkit-user-select: none;
+border: 1px solid #ccc; display: inline-block; cursor: pointer; margin: 0 2px 0 2px; padding: 2px 5px 2px 5px; text-align: center; -webkit-user-select: none;
 }
 .ui-paginator-button:hover {
 background: #ccc;

@@ -145,7 +145,7 @@
                 if (x <= days && (i > 0 || (i === 0 && j >= day))) {
                     if (flag && x === today.getDate() && thisMonth === today.getMonth() + 1 && thisYear === today.getFullYear()) {
                         dayInfo.today = true;
-                        flag = false;
+                        flag = false;//today set
                     }
                     dayInfo.date = x++;
                     dayInfo.year = thisYear;
@@ -219,7 +219,16 @@
         milliseconds: gsetter('getMilliseconds', 'setMilliseconds'),
         toString: function(noTime) {
             var t = this.$get('value'),
-                fmt = noTime ? DateTime.DefaultDateFormat : DateTime.DefaultDateTimeFormat;
+                fmt;
+            if (!noTime) {
+                fmt = DateTime.DefaultDateFormat;
+            } else {
+                if (typeof noTime == 'string') {
+                    fmt = noTime;
+                } else {
+                    fmt = DateTime.DefaultDateTimeFormat;
+                }
+            }
             return _str.format(fmt, {
                 year: t.getFullYear(),
                 month: t.getMonth() + 1,
@@ -228,9 +237,6 @@
                 minute: t.getMinutes(),
                 second: t.getSeconds()
             });
-        },
-        format: function(fmt) {
-            if (!fmt) return this.toString();
         },
         valueOf: function() {
             return this.$get('value').getTime();
@@ -275,6 +281,8 @@
         equal: function(other) {
             return this.value.getTime() == other.value.getTime();
         }
+    }).aliases({
+        format: 'toString'
     }).methods({
         firstDayOfMonth: function() {
             return this.set({
@@ -285,6 +293,14 @@
             return this.set({
                 month: this.month() + 1,
                 date: 0
+            });
+        },
+        today: function() {
+            var today = DateTime.Today();
+            return this.set({
+                year: today.year(),
+                month: today.month(),
+                date: today.date()
             });
         },
         yesterday: function() {

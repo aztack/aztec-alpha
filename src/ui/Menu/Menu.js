@@ -107,8 +107,15 @@ var Menu = _type.create('$root.ui.Menu', List, {
             .when('jquery', 'number', 'number', function(parent, x, y) {
                 return [parent, x || 0, y || 0];
             })
+            .when('{*}',function(offset){
+                var x = offset.left, y = offset.top;
+                if(x == null) x = offset.x;
+                if(y == null) y = offset.y;
+                return [parent, x, y];
+            })
             .invoke(function(parent, x, y) {
-                this.appendTo(parent||'body').show().css({
+                if(!parent || !parent.length) parent = 'body';
+                this.appendTo(parent).show().css({
                     left: x,
                     top: y
                 });
@@ -137,6 +144,7 @@ var Menu = _type.create('$root.ui.Menu', List, {
 function Menu_initialize(self) {
     var submenu;
     self.css('position', 'absolute').on('mouseup', function(e) {
+        if(e.which !== 1) return;
         var index = self.indexOf(e.target),
             item;
         if (index < 0) {
@@ -149,6 +157,7 @@ function Menu_initialize(self) {
         self.hide();
     });
     $(document).on('mousedown', function(e) {
+        if(e.which !== 1) return;
         var t = $(e.target);
         if (!t.closest('.ui-menu').length && self.is(':visible')) {
             self.hide();

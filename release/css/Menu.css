@@ -1,6 +1,6 @@
 /* $root.ui.menu */
 .ui-menu {
-margin: 0; padding: 0; border: 1px solid gray; cursor: pointer; min-width: 100px; box-shadow: 2px 2px 2px #888; background-color: #fff; display: inline-block; position: absolute; list-style: none; z-index: 10010;
+margin: 0; padding: 0; border: 1px solid gray; cursor: pointer; box-shadow: 2px 2px 2px #888; background-color: #fff; display: inline-block; position: absolute; list-style: none; z-index: 10010;
 }
 .ui-menu-item {
 list-style: none; display: block; padding: 2px;

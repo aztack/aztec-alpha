@@ -18,6 +18,7 @@
     exports = exports || {};
     _tpl
         .set('$root.ui.Table.table',"<table class=\"ui-table\">\n<thead class=\"ui-thead\"></thead>\n<tbody class=\"ui-tbody-data\"></tbody>\n<tbody class=\"ui-tbody-loading\"><tr><td></td></tr></tbody>\n<tbody class=\"ui-tbody-nodata\"><tr><td>No Data</td></tr></tbody>\n<tfoot class=\"ui-tfoot\"><tr><td></td></tr></tfoot>\n</table>\n")
+        .set('$root.ui.Table.simple',"<table class=\"ui-table\">\n<thead class=\"ui-thead\"></thead>\n<tbody class=\"ui-tbody-data\"></tbody>\n<tfoot class=\"ui-tfoot\"><tr><td></td></tr></tfoot>\n</table>\n")
         .set('$root.ui.Table.fixHeadTable',"<div class=\"ui-table ui-table-fixhead\">\n<div class=\"head\"><table><thead class=\"ui-thead\"></thead></table></div>\n<div class=\"body\" style=\"overflow-y:auto\">\n<div class=\"ui-tbody-loading\"></div>\n<div class=\"ui-tbody-nodata\">No Data</div>\n<table><tbody class=\"ui-tbody-data\"></tbody></table>\n</div>\n<div class=\"ui-tfoot\"></div>\n</div>\n");
     var varArg = _arguments.varArg,
         tpl = _template.id$('$root.ui.Table');
@@ -78,6 +79,8 @@
                     var template = Table.Template.Table;
                     if (opts.fixhead || false) {
                         template = Table.Template.FixHeadTable;
+                    } else if (opts.simple) {
+                        template = Table.Template.Simple;
                     }
                     return [this.base(template), opts];
                 })
@@ -104,8 +107,8 @@
                 })
                 .when('arrayLike', function(headers) {
                     var ths = _enum.map(headers, function(col) {
-                        return _str.format('<th>{0}</th>', [col]);
-                    }).join(''),
+                            return _str.format('<th>{0}</th>', [col]);
+                        }).join(''),
                         lastTr = this.header.children().last(),
                         html = '<tr>' + ths + '</tr>';
                     if (lastTr.length) {
@@ -311,11 +314,13 @@
             }
         }
     }).options({
-        fixhead: false
+        fixhead: false,
+        footer: false
     }).statics({
         Template: {
             Table: tpl('table'),
-            FixHeadTable: tpl('fixHeadTable')
+            FixHeadTable: tpl('fixHeadTable'),
+            Simple: tpl('simple')
         },
         Status: {
             Loading: 'loading',
@@ -344,20 +349,21 @@
         }
         if (!opts.footer) {
             self.footer.remove();
-            self.$attr('footer', $());
+            self.$attr('footer', null);
         }
     
-        self.body.delegate('td', 'click', function(e) {
+        self.body.delegate('td', 'mouseup', function(e) {
+            if (e.which !== 1) return;
             var data = self.$get('tableData'),
                 td = $(this),
                 tr = td.closest('tr'),
-                data = self.$get('tableData'),
                 col = tr.children().index(td),
                 row = tr.parent().children().index(tr);
             self.trigger(Table.Events.OnCellClicked, [e.target, row, col, data[row][col]]);
         });
     
-        self.header.delegate('th', 'click', function(e) {
+        self.header.delegate('th', 'mouseup', function(e) {
+            if (e.which !== 1) return;
             var ths = self.header.find('th'),
                 i = ths.index(this),
                 text = $(this).text();

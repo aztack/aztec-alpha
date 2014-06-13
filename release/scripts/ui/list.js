@@ -147,11 +147,11 @@
           item.append(typeof cbk == 'function' ? cbk.call(item, arg) : arg);
           return [item];
         })
-        .when('array<string>', function(arg) {
-          return [List_createItems(this, opts, arg, cbk)];
-        })
         .when('array<jqueryOrElement>', function(arg) {
           return [arg];
+        })
+        .when('array<*>', function(arg) {
+          return [List_createItems(this, opts, arg, cbk)];
         })
         .otherwise(function(arg) {
           var item = $(opts.itemTag);

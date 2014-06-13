@@ -223,14 +223,14 @@
             total = self.totalPage,
             items, fmt, btncls = 'ui-paginator-button';
     
-    
         if (withEllipsis) {
             if (total <= max) {
                 self.add(_ary.fromRange(1, max));
             } else {
                 fmt = function(page, tag, itemCls) {
                     var cls = itemCls ? ' class="' + itemCls + ' ' + btncls + '"' : '';
-                    return _str.format('<{0}{2} data-index="{3}">{1}</{0}>', tag, page, cls, page - 1);
+                    var s = _str.format('<{0}{2} data-index="{3}">{1}</{0}>', tag, page, cls, page - 1);
+                    return s;
                 };
                 if (_range.create('[)', 1, max).covers(page)) {
                     items = self.add(_ary.fromRange(1, max - 1), fmt);

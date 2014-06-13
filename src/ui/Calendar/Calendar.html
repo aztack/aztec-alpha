@@ -4,6 +4,7 @@
         <style>
         .ui-calendar {
             font-size: 12px;
+            -webkit-user-select: none;
         }
         .ui-calendar td, .ui-calendar th {
             cursor: pointer;
@@ -17,11 +18,21 @@
             border-left: 1px solid #ccc !important;
             border-right: 1px solid #ccc !important;
         }
+        .ui-calendar .grayed {
+            color: #ccc;
+        }
+        .ui-calendar .disabled {
+            cursor: default;
+            text-decoration: line-through;
+            color: #ccc;
+        }
         .ui-calendar .selected, .ui-calendar .today.selected {
             background: #fdfdac;
+            box-shadow: inset 1px 0px 1px rgba(0, 0, 0, 0.2);
         }
         .ui-calendar .today {
-            background: #ccc;
+            background: #99d2ff;
+            box-shadow: inset 1px 0px 1px rgba(0, 0, 0, 0.2);
         }
         .ui-calendar-prev-month, .ui-calendar-next-month {
             display:inline-block;
@@ -39,6 +50,26 @@
 
         .ui-calendar-menu {
             font-size: 12px;
+            min-width: 2em;
+            text-align: center;
+        }
+
+        .ui-calendar-menu .selected {
+            background-color: #ccc;
+        }
+
+        .ui-calendar-title .select {
+            margin: 0 0 0 1em;
+        }
+
+        .ui-calendar-dropdown {
+            background : url(images/calendar-down.png) center center no-repeat;
+            display: inline-block;
+            width: 11px;
+            height: 7px;
+        }
+        .ui-calendar-dropdown {
+            *display: inline;
         }
         </style>
         <link rel="stylesheet" href="../../../release/css/table.css" />
@@ -56,35 +87,49 @@
                 </th>
             </tr>
         </script>
+        
         <script type="text/xtemplate" xtemplate="$root.ui.Calendar.footer,delete" sigil-class="Calendar" style="display:none;">
+            <tr><td colspan="{0}"><div class="text">今天:{1}</div></td></tr>
         </script>
+
+        <script type="text/xtemplate" xtemplate="$root.ui.Calendar.titlebar,delete" sigil-class="Calendar" style="display:none">
+            <span class="ui-calendar-title" sigil=".title">
+                <a class="select year">{year}</a>
+                <a class="select month">{month,2,0}</a>
+            </span>
+        </script>
+
         <div id="calendar" style="float:left;width:auto;margin-left:30%"></div>
+        <input id="date" type="text" style="margin:0"/>
     </body>
 
     <script>
         require.config({
             baseUrl: '../../../release/scripts/'
         });
-        require(['lang/date','ui/calendar','ui/menu'], function(date, cale, menu) {
-            window.date = date;
-            a = new date.DateTime();
+        require(['ui/calendar','ui/layout'], function(cale,layout) {
             Calendar = cale.Calendar;
             c = new Calendar();
-            c.appendTo('#calendar');
-            m = new menu.Menu();
-            m.asContextMenuOf(c).on(m.$class.Events.BeforeShowAt,function(e,d){
-            	if(d.target.tagName.toLowerCase() != 'td') {
-            		d.isShow = false;
-            		return;
-            	} else {
-            		d.isShow = true;
-            	}
-                var o = c.getCellData(d.target),
-                    dt = new date.DateTime().set(o).noon();
-                m.setItems([dt.toString(true), dt.toString()]);
-            }).on(m.$class.Events.OnItemSelected,function(e,item){
-                alert(item.text());
+            c.css({
+                position: 'absolute',
+                width: 0
+            }).appendTo('body').hide();
+
+            var input = $('#date');
+            input.focus(function() {
+                layout.below(c.show(), this, {
+                    y: 10
+                });
             })
+            c.on(Calendar.Events.OnDateChanged,function(e, which, v){
+                input.val(c.selected.format("{year,-2}/{month,2,0}/{date,2,0}"));
+                if (which == 'date') c.hide();
+            })
+            $(document).click(function(e){
+                var t = $(e.target), vis = c.is(':visible');
+                if(!vis || t[0] === input[0] || c.find(t).length || c.menu.find(t).length) return;
+                c.hide();
+            });
         });
     </script>
 </html>

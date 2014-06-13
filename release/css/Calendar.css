@@ -1,6 +1,6 @@
 /* $root.ui.calendar */
 .ui-calendar {
-font-size: 12px;
+font-size: 12px; -webkit-user-select: none;
 }
 .ui-calendar td {
 cursor: pointer; width: 14px; height: 14px;
@@ -14,14 +14,20 @@ background: #efefef;
 .ui-calendar td {
 border-left: 1px solid #ccc !important; border-right: 1px solid #ccc !important;
 }
+.ui-calendar .grayed {
+color: #ccc;
+}
+.ui-calendar .disabled {
+cursor: default; text-decoration: line-through; color: #ccc;
+}
 .ui-calendar .selected {
-background: #fdfdac;
+background: #fdfdac; box-shadow: inset 1px 0px 1px rgba(0, 0, 0, 0.2);
 }
 .ui-calendar .today.selected {
-background: #fdfdac;
+background: #fdfdac; box-shadow: inset 1px 0px 1px rgba(0, 0, 0, 0.2);
 }
 .ui-calendar .today {
-background: #ccc;
+background: #99d2ff; box-shadow: inset 1px 0px 1px rgba(0, 0, 0, 0.2);
 }
 .ui-calendar-prev-month {
 display: inline-block; height: 1em; width: 2em;
@@ -36,5 +42,17 @@ background: url(images/calendar-prev.png) center center no-repeat; float: left;
 background: url(images/calendar-next.png) center center no-repeat; float: right;
 }
 .ui-calendar-menu {
-font-size: 12px;
+font-size: 12px; min-width: 2em; text-align: center;
+}
+.ui-calendar-menu .selected {
+background-color: #ccc;
+}
+.ui-calendar-title .select {
+margin: 0 0 0 1em;
+}
+.ui-calendar-dropdown {
+background: url(images/calendar-down.png) center center no-repeat; display: inline-block; width: 11px; height: 7px;
+}
+.ui-calendar-dropdown {
+*display: inline;
 }
