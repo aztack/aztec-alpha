@@ -149,7 +149,7 @@ function calendar(year, month) {
             if (x <= days && (i > 0 || (i === 0 && j >= day))) {
                 if (flag && x === today.getDate() && thisMonth === today.getMonth() + 1 && thisYear === today.getFullYear()) {
                     dayInfo.today = true;
-                    flag = false;//today set
+                    flag = false; //today set
                 }
                 dayInfo.date = x++;
                 dayInfo.year = thisYear;
@@ -183,6 +183,14 @@ function gsetter(g, s) {
     };
 }
 
+/**
+ * DateTime
+ * ========
+ * Represents a date time, mutable
+ * every change is made on the instance. Call dup to make a copy
+ *
+ * @param {String|Date|DateTime|Integer} when
+ */
 var DateTime = _type.create('$root.lang.DateTime', Object, {
     init: function() {
         var value;
@@ -202,6 +210,11 @@ var DateTime = _type.create('$root.lang.DateTime', Object, {
                 this.$attr('value', value);
             });
     },
+    /**
+     * Getters and Setters
+     * ===================
+     * year,month,date,hours,minutes,seconds,millisencods
+     */
     year: gsetter('getFullYear', 'setFullYear'),
     month: function(v) {
         var value = this.$get('value');
@@ -221,6 +234,17 @@ var DateTime = _type.create('$root.lang.DateTime', Object, {
     minutes: gsetter('getMinutes', 'setMinutes'),
     seconds: gsetter('getSeconds', 'setSeconds'),
     milliseconds: gsetter('getMilliseconds', 'setMilliseconds'),
+    /**
+     * toString
+     * @param  {[type]} noTime
+     * @return {[type]} a fomratted date time string
+     *
+     * ```javascript
+     * var dt = new DateTime();
+     * dt.toString() => '2014-06-15 17:36'
+     * dt.toString(true) '2014-06-15'
+     * ```
+     */
     toString: function(noTime) {
         var t = this.$get('value'),
             fmt;
@@ -242,9 +266,26 @@ var DateTime = _type.create('$root.lang.DateTime', Object, {
             second: t.getSeconds()
         });
     },
+    /**
+     * valueOf
+     * @return {Integer} return time of internal Date instance
+     */
     valueOf: function() {
         return this.$get('value').getTime();
     },
+    /**
+     * set
+     * @param {Integer|Object}
+     *
+     * ```javascript
+     * datetime.set(new Date());
+     * datetime.set({
+     *     year: 2014,
+     *     month: 6,
+     *     date: 1
+     * });
+     * ```
+     */
     set: function() {
         var value = this.$get('value');
         varArg(arguments, this)
@@ -262,6 +303,11 @@ var DateTime = _type.create('$root.lang.DateTime', Object, {
             }).resolve();
         return this;
     },
+    /**
+     * toObject
+     * @param  {Boolean} detailed, only return year,month,date if false
+     * @return {Object} {year,month,date,hours,minutes,seconds,milliseconds,day}
+     */
     toObject: function(detailed) {
         var value = this.$get('value');
         return detailed ? {
@@ -279,26 +325,48 @@ var DateTime = _type.create('$root.lang.DateTime', Object, {
             date: value.getDate()
         };
     },
+    /**
+     * dup
+     * duplication
+     * @return {DateTime} return a copy of current instance
+     */
     dup: function() {
         return new DateTime(this.value);
     },
+    /**
+     * equal
+     * @param  {DateTime} other
+     * @return {Boolean} return true if represents the same time with 'other'
+     */
     equal: function(other) {
         return this.value.getTime() == other.value.getTime();
     }
 }).aliases({
     format: 'toString'
 }).methods({
+    /**
+     * firstDayOfMonth
+     * @return {DateTime}
+     */
     firstDayOfMonth: function() {
         return this.set({
             date: 1
         });
     },
+    /**
+     * lastDayOfMonth
+     * @return {DateTime}
+     */
     lastDayOfMonth: function() {
         return this.set({
             month: this.month() + 1,
             date: 0
         });
     },
+    /**
+     * today
+     * @return {DateTime}
+     */
     today: function() {
         var today = DateTime.Today();
         return this.set({
@@ -307,36 +375,64 @@ var DateTime = _type.create('$root.lang.DateTime', Object, {
             date: today.date()
         });
     },
+    /**
+     * yesterday
+     * @return {DateTime}
+     */
     yesterday: function() {
         return this.set({
             date: this.date() - 1
         });
     },
+    /**
+     * tomorrow
+     * @return {DateTime}
+     */
     tomorrow: function() {
         return this.set({
             date: this.date() + 1
         });
     },
+    /**
+     * nextYear
+     * @return {DateTime}
+     */
     nextYear: function() {
         return this.set({
             year: this.year() - 1
         });
     },
+    /**
+     * prevYear
+     * @return {DateTime}
+     */
     prevYear: function() {
         return this.set({
             year: this.year() + 1
         });
     },
+    /**
+     * nextMonth
+     * @return {DateTime}
+     */
     nextMonth: function() {
         return this.set({
             month: this.month() + 1
         });
     },
+    /**
+     * prevMonth
+     * @return {DateTime}
+     */
     prevMonth: function() {
         return this.set({
             month: this.month() - 1
         });
     },
+    /**
+     * noon
+     * @return {DateTime}
+     */
     noon: function() {
         return this.set({
             hours: 12,
@@ -344,6 +440,10 @@ var DateTime = _type.create('$root.lang.DateTime', Object, {
             seconds: 0
         });
     },
+    /**
+     * midnight
+     * @return {DateTime}
+     */
     midnight: function() {
         return this.set({
             hours: 24,
@@ -351,6 +451,10 @@ var DateTime = _type.create('$root.lang.DateTime', Object, {
             seconds: 0
         });
     },
+    /**
+     * beginning
+     * @return {DateTime}
+     */
     beginning: function() {
         return this.set({
             hours: 0,
@@ -358,6 +462,10 @@ var DateTime = _type.create('$root.lang.DateTime', Object, {
             seconds: 0
         });
     },
+    /**
+     * ending
+     * @return {DateTime}
+     */
     ending: function() {
         return this.set({
             hours: 23,
@@ -371,12 +479,23 @@ var DateTime = _type.create('$root.lang.DateTime', Object, {
     sec: 'seconds',
     min: 'minutes'
 }).statics({
+    /**
+     * Today
+     * @returns {DateTime} return a DateTime instance represents today's noon
+     */
     Today: function() {
         return new DateTime().noon();
     },
+    /**
+     * Parse
+     * @param {DateTime} when
+     * @returns {DateTime} return a DateTime instance represent by when which
+     * has the pattern "year/month/date hours:minutes:seconds"
+     */
     Parse: function(when) {
         return new DateTime(Date.parse(when));
     },
+    //#DateTime format used by DateTime\#toString()#
     StandardDateTimeFormat: "{year}/{month,2,0}/{date,2,0} {hour,2,0}:{minute,2,0}:{second,2,0}",
     DefaultDateTimeFormat: "{year}-{month,2,0}-{date,2,0} {hour,2,0}:{minute,2,0}:{second,2,0}",
     StandardDateFormat: "{year}/{month,2,0}/{date,2,0}",
@@ -384,44 +503,55 @@ var DateTime = _type.create('$root.lang.DateTime', Object, {
     DefaultTimeFormat: "{hour,2,0}:{minute,2,0}:{second,2,0}"
 });
 
-var TimeSpan = _type.create('$root.lang.TimeSpan', Number, {
+/**
+ * TimeSpan
+ * ========
+ * Represents a period of time
+ */
+var TimeSpan = _type.create('$root.lang.TimeSpan', Object, {
     init: function(millis) {
-        this.value = Math.abs(millis);
+        this.value = Math.abs(millis || 0);
         var obj = this.toObject();
-        this.$attr('object', obj);
+        this.$attr('value', obj);
     },
     val: function(v) {
         if (v == null) {
             return this.value;
         } else {
             this.value = v;
-            this.$attr('object', this.toObject());
+            this.$attr('value', this.toObject());
         }
         return this;
     },
     year: function() {
-        return this.object.year;
+        return this.value.year;
     },
     day: function() {
-        return this.object.year;
+        return this.value.day;
     },
     hour: function() {
-        return this.object.hour;
+        return this.value.hour;
     },
     minute: function() {
-        return this.object.minute;
+        return this.value.minute;
     },
     second: function() {
-        return this.object.second;
+        return this.value.second;
     },
     toString: function(fmt) {
-        var obj = this.$attr('object');
+        var obj = this.$attr('value');
         return _str.format(fmt || '{year}Y {day}D {hour,2,0}:{minute,2,0}:{second,2,0}', obj);
+    },
+    valueOf: function(){
+        return this.$get('value');
     },
     toObject: function() {
         var obj = TimeSpan.ToObject(this.value);
-        this.$attr('object', obj);
+        this.$attr('value', obj);
         return obj;
+    },
+    equal: function(rhs){
+        return  this.val() === rhs.val();
     }
 }).statics({
     MINUTE: 60,

@@ -1,5 +1,6 @@
 The Aztec JavaScript Framework
 ==============================
+![Mesoamerican pyramids](aztec.jpg)
 Requirements: 
   - ruby gems: erubis, nokogiri, watchr (auto build)
   - node package: docker (generate docs)
