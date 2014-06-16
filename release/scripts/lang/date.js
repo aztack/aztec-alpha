@@ -147,6 +147,11 @@
                         dayInfo.today = true;
                         flag = false; //today set
                     }
+                    if (x === 1) {
+                        dayInfo.first = true;
+                    } else if (x === days) {
+                        dayInfo.last = true;
+                    }
                     dayInfo.date = x++;
                     dayInfo.year = thisYear;
                     dayInfo.month = thisMonth;
@@ -538,7 +543,7 @@
             var obj = this.$attr('value');
             return _str.format(fmt || '{year}Y {day}D {hour,2,0}:{minute,2,0}:{second,2,0}', obj);
         },
-        valueOf: function(){
+        valueOf: function() {
             return this.$get('value');
         },
         toObject: function() {
@@ -546,8 +551,8 @@
             this.$attr('value', obj);
             return obj;
         },
-        equal: function(rhs){
-            return  this.val() === rhs.val();
+        equal: function(rhs) {
+            return this.val() === rhs.val();
         }
     }).statics({
         MINUTE: 60,

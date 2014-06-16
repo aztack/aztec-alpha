@@ -45,7 +45,7 @@
         text: function(arg) {
             var t = this.sigil('.text');
             if (_type.isNullOrUndefined(arg)) {
-                return t.text();
+                return t.length ? t.text() : this.base();
             } else {
                 t.text(arg);
                 return this;

@@ -36,6 +36,11 @@ var Calendar = _type.create('$root.ui.Calendar', Table, {
         this.$attr('menu', new Menu());
         Calendar_initialize(this);
     },
+    /**
+     * #Calendar\#set(year,month)#
+     * @param {Integer} year
+     * @param {Integer} month
+     */
     set: function(year, month) {
         this.selected.year(year).month(month);
         Calendar_update(this);
@@ -48,6 +53,9 @@ var Calendar = _type.create('$root.ui.Calendar', Table, {
             date = d.getDate();
         this.trigger(Calendar.Events.OnDateChanged,['date', date]);
         return this.set(y, m);
+    },
+    toString: function(fmt){
+        return this.selected.format(fmt);
     }
 }).options({
     yearSelectorRadius: 5

@@ -8,7 +8,7 @@
         _enum: $root.lang.enumerable,
         _tpl: $root.browser.template,
         _arguments: $root.lang.arguments,
-        _list: $root.ui.List,
+        _list: $root.ui.list,
         $: jquery,
         jqe: jQueryExt
     },

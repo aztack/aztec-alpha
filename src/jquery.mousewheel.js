@@ -1,6 +1,6 @@
 ({
     description: 'jQuery Mouse Wheel Plugin',
-    namespace: jQuery,
+    namespace: jquery,
     notransform: true,
     priority: 2
 });

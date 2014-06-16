@@ -194,16 +194,6 @@ function getMethodsOn(obj) {
     return ret;
 }
 
-function array_grep(pattern) {
-    var result = [];
-    arrayEach(this, function(name) {
-        if (name.match(pattern)) {
-            result.push(name);
-        }
-    });
-    return result;
-}
-
 function instance$methods(depth, thisIsAClass) {
     var ret = [],
         proto = true,
@@ -225,7 +215,6 @@ function instance$methods(depth, thisIsAClass) {
         proto = clazz ? clazz.prototype : null;
         depth--;
     }
-    ret.grep = array_grep;
     return ret;
 }
 

@@ -1,6 +1,6 @@
 /* $root.ui.spinEdit */
 .ui-spinedit {
-background: #fff; display: inline-block; position: relative;
+border: 1px solid gray; background: #fff; display: inline-block; position: relative;
 }
 .ui-spinedit .button {
 cursor: pointer; list-style-type: none; -webkit-user-select: none;

@@ -1,24 +1,27 @@
 <html>
     <head>
+        <meta charset="utf-8">
         <title>The Big Demo</title>
         <base href="." />
         <link rel="stylesheet" href="release/css/Paginator.css" />
         <link rel="stylesheet" href="release/css/Table.css" />
         <link rel="stylesheet" href="release/css/Dialog.css" />
         <link rel="stylesheet" href="release/css/Menu.css" />
+		<link rel="stylesheet" href="release/css/Calendar.css" />
         
         <script src="release/scripts/aztec.js"></script>
         <script src="release/scripts/jQuery.js"></script>
         <script src="release/scripts/jQueryExt.js"></script>
         <script src="release/scripts/browser/template.js"></script>
         <script src="release/scripts/ui/list.js"></script>
+        <script src="release/scripts/ui/layout.js"></script>
         <script src="release/scripts/ui/paginator.js"></script>
-        <script src="release/scripts/ui/table.js"></script>
-        
+        <script src="release/scripts/ui/table.js"></script>       
         <script src="release/scripts/ui/draggable.js"></script>
         <script src="release/scripts/ui/overlay.js"></script>
         <script src="release/scripts/ui/dialog.js"></script>
         <script src="release/scripts/ui/menu.js"></script>
+        <script src="release/scripts/ui/calendar.js"></script>
     </head>
 
     <body>
@@ -53,7 +56,18 @@
             d.appendTo('body');
             d.showAt('golden');
 
+			var css = {
+				'width': 0,
+				'margin': '1em'
+			};
+			c = new $root.ui.calendar.Calendar();
+			c.appendTo('body').css(css);
 
+			t = new $root.ui.table.Table();
+			t.setData([
+				[1,2],
+				[3,4]
+			]).appendTo('body').css(css);
         </script>
         <script type="text/x-aztec-widget">
             <widget appendTo="body">

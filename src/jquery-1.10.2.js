@@ -1,6 +1,6 @@
 ({
 	description: 'jQuery',
-	namespace: jQuery,
+	namespace: jquery,
 	returns: jQuery,
 	notransform: true,
 	priority: 0

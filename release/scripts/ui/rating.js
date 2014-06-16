@@ -1,17 +1,17 @@
 /**
  * #Rating#
  * ======
- * - Dependencies: `lang/type`,`lang/fn`,`lang/enumerable`,`browser/template`,`lang/arguments`,`ui/List`,`jquery`,`jQueryExt`
+ * - Dependencies: `lang/type`,`lang/fn`,`lang/enumerable`,`browser/template`,`lang/arguments`,`ui/list`,`jquery`,`jQueryExt`
  * - Version: 0.0.1
  */
 
 (function(global, factory) {
     if (typeof define === 'function' && define.amd) {
-        define('ui/rating', ['lang/type', 'lang/fn', 'lang/enumerable', 'browser/template', 'lang/arguments', 'ui/List', 'jquery', 'jQueryExt'], factory);
+        define('ui/rating', ['lang/type', 'lang/fn', 'lang/enumerable', 'browser/template', 'lang/arguments', 'ui/list', 'jquery', 'jQueryExt'], factory);
     } else {
         var $root = global.$root,
             exports = $root._createNS('$root.ui.rating');
-        factory($root.lang.type, $root.lang.fn, $root.lang.enumerable, $root.browser.template, $root.lang.arguments, $root.ui.List, jQuery, jQueryExt, exports);
+        factory($root.lang.type, $root.lang.fn, $root.lang.enumerable, $root.browser.template, $root.lang.arguments, $root.ui.list, jQuery, jQueryExt, exports);
     }
 }(this, function(_type, _fn, _enum, _tpl, _arguments, _list, $, jqe, exports) {
     'use strict';

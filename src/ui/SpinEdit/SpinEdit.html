@@ -3,6 +3,7 @@
         <title>SpinEdit</title>
         <style>
             .ui-spinedit {
+                border: 1px solid gray;
                 background: #fff;
                 display: inline-block;
                 position: relative;
@@ -44,6 +45,7 @@
                 background: url(images/spinedit-arrow.gif) no-repeat center -8px;
             }
         </style>
+        <link rel="stylesheet" href="../../../release/css/TextField.css" />
         <link rel="stylesheet" href="../../../release/css/SpinEdit.css" />
         <script src="../../../release/scripts/requirejs.js"></script>
     </head>
@@ -81,7 +83,7 @@
                 maxValue: 10,
                 minValue: -3,
                 cycle: true
-            }).on(SpinEdit.Events.OnChanged, inspect).appendTo('body');
+            }).on(SpinEdit.Events.OnChanged, inspect).appendTo('body').css({margin: '1em'});
         });
 
     </script>

@@ -20,8 +20,8 @@
                 a.menu.add(456)
                 a.menu.add(789);
                 a.appendTo('body');
-                a.on(ComboBox.Events.OnItemSelected, function(){
-                    console.log(arguments);
+                a.on(ComboBox.Events.OnItemSelected, function(e, item){
+                    console.log(item.text());
                 });
             });
         </script>

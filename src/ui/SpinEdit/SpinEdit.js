@@ -106,7 +106,7 @@ function SpinEdit_initialize(self, opts) {
     }
 
     self.buttons.on(SpinButton.Events.OnButtonClicked, function(e, delta) {
-        ret = SpinEdit_setVal(self, opts, delta, tf);
+        var ret = SpinEdit_setVal(self, opts, delta, tf);
         self.trigger(SpinEdit.Events.OnChanged, ret.concat([e.target, delta]));
     });
 

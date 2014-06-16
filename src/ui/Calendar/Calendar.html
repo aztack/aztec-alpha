@@ -40,10 +40,12 @@
             width: 2em;
         }
         .ui-calendar-prev-month {
+            border: 1px solid transparent;
             background : url(images/calendar-prev.png) center center no-repeat;
             float: left;
         }
         .ui-calendar-next-month {
+            border: 1px solid transparent;
             background : url(images/calendar-next.png) center center no-repeat;
             float: right;
         }
@@ -60,6 +62,10 @@
 
         .ui-calendar-title .select {
             margin: 0 0 0 1em;
+            border: 1px solid transparent;
+        }
+        .ui-calendar-title .select:hover, .ui-calendar-prev-month:hover, .ui-calendar-next-month:hover{
+            border: 1px solid #ccc;
         }
 
         .ui-calendar-dropdown {

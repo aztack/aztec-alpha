@@ -447,7 +447,7 @@ function Table_adjustColspan(self, span) {
         span = data[0].length;
         self.sigil('.loading').find(sel).attr(attr, span);
         self.sigil('.nodata').find(sel).attr(attr, span);
-        self.footer.find(sel).attr(attr, span);
+        if (self.footer) self.footer.find(sel).attr(attr, span);
     }, 0);
 
 }

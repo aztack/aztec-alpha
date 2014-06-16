@@ -91,9 +91,6 @@
                 parent = $(window);
             }
             varArg(arguments, this)
-                .when(function() {
-                    return [parent, this.css('left'), this.css('top')];
-                })
                 .same(['string'], ['number', 'string'], ['string', 'number'], function(xpos, ypos) {
                     this.data('showAt', [xpos, ypos]);
                     var coord = Dialog_getShowPosition(this, xpos, ypos);
