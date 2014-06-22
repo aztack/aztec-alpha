@@ -5,7 +5,7 @@ module Aztec
     #
     class JsModule
         include Comparable
-        CONFIG_PATTERN = /(^\(\{\n*.*?\}\);)$/m
+        CONFIG_PATTERN = /^\(\{\n*.*?\}\);\s*$/m
 
         def self.src_dir
             @src_dir

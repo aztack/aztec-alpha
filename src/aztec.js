@@ -48,6 +48,8 @@
 		}
 	}
 
+	/*
+	//ie8 Object.defineProperty can only define properties on dom element
 	if (Object.defineProperty) {
 		Object.defineProperty(G, '_createNS', {
 			enumerable: false,
@@ -60,7 +62,10 @@
 	} else {
 		G._createNS = createNS;
 		G._help = help;
-	}
+	}*/
+
+	G._createNS = createNS;
+	G._help = help;
 
 	var lang = [
 		'lang/json',
